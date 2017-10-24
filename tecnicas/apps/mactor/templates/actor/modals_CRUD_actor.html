@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+           <! INICIO MODAL CREAR--------------------------->
+
+              <div id="myModal1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+								     <div class="modal-content">
+								     	<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+											<h4 class="modal-title">Nuevo actor</h4>
+								     	</div>
+								     	<div id="mod_body2" class="modal-body" style="text-align: justify">
+											{% include 'actor/formulario_crear.html'%}
+								     	</div>
+										 <div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
+										<button id="boton_guardar" type="submit" onclick="guardar()" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
+								  		</div>
+									 </div>
+								</div>
+                    </div>
+
+
+           <! INICIO MODAL ELIMINAR------------------------>
+
+              <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+								     <div class="modal-content">
+								     	<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Eliminar actor</h4>
+								     	</div>
+								     	<div id="mod_body" class="modal-body" style="text-align: justify">
+                                            <p>¿Realmente desea eliminar al actor <span id="modal_name"></span>?</p>
+								     	</div>
+										 <div class="modal-footer">
+                                                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
+                                                <button id="modal_idProducto"  type="submit" class="btn btn-danger" onclick="Eliminar()">Eliminar</button>
+								  		</div>
+									 </div>
+								</div>
+                    </div>
+
+
+           <! INICIO MODAL EDITAR--------------------------->
+
+              <div id="myModal3" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+								     <div class="modal-content">
+								     	<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+											<h4 class="modal-title">Editar actor</h4>
+								     	</div>
+								     	<div id="mod_body3" class="modal-body" style="text-align: justify">
+											{% include 'actor/formulario_editar.html'%}
+								     	</div>
+										 <div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
+										<button id="modal_actualizar" type="submit" onclick="actualizar()" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
+								  		</div>
+									 </div>
+								</div>
+                    </div>
+
+
+            <! INICIO MODAL AYUDA--------------------------->
+
+              <div id="myModal4" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+								     <div class="modal-content">
+								     	<div class="modal-header">
+											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+											<h4 class="modal-title">Ayuda</h4>
+								     	</div>
+								     	<div class="modal-body" style="text-align: justify">
+											<p>Lista de actores a analizar mediante la técnica MACTOR. Generalmente son seleccionados a partir
+                                            de la determinación de variables claves a través de técnicas como Lluvia de ideas y MICMAC.</p>
+								     	</div>
+										 <div class="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+								  		</div>
+									 </div>
+								</div>
+                    </div>
+
+
+
+</body>
+</html>

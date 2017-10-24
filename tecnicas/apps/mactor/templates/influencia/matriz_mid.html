@@ -1,0 +1,183 @@
+{% extends 'base\baseMactor.html' %}
+{% load staticfiles %}
+
+{% block pull-left %}
+<h2>Matrices de influencia entre actores</h2>
+{% endblock %}
+
+{% block content %}
+
+<! Matriz MID-------------------------------------------------------------------------------------------------->
+    <div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="widget wgreen">
+                    <div class="widget-head">
+                         <div class="pull-left">MID - Matriz de influencias directas</div>
+                         <div class="widget-icons pull-right"></div>
+                         <div class="clearfix"></div>
+                    </div>
+
+<div class="widget-content">
+
+<table class="table table-bordered" id="tabla1">
+    <thead>
+        <tr>
+            <input style='text-align: center;'  type="text" size="3" value="">
+            {%if actores %}
+                {% for actor in actores %}
+                <input id="{{actor.id}}" name="col" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
+                {% endfor %}
+            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="Inf. D">
+            {% else %}
+            <h2>No hay actores registrados</h2>
+            {% endif %}
+            <br>
+         </tr>
+    </thead>
+
+    <tbody>
+
+        {%if valores %}
+    <tr>
+    {%for i in valores%}
+        {%if i.posicion == cantidad_mid%}
+        <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+        <br>
+        {%elif i.posicion == 0%}
+        <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
+        {%else%}
+         <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+        {%endif%}
+    {%endfor%}
+        {% else %}
+            <h2>No hay influencias registradas</h2>
+        {% endif %}
+            <br>
+    </tr>
+    </tbody>
+</table>
+
+</div>
+                </div>
+            </div>
+        </div>
+    </div>
+<! ------------------------------------------------------------------------------------------------------------>
+
+<br>
+<br>
+
+<! MATRIZ MIDI------------------------------------------------------------------------------------------------->
+<div class="container">
+        <div class="row">
+            <div class="col-md-10">
+                <div class="widget wgreen">
+                    <div class="widget-head">
+                         <div class="pull-left">MIDI - Matriz de Influencias Directas e Indirectas</div>
+                        <div class="widget-icons pull-right"></div>
+                        <div class="clearfix"></div>
+                    </div>
+
+<div class="widget-content">
+
+<table class="table table-bordered" id="tabla2">
+    <thead>
+        <tr>
+            <input style='text-align: center;'  type="text" size="3" value="">
+            {%if actores %}
+                {% for actor in actores %}
+                <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
+                {% endfor %}
+            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly  type="text" size="3" value="Ii">
+            {% else %}
+            <h2>No hay actores registrados</h2>
+            {% endif %}
+            <br>
+         </tr>
+    </thead>
+
+    <tbody>
+
+        {%if valores_midi %}
+    <tr>
+    {%for i in valores_midi %}
+        {%if i.posicion == cantidad_midi%}
+        <!--Inserta el ultimo valor antes del salto de fila-->
+        <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+        <br>
+        <!--Inserta los nombres cortos-->
+        {%elif i.posicion == 0%}
+        <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
+        {%else%}
+        <!--inserta los valores midi-->
+         <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+        {%endif%}
+    {%endfor%}
+        {% else %}
+            <h2>No hay influencias registradas</h2>
+        {% endif %}
+            <br>
+    </tr>
+    </tbody>
+</table>
+
+</div>
+                </div>
+            </div>
+
+            <div class="form-group">
+
+                <div class="col-md-offset-2 col-md-8">
+                    <a class="btn btn-sm btn-success" href="{%url 'mactor:influencia'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                    <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                    <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+<! ------------------------------------------------------------------------------------------------------------>
+
+<! INICIO MODAL AYUDA--------------------------->
+
+                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+								     <div class="modal-content">
+								     <div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+									<h4 class="modal-title">Ayuda</h4>
+								     </div>
+								     <div class="modal-body" style="text-align: justify">
+									<p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
+                                        que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
+                                        influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
+                                        procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
+                                        de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
+                                        de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
+                                        existencia o permanencia de otro (4).
+                                    </p>
+                                         <br>
+                                    <p>La columna Influencia Directa (Inf. D), representa la influencia total que determinado
+                                        actor ejerce en el grupo de actores estudiado. Mientras que la columna Dependencia Directa
+                                        (Dep. D), la influencia total que el resto de actores ejerce sobre ese actor.
+                                    </p>
+								     </div>
+								  <div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+								  </div>
+								    </div>
+								</div>
+                    </div>
+
+<! INICIO MODAL DETALLE DEL ACTOR--------------------------->
+
+                    {% include 'actor/modal_detalle_actor.html'%}
+
+{% block extrajs %}
+<script src="{% static 'js_mactor_consultas/detalle_actor_objetivo_matriz.js'%}"></script>
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
+{% endblock %}
+
+{% endblock %}

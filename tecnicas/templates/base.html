@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <title>{% block favicon_title %}Softprosp{% endblock %}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <!-- Style (css)-->
+    {% include "css.html" %}
+    <meta name="robots" content="NONE,NOARCHIVE"/>
+    <!-- Favicon -->
+    <link rel="shortcut icon" href="{% static 'img/favicon/favicon.png'%}">
+</head>
+
+<body class="">
+    <!-- Navbar-->
+    {% include "navbar.html" %}
+    <!-- Content-->
+    <div class="content">
+        <!-- Sidebar-->
+        {% include "sidebar.html" %}
+        <!-- Mainbar-->
+        <!-- Main bar -->
+        <div class="mainbar">
+        <!-- Page heading -->
+        <div class="page-head">
+            <!-- Page heading -->
+            <h2 class="pull-left">{% block head_title %} {% endblock %}
+                <!-- page meta -->
+                <span class="page-meta"></span>
+            </h2>
+            <!-- Breadcrumb -->
+            <div class="bread-crumb pull-right"></div>
+            <div class="clearfix"></div>
+        </div>
+        <!-- Matter -->
+        <div class="matter">  <!--contenido importante-->
+            <div class="container"> <!-- div de bootstrap para responsive-->
+                <div class="row centered">
+                    <div class="row"></div>
+                    <div class="col-md-12">
+                        {% block content %}
+                        {% endblock %}
+                    </div>
+                    <footer id="footer"></footer>
+                </div>
+            </div>
+            <!-- Matter ends -->
+        </div>
+        <!-- Mainbar ends -->
+        <div class="clearfix"></div>
+    </div>
+
+    </div>
+
+<!-- Scroll to top -->
+<span class="totop"><a href="#"><i class="fa fa-chevron-up"></i></a></span>
+
+<!-- JavaScript-->
+{% include "js.html" %}
+
+<!--bloque para archivos js extras-->
+{% block extrajs %}
+{% endblock %}
+
+</body>
+</html>

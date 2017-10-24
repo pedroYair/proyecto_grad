@@ -1,0 +1,76 @@
+ <div class="navbar navbar-inverse navbar-fixed-top bs-docs-nav">
+     <div class="container">
+         <div class="navbar-header">
+             <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+                 <span class="sr-only">Toggle navigation</span>
+                 <span class="fa fa-bars"></span>
+             </button>
+             <a href="" class="navbar-brand">
+                 <img src="/static/img/softprosp.png" id="branding"/>
+             </a>
+         </div>
+
+         {% if request.user.is_authenticated %}
+         <div class="collapse navbar-collapse bs-navbar-collapse" role="navigation">
+             <!-- Links -->
+             <ul class="nav navbar-nav navbar-right">
+                 <li class="dropdown">
+                     <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                         <img src="/static/default/no-img.jpg" style="width:20px" alt="">
+                         {{request.user}}
+                         <b class="caret"></b>
+                     </a>
+                     <!-- Dropdown menu -->
+                     <ul class="dropdown-menu">
+                         <li><a href="#"><i class="fa fa-user"></i>Perfil</a></li>
+                         <li><a href="/password_change/"><i class="fa fa-lock"></i>Cambiar contraseña</a></li>
+                         <li><a href="{% url 'auth_logout'%}"><i class="fa fa-sign-out"></i>Salir</a></li>
+                     </ul>
+                 </li>
+             </ul>
+             <!-- Notifications -->
+             <ul class="nav navbar-nav navbar-right">
+                 <!-- Comment button with number of latest comments count -->
+                 <li class="dropdown dropdown-big">
+                     <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                         <i class="fa fa-comments-o" aria-hidden="true"></i>Notificaciones <span id="notifications-badge" class="badge badge-info">0</span>
+                     </a>
+                     <ul class="dropdown-menu scrollable">
+                         <li id="nots-list">
+                             <!-- Heading - h5 -->
+                             <h5><i class="fa fa-comments"></i> Notificaciones</h5>
+                             <!-- Use hr tag to add border -->
+                             <hr/>
+                         </li>
+                         <li>
+                             <div class="drop-foot">
+                                 <a href="">Ver todos.</a>
+                             </div>
+                         </li>
+                     </ul>
+                 </li>
+
+                 <!-- Message button with number of latest messages count-->
+                 <li class="dropdown dropdown-big">
+                     <a class="dropdown-toggle" href="#" data-toggle="dropdown">
+                         <i class="fa fa-envelope-o"></i> Mensajes <span id="messages-badge" class="badge badge-info">0</span>
+                     </a>
+                     <ul class="dropdown-menu">
+                         <li id="mess-list">
+                             <!-- Heading - h5 -->
+                             <h5><i class="fa fa-envelope-o"></i> Mensajes</h5>
+                             <!-- Use hr tag to add border -->
+                             <hr/>
+                         </li>
+                         <li>
+                             <div class="drop-foot">
+                                 <a href="">Ver todos.</a>
+                             </div>
+                         </li>
+                     </ul>
+                 </li>
+             </ul>
+         </div>
+         {% endif %}
+     </div>
+ </div>

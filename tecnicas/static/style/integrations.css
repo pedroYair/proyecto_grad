@@ -1,0 +1,10 @@
+.pool{
+    background-image: url('../img/drop.png');
+    background-repeat: no-repeat;
+    background-size: 80px 80px;
+}
+
+.shadow{
+    background-color: #eeeeee;
+    box-shadow: 10px 10px 5px #888;
+}

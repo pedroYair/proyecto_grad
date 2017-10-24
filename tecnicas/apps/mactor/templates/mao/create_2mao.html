@@ -1,0 +1,152 @@
+{% extends 'base\baseMactor.html' %}
+{% load staticfiles %}
+
+{% block pull-left %}
+<h2>Relación 2MAO</h2>
+{% endblock %}
+
+{% block content %}
+
+<div class="matter">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="widget wgreen">
+              						<div class="widget-head">
+									  <div class="pull-left">Formulario - Matriz Valorada de Posiciones</div>
+									  <div class="clearfix"></div>
+									</div>
+									<div class="widget-content">
+									  <div class="padd">
+
+										<hr/>
+										<!-- Form starts.  -->
+											<form class="form-horizontal" role="form" method="post" id="form_2mao">
+                                            {% csrf_token %}
+
+												<div class="col-md-3 col-md-offset-1" hidden>
+                                                	<div  class="row">
+                                                		<div class="form-group">
+															<label class="control-label">Tipo</label>
+															<input class="form-control" type="number" value="2" name="tipo">
+														</div>
+                                                	</div>
+                                                </div>
+
+												<div class="row">
+													<div class="col-md-7 col-md-offset-1">
+                                                		<div class="form-group">
+                                                    		{{form.idActorY.errors}}
+												  			<label class="control-label">Relación del actor</label>
+                                                    		{{form.idActorY}}
+														</div>
+													</div>
+												</div>
+
+                                                <div class="row">
+                                                    <div class="col-md-7 col-md-offset-1">
+                                                        <div id="info" style="text-align: justify"></div>
+                                                    </div>
+                                                </div>
+
+												<div class="row">
+													<div class="col-md-7 col-md-offset-1">
+														<div class="form-group">
+															{{form.idObjetivoX.errors}}
+												  			<label class="control-label">Sobre el objetivo</label>
+                                                    		{{form.idObjetivoX}}
+														</div>
+													</div>
+
+
+                                                	<div class="col-md-2 col-md-offset-1">
+														<div class="form-group">
+															<label class="control-label">Valor</label>
+															<br>
+													  		{{form.valor}}
+														</div>
+													</div>
+												</div>
+
+                                                <div class="row">
+                                                    <div class="col-md-7 col-md-offset-1">
+                                                        <div id="info2" style="text-align: justify"></div>
+                                                    </div>
+                                                </div>
+
+
+                                                <div class="row">
+                                                	<div class="col-md-7 col-md-offset-1">
+														<div class="form-group">
+														  <label class="control-label">Justificación</label>
+														  {{form.justificacion}}
+														</div>
+                                                	</div>
+                                                </div>
+
+												<div  class="row">
+                                                	<div class="col-md-3 col-md-offset-1" hidden>
+                                                		<div class="form-group">
+												  			<label class="control-label">Experto</label>
+												 			<input class="form-control" type="text" value="{{user.id}}" name="idExperto">
+														</div>
+                                                	</div>
+
+                                                	<div class="col-md-3 col-md-offset-1">
+														<div class="form-group">
+												  			<label class="control-label">Estudio</label>
+												 			{{form.idEstudio}}
+														</div>
+                                               		 </div>
+												</div>
+
+												<div class="form-group">
+												  <div class="col-md-offset-2 col-md-8">
+													   <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_1mao'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                                                     	<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> Guardar</button>
+													  	<a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                                                      	<a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_2mao'%}">Matriz <i class="fa fa-arrow-right"></i></a>
+												  </div>
+
+      <! INICIO MODAL AYUDA--------------------------->
+
+                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+								<div class="modal-dialog">
+								     <div class="modal-content">
+								     <div class="modal-header">
+									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+									<h4 class="modal-title">Ayuda</h4>
+								     </div>
+								     <div class="modal-body">
+									<p>Se describe la actitud de cada actor en relación al alcance de cada objetivo,
+										indicando su posición mediante una escala de valores enteros que abarca de
+										-4 a 4, siendo estos los niveles mas altos de desacuerdo y acuerdo
+										respectivamente y  0 una posición neutra.</p>
+								     </div>
+								  <div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+								  </div>
+								    </div>
+								</div>
+                    </div>
+
+												</div>
+											</form>
+									  </div>
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+</div>
+
+{% block extrajs %}
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js_mactor_consultas/consultar_desc_actor.js' %}"></script>
+<script src="{% static 'js_mactor_consultas/consultar_desc_objetivo.js' %}"></script>
+<script src="{% static 'js_mactor_consultas/desactivar_opciones_select_mao.js'%}"></script>
+{% endblock %}
+
+{% endblock %}

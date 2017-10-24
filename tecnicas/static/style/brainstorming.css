@@ -1,0 +1,183 @@
+.lluvia_idea {
+    /*border: 0;*/
+}
+
+.lluvia_idea .widget-content{
+    border: 1px solid #43c83c !important;
+}
+.lluvia_idea .widget-head{
+    text-transform: capitalize;
+    border: 0 !important;
+    font-size: 20px;
+    font-weight: bold;padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.lluvia_idea .sesiones{
+    display: block;
+    padding-left: 0;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+.lluvia_idea .sesiones li.cerrado{
+    background: #fa3031;
+    color: white;
+}
+
+.lluvia_idea .sesiones li.cerrado .actions-btn a{
+    color: white ;
+
+}
+
+.lluvia_idea .sesiones li{
+    display: block;
+    /*height: 30px;*/
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-weight: bold;
+    border-bottom: 1px solid #eeeeee;
+    background: white;
+    color: black;
+    font-size: 16px;
+}
+
+.lluvia_idea .sesiones li:last-child{
+    border-bottom: 0;
+}
+
+.lluvia_idea .sesiones li .actions-btn{
+    display: inline-block;
+    float: right;
+
+}
+
+.lluvia_idea .sesiones li .actions-btn a:hover{
+    /*color: #eeeeee;*/
+}
+.lluvia_idea .sesiones li .actions-btn a{
+    color: black;
+    font-size: 15px;
+}
+.lluvia_idea .sesiones li .actions-btn a i{
+    vertical-align: middle;
+}
+
+#modal_reglas .modal-body{
+    padding: 0;
+
+}
+
+#modal_reglas .modal-body ul{
+    padding-left: 0;
+    list-style: none;
+    margin-bottom: 0;
+}
+
+#modal_reglas .modal-body ul li{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 20px;
+    padding-right: 20px;
+    font-size: 14px;
+    line-height: 18px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+#modal_reglas .modal-body ul li:last-child{
+    border-bottom: 0;
+
+
+}
+
+#modal_reglas .modal-body ul li .actions-btn{
+    float: right;
+    display: inline-block;
+}
+
+#modal_reglas .modal-footer{
+    margin-top: 0;
+
+}
+
+#modal_reglas .modal-body form{
+    border-bottom: 1px solid #eeeeee;
+}
+#modal_reglas .modal-body form input{
+    width: 80%;
+    float: left;
+    border: 0 !important;
+    height: 50px;
+}
+
+
+#modal_reglas .modal-body form button{
+    float: left;
+    width: 20%;
+    height: 50px;
+    border: 0;
+}
+
+#ideas_list{
+    padding-left: 0 !important;
+}
+
+
+#modal_moderation textarea{
+    width: 100%;
+}
+
+#modal_add_comment_idea #idea_descripcion{
+    font-size: 16px;
+    margin-bottom: 20px !important;
+    display: block;
+    font-style: italic;
+
+}
+
+label{
+    font-weight: bold;
+}
+
+#modal_add_comment_idea label{
+    display: block;
+    margin-bottom: 10px;
+}
+
+#modal_add_comment_idea textarea{
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+}
+#modal_add_comment_idea #id_email{
+    display: block;
+    width: 100%;
+}
+
+.modal label{
+    display: block;
+    font-weight: bold;
+
+}
+
+.modal input:not([type=hidden],[type=checkbox]){
+    width: 100%;
+    display: block;
+    margin-bottom: 20px;
+}
+
+.modal textarea{
+    display: block;
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+.text-error{
+    color: darkred;
+}
+
+#ideas_list {
+    padding-left:0 !important;
+}

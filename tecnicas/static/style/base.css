@@ -1,0 +1,80 @@
+.messages{
+    margin-top: 20px;
+}
+
+.breadcrumb{
+    margin-top: 20px;
+}
+
+.like,.dislike,.expand{
+    padding-left: 15px;
+    cursor: pointer;
+}
+
+.like i{
+    padding-right:5px;
+}
+
+.dislike i{
+    padding-right:5px;
+}
+
+.like:hover{
+  color:forestgreen;
+
+}
+
+.dislike:hover{
+   color:darkred;
+}
+
+.expand i{
+    padding-right: 5px;
+}
+
+.expand:hover{
+    color:darkblue;
+}
+
+.disable{
+    color:#555;
+}
+
+.disable:hover{
+    color:#555;
+}
+
+#id_honeypot{
+    display: none;
+}
+
+#id_voto{
+    display: none;
+}
+
+.modal-body textarea{
+    height: 120px;
+}
+
+.action-checkbox-column{
+    width: 10px;
+}
+
+.scrollable{
+    overflow-y:scroll;
+    max-height: 300px;
+    max-width:300px;
+}
+
+.nots-mini-view{
+    max-width: 300px;
+}
+
+.nots-mini-view h6{
+    word-break: break-all;
+    max-width: 300px;
+}
+
+.node{
+    word-wrap: break-word;
+}

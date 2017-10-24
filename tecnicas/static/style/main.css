@@ -1,0 +1,111 @@
+/* 
+    Document   : main.css
+    Created on : Jul 23, 2013, 1:57:18 PM
+    Author     : minrock
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+.wrapper-not{
+    color: #444;
+}
+
+.wrapper-not:hover{
+    color: #999;
+}
+
+.nav-admin .navbar .brand{
+    color: black !important;
+}
+
+.nav-admin .navbar .nav > li > a{
+    color: black !important;
+}
+
+.mod_comment{
+    float:right;
+}
+
+.coord:hover{
+    color: #b19312;
+}
+
+.pm_body{
+    margin-top: 10px;
+    padding: 10px 10px;
+
+    color:black;
+    font-size:1em;
+}
+
+i{
+          margin-left:10px;
+}
+
+.centered{
+    margin-left: 25px !important;
+    margin-right: 25px !important;
+}
+
+.no-bull{
+    list-style: none;
+}
+
+.errorlist{
+    padding-left: 0;
+}
+
+.errorlist > li{
+    list-style-type: none;
+
+	background: #fa3031 !important;
+	color: #fff !important;
+	border: 0px !important;
+    padding: 0 10px;
+}
+
+#sesiones_abiertas li{
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+
+}
+
+#sesiones_abiertas li h6{
+    font-size: 16px;
+    text-transform: capitalize;
+}
+
+#sesiones_abiertas li span.fechas{
+    font-size: 12px;
+    font-style: italic;
+}
+
+#sesiones_abiertas li p{
+    font-size: 14px;
+}
+
+.custom-form{
+    width: 400px;
+    padding: 20px;
+    border: 2px solid #eee;
+    margin:  0 auto;
+}
+
+.custom-form .form-group{
+    margin-bottom: 10px;
+}
+
+.custom-form label{
+    font-weight: bold;
+    margin-bottom: 10px;
+    box-shadow: #002a80;
+}
+
+.autocomplete-light-widget{
+    width: 100%;
+}
+
+#lista_estudios .widget-content{
+    min-height: 360px;
+
+}
