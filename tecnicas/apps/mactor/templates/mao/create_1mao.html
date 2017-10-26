@@ -1,8 +1,8 @@
-{% extends 'base\baseMactor.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block pull-left %}
-<h2>Relación 1MAO</h2>
+{% block head_title %}
+Estudio:
 {% endblock %}
 
 {% block content %}
@@ -20,7 +20,7 @@
 									  <div class="padd">
 
 										<hr/>
-										<!-- Form starts.  -->
+					<!-- Form starts. ----- ------------------------------------>
 											<form class="form-horizontal" role="form" method="post" id="form_1mao">
                                             {% csrf_token %}
 
@@ -37,7 +37,7 @@
 													<div class="col-md-7 col-md-offset-1">
                                                 		<div class="form-group">
                                                     		{{form.idActorY.errors}}
-												  			<label class="control-label">Relación del actor</label>
+												  			<label class="control-label" style="text-align: left">Relación del actor</label>
                                                     		{{form.idActorY}}
 														</div>
 													</div>
@@ -53,7 +53,7 @@
 													<div class="col-md-7 col-md-offset-1">
 														<div class="form-group">
 															{{form.idObjetivoX.errors}}
-												  			<label class="control-label">Sobre el objetivo</label>
+												  			<label class="control-label" style="text-align: left">Sobre el objetivo</label>
                                                     		{{form.idObjetivoX}}
 														</div>
 													</div>
@@ -61,7 +61,7 @@
 
                                                 	<div class="col-md-2 col-md-offset-1">
 														<div class="form-group">
-															<label class="control-label">Valor</label>
+															<label class="control-label" style="text-align: left">Valor</label>
 															<br>
 													  		{{form.valor}}
 														</div>
@@ -78,7 +78,7 @@
                                                 <div class="row">
                                                 	<div class="col-md-7 col-md-offset-1">
 														<div class="form-group">
-														  <label class="control-label">Justificación</label>
+														  <label class="control-label" style="text-align: left">Justificación</label>
 														  {{form.justificacion}}
 														</div>
                                                 	</div>
@@ -87,14 +87,14 @@
 												<div  class="row">
                                                 	<div class="col-md-3 col-md-offset-1" hidden>
                                                 		<div class="form-group">
-												  			<label class="control-label">Experto</label>
+												  			<label class="control-label" style="text-align: left">Experto</label>
                                                             <input class="form-control" type="text" value="{{user.id}}" name="idExperto">
 														</div>
                                                 	</div>
 
                                                 	<div class="col-md-3 col-md-offset-1">
 														<div class="form-group">
-												  			<label class="control-label">Estudio</label>
+												  			<label class="control-label" style="text-align: left">Estudio</label>
 												 			{{form.idEstudio}}
 														</div>
                                                		 </div>

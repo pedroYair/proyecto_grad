@@ -1,13 +1,14 @@
-// Mediante este archivo al seleccionar una opcion del primer select (Y), se muestran en el segundo activas solo
-// aquellas opciones que aun no se han registrado.
+/*permite que al seleccionar una opcion en el primer select, en el segundo solo se muestren activas aquellas que
+aun no se han registrado. Esto para los formularios de fichas de estrategias y mid */
 
-$('#id_idActorY').on('change', DescripcionY);
-        function  DescripcionY()
-        {   // se obtiene el id del actor
+$('#id_idActorY').on('change', Desactivar);
+        function  Desactivar()
+        {
+            // se obtiene el id del actor
             var id = $(this).val();
             // se obtiene el id del formulario
             var tipo = $(this).closest("form").attr('id');
-
+            // se envia mediante ajax el id del actor y el tipo de formulario
             $.ajax({
                 data : {'id' : id, 'tipo': tipo},
                 url : 'mid-ajax',
@@ -15,21 +16,61 @@ $('#id_idActorY').on('change', DescripcionY);
                 success : function (data)
                 {
                     var object = JSON.parse(data);
-                    // permite que al cambiar la opcion se activen las opciones correspondientes (actualizar opciones)
+
+                    // determina cuales options deben ser activados
                     for(var i=0; i<object.actores.length;i++)
                     {
                         $("#id_idActorX").find("option[value='"+object.actores[i]+"']").prop("disabled",false);
+
+                        if(tipo =="form_mid")
+                        {
+                            var textAct = $("#id_idActorX").find("option[value='"+object.actores[i]+"']").text();
+                            textAct = eliminar_subcadena(textAct);
+                            // asigna el valor de influencia registrado
+                            $("#id_idActorX").find("option[value='"+object.actores[i]+"']").prop("text",textAct);
+                        }
                     }
-                    // al activar todas las opciones se establecen cuales deben desactivarse para la opcion actual
-                    for (var i=0;i<object.lista.length; i++)
+
+                    // determina cuales optiones deben ser desactivados
+                    for (var j=0;j<object.lista.length; j++)
                     {
-                        $("#id_idActorX").find("option[value='"+object.lista[i]+"']").prop("disabled",true);
+                        // se asigna la lista de valores registrados a la variable value
+                        var value = object.valores[j];
+
+                        if(tipo=="form_mid")
+                        {
+                            // se obtiene el texto de la opcion seleccionada en el select
+                            var text = $("#id_idActorX").find("option[value='"+object.lista[j]+"']").text();
+                            text = eliminar_subcadena(text);
+                            // asigna el valor de influencia registrado
+                            $("#id_idActorX").find("option[value='"+object.lista[j]+"']").prop("text",text + " (" + value + ")");
+                        }
+                         // desactiva las opciones correspondientes a las influencias registradas
+                        $("#id_idActorX").find("option[value='"+object.lista[j]+"']").prop("disabled",true);
                     }
                     // se activa el segundo select
                         document.getElementById("id_idActorX").disabled = false;
                 }
             });
         }
+
+function eliminar_subcadena(cadena){
+
+                        // se actualizan los valores de las influencias registradas
+                        for(var y=0;y<cadena.length; y++)
+                        {
+                            var caracter = cadena.charAt(y);
+
+                            if(caracter == "(")
+                            {
+                                cadena = cadena.substring(0, y);
+                            }
+                        }
+
+                        return cadena;
+        }
+
+
 
 
 

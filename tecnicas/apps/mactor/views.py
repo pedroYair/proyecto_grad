@@ -173,7 +173,7 @@ class Listar_ficha(ListView):
 class Editar_ficha(UpdateView):
     model = Ficha_actor
     form_class = Form_Ficha
-    template_name = 'ficha/crear_ficha.html'
+    template_name = 'ficha/editar_ficha.html'
     success_url = reverse_lazy('mactor:lista_fichas')
 
 
@@ -380,7 +380,7 @@ def Matriz_mid(request):
     return render(request, 'influencia/matriz_mid.html', contexto)
 
 
-# VIEWS MODELO RELACION_MAO---------------------------------------------------------------------------------->
+# -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
 
 
 class Crear_1mao(CreateView):
@@ -441,7 +441,7 @@ def Generar_matriz_2mao(request):
 
     return render(request, 'mao/matriz_2mao.html', contexto)
 
-# -------------------------------------CLASES AUXILIARES--------------------------------------------------------------->
+# ---------------------------------------------CLASES AUXILIARES-------------------------------------->
 
 
 # Clase auxiliar para la generacion de matrices, se asigna una posicion a un respectivo valor
@@ -452,7 +452,7 @@ class Valor_posicion:
 
 
 # Ingresa las influencias con valor 0 de un actor sobre si mismo, necesario para que la matriz sea cuadrada
-def auto_influencia():
+"""def auto_influencia(request):
     actor = Actor.objects.all().order_by('id')
     inf = Relacion_MID.objects.all().order_by('id')
     flag = False
@@ -474,18 +474,66 @@ def auto_influencia():
             a.save()
 
     inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
-    return inf
+    return inf"""
 
 # -------------------------------------FUNCIONES AUXILIARES------------------------------------------------------------>
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Funciones influencias entre actores>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
+# Ingresa las influencias con valor 0 de un actor sobre si mismo, necesario para que la matriz sea cuadrada
+def Crear_auto_influencia(request):
+
+    if request.is_ajax():
+        id_b = request.GET['id']
+        actor = Actor.objects.all().order_by('id')
+        inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
+        lista_registrados = []
+        cont = 0
+
+
+        # se verifica si estas influencias ya existen
+        for i in actor:
+            for j in inf:
+                if j.idActorX.id == i.id and j.idActorY.id == i.id:
+                    print(j.idActorX)
+                    print("")
+                    print(j.idActorY)
+                    print("-----------------------------------------")
+                    lista_registrados.append(i.id)
+
+        for i in actor:
+                if i.id not in lista_registrados:
+                    a = Relacion_MID()
+                    a.idActorY = i
+                    a.idActorX = i
+                    a.valor = 0
+                    a.justificacion = "auto_inf"
+                    a.idExperto = inf[0].idExperto
+                    a.idEstudio = inf[0].idEstudio
+                    a.save()
+        # sino existen estas influencias, se agregan a la bd, ya que se necesitan los atributos
+        """if flag == False:
+            for j in range(len(actor)):
+                a = Relacion_MID()
+                a.idActorY = actor[j]
+                a.idActorX = actor[j]
+                a.valor = 0
+                a.justificacion = "auto_inf"
+                a.idExperto = inf[0].idExperto
+                a.idEstudio = inf[0].idEstudio
+                a.save()"""
+        print("auto influencias registradas" + id_b)
+
+        response = JsonResponse({'resp': "listo"})
+        return HttpResponse(response.content)
+
+
 # Generacion de la matriz MIDIij = MID ij + Sum(Minimo [(MID ik, MID ik])
 def calcular_midi():
 
     actor = Actor.objects.all().order_by('id')
-    inf = auto_influencia()
+    inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
     lista_minimo = []   # contiene las sublistas de valores minimos por cada actor Y
     lista_total = []    # contiene lista_minimo concatenado
     valores_midi = []   # contiene los valores correspondientes a MIDI
@@ -494,7 +542,7 @@ def calcular_midi():
     for i in range(len(inf)):
         if inf[i].idActorY == inf[i].idActorX:
             # cada valor de pos permite el calculo de una fila de la matriz
-            lista_minimo.append(calcular_minimo(pos=i, mid=auto_influencia()))
+            lista_minimo.append(calcular_minimo(pos=i, mid=inf))
 
     # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
     for i in lista_minimo:
@@ -607,6 +655,7 @@ def calcular_minimo(pos, mid):
             fin = fin + actor.count()  # se actualiza el punto final
 
     return lista_suma
+
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Funciones matrices mao>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -1000,27 +1049,34 @@ def Consultar_actores_faltantes(request):
     if request.is_ajax():
         id = request.GET['id']
         tipo = request.GET['tipo']
-        print(tipo)
         actores = Actor.objects.all().order_by('id')
         lista_registrados = []
         lista_id = []
+        lista_valores = []
 
         # si se esta registrando una influencia mid
         if tipo == "form_mid":
             # para desactivar la opcion correspondiente a autoinfluencia se agrega el id como registrado
-            lista_registrados.append(id)
+
             # se obtiene la lista de relaciones mid registradas
             mid = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
             # se obtienen los id de los actores ya registrados en la matriz mid
             for i in mid:
                 if i.idActorY.id == int(id):
                     lista_registrados.append(i.idActorX.id)
+                    lista_valores.append(i.valor)
+
+            # el actor seleccionado debe mostrarse desactivado en caso de no estarlo mediante la funcion
+            # de auto_influencia
+            if id not in lista_registrados:
+                lista_registrados.append(id)
+                lista_valores.append(0)
+
         # si se esta registrando una ficha de estrategias
         if tipo == "form_ficha":
             fichas = Ficha_actor.objects.all().order_by('idActorY', 'idActorX')
             for i in fichas:
                 if i.idActorY.id == int(id):
-                    print(i.idActorX.nombreLargo)
                     lista_registrados.append(i.idActorX.id)
 
         # se obtiene la lista de id de los actores del estudio
@@ -1028,7 +1084,8 @@ def Consultar_actores_faltantes(request):
             lista_id.append(i.id)
 
         response = JsonResponse({'actores': lista_id,
-                                 'lista': lista_registrados})
+                                 'lista': lista_registrados,
+                                 'valores': lista_valores})
         return HttpResponse(response.content)
 
 
@@ -1037,12 +1094,12 @@ def Consultar_objetivos_faltantes(request):
     if request.is_ajax():
         id = request.GET['id']
         tipo = request.GET['tipo']
-        print(tipo)
         objetivos = Objetivo.objects.all().order_by('id')
         lista_registrados = []
+        lista_valores = []
         lista_id = []
 
-        # si se esta registrando una influencia mid
+        # si se esta registrando una influencia 1mao
         if tipo == "form_1mao":
             # se obtiene la lista de relaciones  1mao registradas
             mao = Relacion_MAO.objects.all().exclude(tipo=2).order_by('idActorY', 'idObjetivoX')
@@ -1050,19 +1107,23 @@ def Consultar_objetivos_faltantes(request):
             for i in mao:
                 if i.idActorY.id == int(id):
                     lista_registrados.append(i.idObjetivoX.id)
-        # si se esta registrando una ficha de estrategias
+                    lista_valores.append(i.valor)
+
+        # si se esta registrando una influencia 2mao
         if tipo == "form_2mao":
             mao = Relacion_MAO.objects.all().exclude(tipo=1).order_by('idActorY', 'idObjetivoX')
             for i in mao:
                 if i.idActorY.id == int(id):
                     lista_registrados.append(i.idObjetivoX.id)
+                    lista_valores.append(i.valor)
 
         # se obtiene la lista de id de los objetivos del estudio
         for i in objetivos:
             lista_id.append(i.id)
 
         response = JsonResponse({'objetivos': lista_id,
-                                 'lista': lista_registrados})
+                                 'lista': lista_registrados,
+                                 'valores': lista_valores})
         return HttpResponse(response.content)
 
 

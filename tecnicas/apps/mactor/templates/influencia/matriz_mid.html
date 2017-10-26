@@ -1,8 +1,8 @@
-{% extends 'base\baseMactor.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block pull-left %}
-<h2>Matrices de influencia entre actores</h2>
+{% block head_title %}
+Estudio:
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,7 @@
             <div class="col-md-10">
                 <div class="widget wgreen">
                     <div class="widget-head">
-                         <div class="pull-left">MID - Matriz de influencias directas</div>
+                         <div class="pull-left">MID - Matriz de Influencias Directas</div>
                          <div class="widget-icons pull-right"></div>
                          <div class="clearfix"></div>
                     </div>
@@ -176,8 +176,8 @@
                     {% include 'actor/modal_detalle_actor.html'%}
 
 {% block extrajs %}
-<script src="{% static 'js_mactor_consultas/detalle_actor_objetivo_matriz.js'%}"></script>
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js_mactor_consultas/detalle_actor_objetivo_matriz.js'%}"></script>
 {% endblock %}
 
 {% endblock %}
