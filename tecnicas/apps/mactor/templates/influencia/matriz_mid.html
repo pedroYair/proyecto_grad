@@ -23,14 +23,12 @@ Estudio:
 <table class="table table-bordered" id="tabla1">
     <thead>
         <tr>
-            <input style='text-align: center;'  type="text" size="3" value="">
-            {%if actores %}
+            {%if actores and valores %}
+            <input style='text-align: center;'  type="text" size="3" readonly value="">
                 {% for actor in actores %}
                 <input id="{{actor.id}}" name="col" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
                 {% endfor %}
             <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="Inf. D">
-            {% else %}
-            <h2>No hay actores registrados</h2>
             {% endif %}
             <br>
          </tr>
@@ -38,20 +36,29 @@ Estudio:
 
     <tbody>
 
-        {%if valores %}
+        {% if valores %}
     <tr>
-    {%for i in valores%}
-        {%if i.posicion == cantidad_mid%}
-        <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        <br>
-        {%elif i.posicion == 0%}
-        <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
-        {%else%}
-         <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        {%endif%}
-    {%endfor%}
+    {% for i in valores %}
+        <!--Inserta el ultimo valor de la fila antes del salto de linea-->
+        {% if i.posicion == posicion_salto %}
+            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+            <br>
+        <!--Inserta los nombres cortos en el eje Y-->
+        {% elif i.posicion == 0 %}
+            <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
+        <!--inserta los valores mid posteriores al nombrecorto en Y y previos al valor de la ultima celda-->
         {% else %}
-            <h2>No hay influencias registradas</h2>
+            <!-->
+            {% if i.valor == 100 %}
+                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="X">
+            {% else %}
+            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+            {% endif %}
+            <!-->
+        {% endif %}
+    {% endfor %}
+        {% else %}
+            <h3>Finalize el registro de las influencias directas para visualizar la matriz MID</h3>
         {% endif %}
             <br>
     </tr>
@@ -84,38 +91,36 @@ Estudio:
 <table class="table table-bordered" id="tabla2">
     <thead>
         <tr>
-            <input style='text-align: center;'  type="text" size="3" value="">
-            {%if actores %}
+            {% if actores and valores_midi %}
+            <input style='text-align: center;'  type="text" size="3" readonly value="">
+                <!--se ingresan los nombres cortos de los actores como encabezados de las columnas-->
                 {% for actor in actores %}
-                <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
+                    <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
                 {% endfor %}
             <input style='text-align: center; background-color: #5e5e5e; color: white' readonly  type="text" size="3" value="Ii">
-            {% else %}
-            <h2>No hay actores registrados</h2>
             {% endif %}
             <br>
          </tr>
     </thead>
 
     <tbody>
-
-        {%if valores_midi %}
+    {%if valores_midi %}
     <tr>
-    {%for i in valores_midi %}
-        {%if i.posicion == cantidad_midi%}
-        <!--Inserta el ultimo valor antes del salto de fila-->
-        <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        <br>
-        <!--Inserta los nombres cortos-->
-        {%elif i.posicion == 0%}
-        <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
-        {%else%}
-        <!--inserta los valores midi-->
-         <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        {%endif%}
-    {%endfor%}
+    {% for i in valores_midi %}
+        <!--Inserta el ultimo valor antes del salto de linea-->
+        {% if i.posicion == posicion_salto %}
+            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+            <br>
+        <!--Inserta los nombres cortos en el eje Y-->
+        {% elif i.posicion == 0 %}
+            <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
+        <!--Inserta los valores midi posteriores al nombre corto en Y y previos a la ultima celda-->
         {% else %}
-            <h2>No hay influencias registradas</h2>
+            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+        {% endif %}
+    {% endfor %}
+        {% else %}
+            <h3>Finalice el registro de las influencias directas para visualizar la matriz MIDI</h3>
         {% endif %}
             <br>
     </tr>
@@ -129,10 +134,10 @@ Estudio:
             <div class="form-group">
 
                 <div class="col-md-offset-2 col-md-8">
-                    <a class="btn btn-sm btn-success" href="{%url 'mactor:influencia'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' %}"><i class="fa fa-arrow-left"></i> Atrás</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
                     <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
-                    <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao' %}">Siguiente <i class="fa fa-arrow-right"></i></a>
 
                 </div>
             </div>

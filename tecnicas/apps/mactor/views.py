@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
-from django.core import serializers
-import json
+from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
 from django.shortcuts import render, redirect
 from django.core.urlresolvers import reverse_lazy
 from django.http import JsonResponse, HttpResponse, request
@@ -326,7 +325,7 @@ def Eliminar_objetivo_ajax(request):
 # -----------------------------------------VIEWS MODELO RELACION_MID--------------------------------->
 
 
-class Crear_relacionInfluencia(CreateView):
+class Crear_relacion_mid(CreateView):
     model = Relacion_MID
     form_class = Form_MID
     template_name = 'influencia/create_influencia.html'
@@ -334,49 +333,29 @@ class Crear_relacionInfluencia(CreateView):
 
 
 # View generadora de la matriz MID
-def Matriz_mid(request):
+def Generar_matriz_mid(request):
 
-    actor = Actor.objects.all().order_by('id')
-    inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
-    valores = []    # contiene los valores que se muestran en la matriz
-    cont = 0        # cuenta las influencias
-    pos_list = 0    # determina el nombre corto que se ha de colocar en valores
-    influencia = 0
-    dependencia = 0
+    lista_actores = Actor.objects.all().order_by('id')
+    lista_influencias = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
+    tamano_matriz_completa = len(lista_actores)*len(lista_actores)
+    posicion_salto_linea = lista_actores.count() + 1
 
-    for i in range(len(inf)):
-        cont += 1
-        # se ingresan los valores mid, asignando una posicion a cada valor para facilitar su impresion
-        valores.append(Valor_posicion(posicion=cont, valor=inf[i].valor))
-        # se suman los valores de influencia directa
-        influencia += inf[i].valor
-        # cuando la cantidad de valores ingresado alcanza la cantidad de actores se agrega el valor de influencia
-        if cont == actor.count():
-            valores.append(Valor_posicion(posicion=cont + 1, valor=influencia))
-            # determina la posicion donde se va a colocar el nombre corto de la nueva fila
-            cont2 = (actor.count() + 2) * pos_list
-            # inserta el nombre corto de la nueva fila
-            valores.insert(cont2, Valor_posicion(posicion=0, valor=actor[pos_list].nombreCorto))
-            cont = 0
-            pos_list += 1
-            influencia = 0  # reinicio del valor de influencia
+    if len(lista_influencias) == tamano_matriz_completa:
 
-    # Agregado de la sumatoria de dependencias directas
-    valores.append(Valor_posicion(posicion=0, valor="Dep. D"))
-    cont = 1
-    while cont <= actor.count():
-        for i in valores:
-            if i.posicion == cont:
-                dependencia += i.valor
-        valores.append(Valor_posicion(posicion=cont, valor=dependencia))
-        cont += 1           # iteracion de las posiciones
-        dependencia = 0     # reinicio a o del valor movilizacion
+        valores_mid = establecer_valores_mid(lista_influencias, lista_actores)
+        valores_midi = calcular_midi()
 
-    midi = calcular_midi()  # obtencion de la matriz midi
+        contexto = {'actores': lista_actores,
+                    'posicion_salto': posicion_salto_linea,
+                    'valores': valores_mid,
+                    'valores_midi': valores_midi}
 
+    else:
+        valores_mid = generar_mid_incompleta(lista_influencias, lista_actores)
 
-    contexto = {'actores': actor, 'cantidad_mid': actor.count() + 1, 'cantidad_midi': actor.count() + 1,
-                'valores': valores, 'valores_midi': midi}
+        contexto = {'actores': lista_actores, 'posicion_salto': posicion_salto_linea,
+                    'valores': valores_mid}
+
     return render(request, 'influencia/matriz_mid.html', contexto)
 
 
@@ -392,21 +371,31 @@ class Crear_1mao(CreateView):
 
 def Generar_matriz_1mao(request):
 
-    objetivos = Objetivo.objects.all().order_by('id')                               # objetivos registrados
-    actores = Actor.objects.all().order_by('id')                                    # actores registrados
-    mao = Relacion_MAO.objects.exclude(tipo=2).order_by('idActorY', 'idObjetivoX')  # relaciones mao registradas
-    lista = generar_matriz_mao(objetivos=objetivos, actores=actores, mao=mao)       # lista con parametros del contexto
+    lista_objetivos = Objetivo.objects.all().order_by('id')
+    lista_actores = Actor.objects.all().order_by('id')
+    lista_mao = Relacion_MAO.objects.exclude(tipo=2).order_by('idActorY', 'idObjetivoX')
+    tamano_matriz_completa = (len(lista_actores)*len(lista_objetivos))
 
-    contexto = {'objetivos': objetivos,
-                'actores': actores,
-                'valores': lista[0],                  # valores de la matriz
-                'cantidad': objetivos.count() + 3,    # cantidad de columnas para saber cuando hacer el salto de fila
-                                                      # +3 debido a la columna de nombrecorto y las 3 de implicacion
-                'cantidad2': (objetivos.count()*2)+4, # cantidad de columnas para las sumatorias de movilizacion
-                                                      # x2 y +4  ya que no tienen las mismas posiciones que anteriores
-                'valores_caa': lista[1],              # valores de la  matriz de convergencia
-                'cantidad3': actores.count(),         # cantidad de columnas para las matrices de conv y divergencia
-                'valores_daa': lista[2]}              # valores de la matriz de divergencia
+    if len(lista_mao) == tamano_matriz_completa:
+
+        lista = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao, MATRIZ_COMPLETA)
+
+        contexto = {'objetivos': lista_objetivos,
+                    'actores': lista_actores,
+                    'valores_mao': lista[0],             # valores de la matriz
+                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
+                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,# +4 debido a las columnas de movil
+                    'valores_caa': lista[1],             # valores de la  matriz de convergencia
+                    'cantidad3': lista_actores.count(),  # cantidad de columnas para las matrices de conv y divergencia
+                    'valores_daa': lista[2]}             # valores de la matriz de divergencia
+    else:
+        lista = generar_mao_incompleta(lista_mao, lista_actores, lista_objetivos)
+
+        contexto = {'objetivos': lista_objetivos,
+                    'actores': lista_actores,
+                    'valores_mao': lista,
+                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
+                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4}
 
     return render(request, 'mao/matriz_1mao.html', contexto)
 
@@ -423,21 +412,26 @@ def Generar_matriz_2mao(request):
     objetivos = Objetivo.objects.all().order_by('id')                               # objetivos registrados
     actores = Actor.objects.all().order_by('id')                                    # actores registrados
     mao = Relacion_MAO.objects.exclude(tipo=1).order_by('idActorY', 'idObjetivoX')  # relaciones mao registradas
-    lista = generar_matriz_mao(objetivos=objetivos, actores=actores, mao=mao)       # lista con parametros del contexto
     usuario = request.user.id
     id_user = User.objects.get(id=usuario)
     print(id_user.id)
 
-    contexto = {'objetivos': objetivos,
-                'actores': actores,
-                'valores': lista[0],                  # valores de la matriz
-                'cantidad': objetivos.count() + 3,    # cantidad de columnas para saber cuando hacer el salto de fila
-                                                      # +3 debido a la columna de nombrecorto y las 3 de implicacion
-                'cantidad2': (objetivos.count()*2)+4, # cantidad de columnas para las sumatorias de movilizacion
-                                                      # x2 y +4  porque no tienen las mismas posiciones que los previos
-                'valores_caa': lista[1],              # valores de la  matriz de convergencia
-                'cantidad3': actores.count(),         # cantidad de columnas para las matrices de conv y divergencia
-                'valores_daa': lista[2]}              # valores de la matriz de divergencia
+    if len(mao) == (len(actores) * len(objetivos)):
+        lista = establecer_valores_mao(objetivos=objetivos, actores=actores, mao=mao)  # lista con parametros del contexto
+
+        contexto = {'objetivos': objetivos,
+                    'actores': actores,
+                    'valores': lista[0],  # valores de la matriz
+                    'cantidad': objetivos.count() + 3,  # cantidad de columnas para saber cuando hacer el salto de fila
+                    # +3 debido a la columna de nombrecorto y las 3 de implicacion
+                    'cantidad2': (objetivos.count() * 2) + 4,
+                    # cantidad de columnas para las sumatorias de movilizacion
+                    # x2 y +4  porque no tienen las mismas posiciones que los previos
+                    'valores_caa': lista[1],  # valores de la  matriz de convergencia
+                    'cantidad3': actores.count(),  # cantidad de columnas para las matrices de conv y divergencia
+                    'valores_daa': lista[2]}  # valores de la matriz de divergencia
+    else:
+        contexto = {}
 
     return render(request, 'mao/matriz_2mao.html', contexto)
 
@@ -450,31 +444,13 @@ class Valor_posicion:
         self.posicion = posicion
         self.valor = valor
 
+# Clase auxiliar para la generacion de matrices, se asigna una posicion a un respectivo valor
+class Valor_xy:
+    def __init__(self, x, y, valor):
+        self.x = x
+        self.y = y
+        self.valor = valor
 
-# Ingresa las influencias con valor 0 de un actor sobre si mismo, necesario para que la matriz sea cuadrada
-"""def auto_influencia(request):
-    actor = Actor.objects.all().order_by('id')
-    inf = Relacion_MID.objects.all().order_by('id')
-    flag = False
-
-    # se verifica si existen estas influencias ya existen
-    for i in inf:
-        if i.idActorX == i.idActorY:
-            flag = True
-    # sino existen estas influencias, se agregan a la bd, ya que se necesitan los atributos
-    if flag == False:
-        for j in range(len(actor)):
-            a = Relacion_MID()
-            a.idActorY = actor[j]
-            a.idActorX = actor[j]
-            a.valor = 0
-            a.justificacion = "auto_inf"
-            a.idExperto = inf[0].idExperto
-            a.idEstudio = inf[0].idEstudio
-            a.save()
-
-    inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
-    return inf"""
 
 # -------------------------------------FUNCIONES AUXILIARES------------------------------------------------------------>
 
@@ -485,23 +461,19 @@ class Valor_posicion:
 def Crear_auto_influencia(request):
 
     if request.is_ajax():
-        id_b = request.GET['id']
+        id_b = request.GET['id'] # posteriormente este debe ser el codigo del estudio
         actor = Actor.objects.all().order_by('id')
         inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
         lista_registrados = []
-        cont = 0
-
+        print(id_b)
 
         # se verifica si estas influencias ya existen
         for i in actor:
             for j in inf:
                 if j.idActorX.id == i.id and j.idActorY.id == i.id:
-                    print(j.idActorX)
-                    print("")
-                    print(j.idActorY)
-                    print("-----------------------------------------")
                     lista_registrados.append(i.id)
 
+        # se agregan las autoinfluencias restantes
         for i in actor:
                 if i.id not in lista_registrados:
                     a = Relacion_MID()
@@ -509,27 +481,15 @@ def Crear_auto_influencia(request):
                     a.idActorX = i
                     a.valor = 0
                     a.justificacion = "auto_inf"
-                    a.idExperto = inf[0].idExperto
-                    a.idEstudio = inf[0].idEstudio
+                    a.idExperto = request.user
+                    a.idEstudio = inf[0].idEstudio  # posible error cuando hay cero registros de inf
                     a.save()
-        # sino existen estas influencias, se agregan a la bd, ya que se necesitan los atributos
-        """if flag == False:
-            for j in range(len(actor)):
-                a = Relacion_MID()
-                a.idActorY = actor[j]
-                a.idActorX = actor[j]
-                a.valor = 0
-                a.justificacion = "auto_inf"
-                a.idExperto = inf[0].idExperto
-                a.idEstudio = inf[0].idEstudio
-                a.save()"""
-        print("auto influencias registradas" + id_b)
 
         response = JsonResponse({'resp': "listo"})
         return HttpResponse(response.content)
 
 
-# Generacion de la matriz MIDIij = MID ij + Sum(Minimo [(MID ik, MID ik])
+# Calcula los valores de la matriz de influencias directas e indirectas MIDIij = MID ij + Sum(Minimo [(MID ik, MID ik])
 def calcular_midi():
 
     actor = Actor.objects.all().order_by('id')
@@ -655,6 +615,83 @@ def calcular_minimo(pos, mid):
             fin = fin + actor.count()  # se actualiza el punto final
 
     return lista_suma
+
+
+# Establece la lista de valores mid enviandos por contexto mostrados en la matriz
+def establecer_valores_mid(lista_influencias, lista_actores):
+
+    lista_valores_mid = []
+    posicion = 0                    # permite controlar y asignar la posicion de acuerdo al numero de actores e influencias
+    indice = 0                      # representa el indice del nombreCorto que se ha de colocar en valores
+    suma_fila_influencias = 0
+    suma_columna_dependencia = 0
+
+    for i in range(len(lista_influencias)):
+        posicion += 1
+        # se obtienen los valores de las influencias registradas colocando una posicion para facilitar su visualizacion
+        lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=lista_influencias[i].valor))
+        # si el valor no es valido (matriz incompleta)
+        if lista_influencias[i].valor != VALOR_RELACION_NO_REGISTRADA:
+            suma_fila_influencias += lista_influencias[i].valor
+        # cuando la cantidad de valores ingresada llega a la cantidad de actores se agrega el valor de influencias
+        if posicion == lista_actores.count():
+            lista_valores_mid.append(Valor_posicion(posicion=posicion + 1, valor=suma_fila_influencias))
+            # determina la posicion donde se va a colocar el nombre corto de la nueva fila
+            pos_nombre = (lista_actores.count() + 2) * indice
+            # inserta el nombre corto de la nueva fila
+            lista_valores_mid.insert(pos_nombre, Valor_posicion(posicion=0, valor=lista_actores[indice].nombreCorto))
+            posicion = 0               # reinicio de la posicion (nueva fila)
+            indice += 1                # indice hace referencia al siguiente actor
+            suma_fila_influencias = 0  # reinicio del valor de suma_fila_influencias
+
+    # Agregado de la sumatoria de dependencias directas (suma de columnas)
+    lista_valores_mid.append(Valor_posicion(posicion=0, valor="Dep. D"))
+    posicion = 1
+    while posicion <= lista_actores.count():
+        for i in lista_valores_mid:
+            # si posicion es igual al numero de la columna que se esta sumando
+            if i.posicion == posicion:
+                # si se trata de un valor no valido (matriz incompleta)
+                if i.valor != VALOR_RELACION_NO_REGISTRADA:
+                    suma_columna_dependencia += i.valor
+        # se ingresa a la lista de valores_mid la sumatoria de la columna
+        lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=suma_columna_dependencia))
+        posicion += 1                 # iteracion de las posiciones
+        suma_columna_dependencia = 0  # reinicio a o del valor movilizacion
+
+    return lista_valores_mid
+
+
+def generar_mid_incompleta(mid, lista_actores):
+
+    lista_mid = []
+    lista_aa = []
+
+    for i in lista_actores:
+        for j in lista_actores:
+            lista_aa.append(Valor_xy(y=i.id, x=j.id, valor=""))
+
+    for i in mid:
+        lista_mid.append(Valor_xy(y=i.idActorY.id, x=i.idActorX.id, valor=i.valor))
+
+    cont = 0
+    while len(lista_mid) != len(lista_aa):
+        lista_mid.append(Valor_xy(y=0, x=0, valor=0))
+        cont += 1
+
+    for j in range(len(lista_aa)):
+            a = lista_aa[j].y
+            b = lista_aa[j].x
+            if lista_mid[j].y != a or lista_mid[j].x != b:
+                lista_mid.insert(j, Valor_xy(y=a, x=b, valor=100))
+
+    while cont != 0:
+        lista_mid.pop()
+        cont -= 1
+
+    lista_contexto = establecer_valores_mid(lista_mid, lista_actores)
+
+    return lista_contexto
 
 
 # <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Funciones matrices mao>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -805,31 +842,32 @@ def generar_caa_daa(lista, actores, cant_objetivos, tipo):
 
 # Agrega a la lista de valores mao, los valores de movilizacion (ultimas 3 filas) correspondientes
 def generar_lista_movilizacion(objetivos, valores):
+
     lista_positivos = []
     lista_negativos = []
     lista_movilizacion = []
     movilizacion = 0
     suma_positivos = 0
     suma_negativos = 0
-    cont2 = objetivos.count() + 4  # +4 debido a las cuatro columnas extras en la matriz (nombres cortos y sumatorias)
-    cont = 1
+    posicion_movilizacion = objetivos.count() + 4  # +4 debido a las cuatro columnas extras en la matriz (nombres cortos y sumatorias)
+    indice = 1
 
     # Determinacion de sumatorias de movilizacion (ultima fila) suma de columnas
-    while cont <= objetivos.count():
+    while indice <= objetivos.count():
         for i in valores:
-            if i.posicion == cont:
-                movilizacion += abs(i.valor)
-                if i.valor == abs(i.valor):
-                    # si el valor es positivo
+            if i.posicion == indice:
+                if i.valor != VALOR_RELACION_NO_REGISTRADA:
+                    movilizacion += abs(i.valor)
+                if i.valor == abs(i.valor) and i.valor != VALOR_RELACION_NO_REGISTRADA:
                     suma_positivos += i.valor
-                else:
-                    # si el valor es negativo
+                elif i.valor != abs(i.valor) and i.valor != VALOR_RELACION_NO_REGISTRADA:
                     suma_negativos += abs(i.valor)
+
         # se agregan a la lista los valores de movilizacion
         lista_negativos.append(Valor_posicion(posicion=0, valor=suma_negativos))
         lista_positivos.append(Valor_posicion(posicion=0, valor=suma_positivos))
         lista_movilizacion.append(Valor_posicion(posicion=0, valor=movilizacion))
-        cont += 1           # iteracion de las posiciones
+        indice += 1         # iteracion de las posiciones
         movilizacion = 0    # reinicio del valor movilizacion
         suma_positivos = 0  # reinicio de la suma positiva
         suma_negativos = 0  # reinicio de la suma negativa
@@ -837,11 +875,13 @@ def generar_lista_movilizacion(objetivos, valores):
     # agregado de las sumatorias de movilizacion positiva a la lista de valores
     valores.append(Valor_posicion(posicion=0, valor="+"))
     for i in range(len(lista_positivos)):
-        valores.append(Valor_posicion(posicion=cont2 + i + 1, valor=lista_positivos[i].valor))
+        valores.append(Valor_posicion(posicion=posicion_movilizacion + i + 1, valor=lista_positivos[i].valor))
+
     # agregado de las sumatorias de movilizacion negativa a la lista de valores
     valores.append(Valor_posicion(posicion=0, valor="-"))
     for i in range(len(lista_negativos)):
-        valores.append(Valor_posicion(posicion=cont2 + i + 1, valor=lista_negativos[i].valor))
+        valores.append(Valor_posicion(posicion=posicion_movilizacion + i + 1, valor=lista_negativos[i].valor))
+
     # agregado de las sumatorias de movilizacion total a la lista de valores
     valores.append(Valor_posicion(posicion=0, valor="Mov."))
     for i in range(len(lista_movilizacion)):
@@ -850,59 +890,61 @@ def generar_lista_movilizacion(objetivos, valores):
     return valores
 
 
-# View generadora de las matrices mao
-def generar_matriz_mao(objetivos, actores, mao):
+# Establece los valores que se muestran en la matriz mao
+def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
 
-    valores = []        # valores mostrados en la matriz
-    cont = 0            # cuenta las influencias
-    pos_list = 0        # auxiliar para el calculo de cont2
-    implicacion = 0     # sumatoria absoluta del lado derecho de la matriz
+    lista_valores_mao = []
+    list_valores_caa = []
+    lista_valores_daa = []
+    posicion = 0        # referencia a la lista de valores mao
+    indice = 0          # referencia a las lista de actores y objetivos
     suma_positivos = 0  # sumatoria de los valores positivos de implicacion
     suma_negativos = 0  # sumatoria de los valores negativos de implicacion
 
     # se agregan las relaciones mao a la lista de valores que sera enviada como contexto
     for i in range(len(mao)):
-        cont += 1
+        posicion += 1
         # se agregan las relaciones mao registradas asignandoles una posicion para facilitar su impresion
-        valores.append(Valor_posicion(posicion=cont, valor=mao[i].valor))
-        # se calcula la sumatoria del valor de implicacion (ultima columna) sum de filas
-        implicacion += abs(mao[i].valor)
-        # se determinan las implicaciones positivas y negativas (columnas + y -)
-        if mao[i].valor == abs(mao[i].valor):
-            # si el valor es positivo
+        lista_valores_mao.append(Valor_posicion(posicion=posicion, valor=mao[i].valor))
+
+        # se determinan las implicaciones positivas, negativas y totales (columnas +, - , Imp)
+        if mao[i].valor == abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
             suma_positivos += mao[i].valor
-        else:
-            # si el valor es negativo
+        elif mao[i].valor != abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
             suma_negativos += abs(mao[i].valor)
-            # cuando el numero de registros alcanza la cantidad de objetivos se tiene una fila de la matriz
-            # se agregan entonces las sumatorias de implicacion (ultimas 3 columnas)
-        if cont == objetivos.count():
-            valores.append(Valor_posicion(posicion=cont + 1, valor=suma_positivos))
-            valores.append(Valor_posicion(posicion=cont + 2, valor=suma_negativos))
-            valores.append(Valor_posicion(posicion=cont + 3, valor=implicacion))
+
+        # cuando el numero de registros alcanza la cantidad de objetivos se tiene una fila de la matriz
+        # se agregan entonces las sumatorias de implicacion (ultimas 3 columnas)
+        if posicion == objetivos.count():
+            lista_valores_mao.extend([
+                Valor_posicion(posicion=posicion + 1, valor=suma_positivos),
+                Valor_posicion(posicion=posicion + 2, valor=suma_negativos),
+                Valor_posicion(posicion=posicion + 3, valor=suma_positivos + suma_negativos)])
             # agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
-            cont2 = (objetivos.count() + 4) * pos_list
-            valores.insert(cont2, Valor_posicion(posicion=0, valor=actores[pos_list].nombreCorto))
+            posicion_nombre = (objetivos.count() + 4) * indice
+            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto))
             # se reinician los valores para crear la nueva fila
-            cont = 0
-            pos_list += 1
-            implicacion = 0
+            posicion = 0
+            indice += 1
             suma_positivos = 0
             suma_negativos = 0
 
-    # ---------------------Determinacion de convergencias-------------------->
-    valores_caa = generar_caa_daa(valores, actores, objetivos.count(), 1)
-    # ---------------------Determinacion de divergencias--------------------->
-    valores_daa = generar_caa_daa(valores, actores, objetivos.count(), 2)
-    # ---------------------Valores de movilizacion  ------------------------->
-    valores_mao = generar_lista_movilizacion(objetivos, valores)
+    # si la matriz esta totalmente diligenciada
+    if estado_matriz == MATRIZ_COMPLETA:
+        list_valores_caa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 1)
+        lista_valores_daa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 2)
 
-    lista = []
-    lista.append(valores_mao)             # valores:     valores de la matriz mao
-    lista.append(valores_caa)             # valores_caa: valores de la matriz de convergencias
-    lista.append(valores_daa)             # valores_daa: valores de la matriz de divergencias
+    # se agrega a lista los valores de movilizacion
+    valores_mao = generar_lista_movilizacion(objetivos, lista_valores_mao)
 
-    return lista
+    if estado_matriz == MATRIZ_COMPLETA:
+        lista = []
+        lista.append(valores_mao)
+        lista.append(list_valores_caa)
+        lista.append(lista_valores_daa)
+        return lista
+    else:
+        return valores_mao
 
 
 # Calculo del valor ri para la matriz 3mao
@@ -1040,6 +1082,46 @@ def Generar_matriz_3mao(request):
                     'valores_daa': valores_daa}  # valores de la matriz de divergencia
 
         return render(request, 'mao/matriz_3mao.html', contexto)
+
+
+def generar_mao_incompleta(mao, lista_actores, lista_objetivos):
+
+    lista_mao_incompleta = []               # contendra los valores de la matriz mao incompleta
+    lista_actores_objetivos = []            # establece el orden de los ejes de la matriz
+
+    # se obtiene el orden de los ejes
+    for i in lista_actores:
+        for j in lista_objetivos:
+            lista_actores_objetivos.append(Valor_xy(y=i.id, x=j.id, valor=""))
+
+    # se obtienen las influencias mao actualmente registradas
+    for i in mao:
+        lista_mao_incompleta.append(Valor_xy(y=i.idActorY.id, x=i.idObjetivoX.id, valor=i.valor))
+
+    # ingreso de valores de relleno en la matriz mao para permitir la comparacion con el orden ideal (igual longitud)
+    registros_relleno = 0
+    while len(lista_mao_incompleta) != len(lista_actores_objetivos):
+        lista_mao_incompleta.append(Valor_xy(y=0, x=0, valor=0))
+        registros_relleno += 1
+
+    # al detectar ejes diferentes al ideal se inserta en esa posicion un registro de relleno con los ejes adecucados
+    for j in range(len(lista_actores_objetivos)):
+            eje_y = lista_actores_objetivos[j].y
+            eje_x = lista_actores_objetivos[j].x
+            if lista_mao_incompleta[j].y != eje_y or lista_mao_incompleta[j].x != eje_x:
+                lista_mao_incompleta.insert(j, Valor_xy(y=eje_y, x=eje_x, valor=VALOR_RELACION_NO_REGISTRADA))
+
+    # se eliminan los registros de relleno con ejes de relleno
+    while registros_relleno != 0:
+        lista_mao_incompleta.pop()
+        registros_relleno -= 1
+
+    lista_contexto = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao_incompleta, MATRIZ_INCOMPLETA)
+
+    for i in lista_contexto:
+        print(i.valor)
+
+    return lista_contexto
 
 
 # ------------------------------------VIEWS AJAX----------------------------------------------------

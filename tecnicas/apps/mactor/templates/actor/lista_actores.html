@@ -50,7 +50,7 @@ Estudio:
     {% endfor %}
 
     {% else %}
-    <h2>No hay objetivos registrados</h2>
+    <h2>No hay actores registrados</h2>
 
     {% endif %}
     </tbody>
@@ -88,7 +88,6 @@ Estudio:
                 </div>
             </div>
 
-
  <! INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
 
         {% include 'actor/modals_CRUD_actor.html'%}
@@ -102,6 +101,5 @@ Estudio:
 <script src="{% static 'js_mactor_modals/editar/editar_actor.js'%}"></script>
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
 {% endblock %}
-
 
 {% endblock %}

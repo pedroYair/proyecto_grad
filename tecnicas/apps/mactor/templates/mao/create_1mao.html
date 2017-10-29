@@ -151,4 +151,9 @@ Estudio:
 <script src="{% static 'js_mactor_consultas/desactivar_opciones_select_mao.js'%}"></script>
 {% endblock %}
 
+<! Desactiva el segundo select hasta que se seleccione una opcion en el primero-->
+<script type="text/javascript">
+	document.getElementById("id_idObjetivoX").disabled = true;
+</script>
+
 {% endblock %}
