@@ -371,32 +371,7 @@ class Crear_1mao(CreateView):
 
 def Generar_matriz_1mao(request):
 
-    lista_objetivos = Objetivo.objects.all().order_by('id')
-    lista_actores = Actor.objects.all().order_by('id')
-    lista_mao = Relacion_MAO.objects.exclude(tipo=2).order_by('idActorY', 'idObjetivoX')
-    tamano_matriz_completa = (len(lista_actores)*len(lista_objetivos))
-
-    if len(lista_mao) == tamano_matriz_completa:
-
-        lista = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao, MATRIZ_COMPLETA)
-
-        contexto = {'objetivos': lista_objetivos,
-                    'actores': lista_actores,
-                    'valores_mao': lista[0],             # valores de la matriz
-                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
-                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,# +4 debido a las columnas de movil
-                    'valores_caa': lista[1],             # valores de la  matriz de convergencia
-                    'cantidad3': lista_actores.count(),  # cantidad de columnas para las matrices de conv y divergencia
-                    'valores_daa': lista[2]}             # valores de la matriz de divergencia
-    else:
-        lista = generar_mao_incompleta(lista_mao, lista_actores, lista_objetivos)
-
-        contexto = {'objetivos': lista_objetivos,
-                    'actores': lista_actores,
-                    'valores_mao': lista,
-                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
-                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4}
-
+    contexto = crear_contexto_mao(2)
     return render(request, 'mao/matriz_1mao.html', contexto)
 
 
@@ -409,31 +384,10 @@ class Crear_2mao(CreateView):
 
 def Generar_matriz_2mao(request):
 
-    objetivos = Objetivo.objects.all().order_by('id')                               # objetivos registrados
-    actores = Actor.objects.all().order_by('id')                                    # actores registrados
-    mao = Relacion_MAO.objects.exclude(tipo=1).order_by('idActorY', 'idObjetivoX')  # relaciones mao registradas
-    usuario = request.user.id
-    id_user = User.objects.get(id=usuario)
-    print(id_user.id)
-
-    if len(mao) == (len(actores) * len(objetivos)):
-        lista = establecer_valores_mao(objetivos=objetivos, actores=actores, mao=mao)  # lista con parametros del contexto
-
-        contexto = {'objetivos': objetivos,
-                    'actores': actores,
-                    'valores': lista[0],  # valores de la matriz
-                    'cantidad': objetivos.count() + 3,  # cantidad de columnas para saber cuando hacer el salto de fila
-                    # +3 debido a la columna de nombrecorto y las 3 de implicacion
-                    'cantidad2': (objetivos.count() * 2) + 4,
-                    # cantidad de columnas para las sumatorias de movilizacion
-                    # x2 y +4  porque no tienen las mismas posiciones que los previos
-                    'valores_caa': lista[1],  # valores de la  matriz de convergencia
-                    'cantidad3': actores.count(),  # cantidad de columnas para las matrices de conv y divergencia
-                    'valores_daa': lista[2]}  # valores de la matriz de divergencia
-    else:
-        contexto = {}
-
+    contexto = crear_contexto_mao(1)
     return render(request, 'mao/matriz_2mao.html', contexto)
+
+
 
 # ---------------------------------------------CLASES AUXILIARES-------------------------------------->
 
@@ -489,134 +443,6 @@ def Crear_auto_influencia(request):
         return HttpResponse(response.content)
 
 
-# Calcula los valores de la matriz de influencias directas e indirectas MIDIij = MID ij + Sum(Minimo [(MID ik, MID ik])
-def calcular_midi():
-
-    actor = Actor.objects.all().order_by('id')
-    inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
-    lista_minimo = []   # contiene las sublistas de valores minimos por cada actor Y
-    lista_total = []    # contiene lista_minimo concatenado
-    valores_midi = []   # contiene los valores correspondientes a MIDI
-
-    # se agrega la sublista de valores minimos correspondiente al actorY a lista_minimo
-    for i in range(len(inf)):
-        if inf[i].idActorY == inf[i].idActorX:
-            # cada valor de pos permite el calculo de una fila de la matriz
-            lista_minimo.append(calcular_minimo(pos=i, mid=inf))
-
-    # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
-    for i in lista_minimo:
-        lista_total += i
-
-    cont = 0
-    pos_list = 0
-    li = 0
-    # se realiza la suma MID ij + Sum(Minimo [(MID ik, MID ik])
-    for i in range(len(inf)):
-        cont += 1
-        valores_midi.append(Valor_posicion(posicion=cont, valor=inf[i].valor + lista_total[i]))
-        # se calcula el valor li, donde no se incluye la influencia sobre si mismo
-        if inf[i].idActorY != inf[i].idActorX and cont <= actor.count():
-            li += inf[i].valor + lista_total[i]
-        # se determina la posicion donde se va a colocar el nombre corto de la nueva fila
-        if cont == actor.count():
-            # se suma a la cantidad de actores 2 debido a la columna del nombreCorto y li
-            cont2 = (actor.count() + 2) * pos_list
-            # se inserta el nombre corto de la nueva fila
-            valores_midi.insert(cont2, Valor_posicion(posicion=0, valor=actor[pos_list].nombreCorto))
-            # se determina la posición de la columna li
-            cont3 = cont2 + actor.count() + 1
-            # inserta el valor li en la lista de valores midi de acuerdo a la posicion establecida
-            valores_midi.insert(cont3, Valor_posicion(posicion=actor.count() + 1, valor=li))
-            # se reinician los parametros paera recalcular
-            cont = 0
-            pos_list += 1
-            li = 0
-
-    # se calculan los valores di (ultima fila)
-    valores_midi.append(Valor_posicion(posicion=0, valor="Di"))
-    cont = 1
-    di = 0
-    suma_di = 0
-    while cont <= actor.count():
-        for i in valores_midi:
-            if i.posicion == cont:
-                di += i.valor
-        # se obtiene el valor de influecia sobre si mismo para restarlo a di
-        cont2 = valores_midi[((actor.count() + 2) * (cont - 1)) + cont].valor
-        di = di - cont2
-        # se inserta el valor di a la lista de valores midi
-        valores_midi.append(Valor_posicion(posicion="", valor=di))
-        suma_di += di     # sumatoria de los valores di
-        cont += 1         # iteracion de las posiciones
-        di = 0            # reinicio a 0 del valor di
-    # se inserta la sumatoria total di donde di_total = li_total, ultima celda
-    valores_midi.append(Valor_posicion(posicion="", valor=suma_di))
-
-    return valores_midi
-
-
-# Realiza la parte derecha de la formula: Sum(Minimo [(MID ik, MID ik])
-def calcular_minimo(pos, mid):
-    actor = Actor.objects.all().order_by('id')
-    izquierdo = []       # contiene los valores izquierdos a comparar
-    derecho = []         # contiene los valores derechos a comparar
-    comparacion = []     # contiene los valores minimos establecidos al comparar izquierdo vs derecho
-    lista_suma = []      # contiene la suma de los valores minimos establecidos al comparar
-
-    # valores del lado derecho del minimo: influencias de los actores influenciados por Y sobre X excepto Y
-    cont = 1
-    aux = 0
-    for i in range(len(mid)):
-        lista_suma.append(0)
-        # se verifica si en el registro actual (i), el campo idActorY no corresponde al recibido como parametro (pos)
-        if mid[i].idActorY != mid[pos].idActorY:
-            # de cumplirse la condicion se guarda el valor, asigandolo a una posición para facilitar la comparacion
-            derecho.append(Valor_posicion(posicion=cont, valor=mid[i].valor))
-            aux += 1
-            if aux == actor.count():
-                cont += 1
-                aux = 0
-
-    cont = 0
-    # valores del lado izquierdo del minimo: influencias del actor Y sobre los demas
-    for i in range(len(mid)):
-        # se guardan las influencias del actorY recibido (pos) sobre los demas actores, excepto la de el mismo
-        if mid[pos].idActorY != mid[i].idActorX and mid[i].idActorY == mid[pos].idActorY and len(izquierdo) < actor.count() - 1:
-            izquierdo.append(Valor_posicion(posicion=cont + 1, valor=mid[i].valor))
-            cont += 1
-
-    cont = 0
-    # se realiza la comparacion entre los elementos de derecho e izquierdo para determinar el valor minimo
-    for i in range(len(derecho)):
-        if izquierdo[cont].posicion == derecho[i].posicion and cont < actor.count():
-            # si el valor izquierdo es menor al derecho
-            if izquierdo[cont].valor <= derecho[i].valor:
-                comparacion.append(izquierdo[cont].valor)
-            else:
-                comparacion.append(derecho[i].valor)
-        else:
-            cont += 1
-            if izquierdo[cont].posicion == derecho[i].posicion:
-                if izquierdo[cont].valor <= derecho[i].valor:
-                    comparacion.append(izquierdo[cont].valor)
-                else:
-                    comparacion.append(derecho[i].valor)
-
-    ini = 0              # indica el punto inicial de la sublista
-    fin = actor.count()  # indica el punto final de la sublista
-
-    # la lista comparacion es divida y sumada
-    for i in range(fin):
-        if i < actor.count() - 1:
-            # se suman los valores minimos
-            lista_suma = map(sum, zip(lista_suma, comparacion[ini:fin]))
-            ini = fin                  # se actualiza el punto de inicio
-            fin = fin + actor.count()  # se actualiza el punto final
-
-    return lista_suma
-
-
 # Establece la lista de valores mid enviandos por contexto mostrados en la matriz
 def establecer_valores_mid(lista_influencias, lista_actores):
 
@@ -662,42 +488,219 @@ def establecer_valores_mid(lista_influencias, lista_actores):
     return lista_valores_mid
 
 
+# Establece como se mostrara la matriz mid en caso de que no este completamente diligenciada
 def generar_mid_incompleta(mid, lista_actores):
 
-    lista_mid = []
-    lista_aa = []
+    lista_ejes_incompletos = []
+    lista_ejes_ordenados = []
 
+    # se llena la lista de ejes ordenados con los orden en que deben ir los actores en la matriz (ejes Y y X)
     for i in lista_actores:
         for j in lista_actores:
-            lista_aa.append(Valor_xy(y=i.id, x=j.id, valor=""))
+            lista_ejes_ordenados.append(Valor_xy(y=i.id, x=j.id, valor=""))
 
+    # se obtienen las parejas de ejes, actualmente registradas y su valor correspondiente
     for i in mid:
-        lista_mid.append(Valor_xy(y=i.idActorY.id, x=i.idActorX.id, valor=i.valor))
+        lista_ejes_incompletos.append(Valor_xy(y=i.idActorY.id, x=i.idActorX.id, valor=i.valor))
 
+    # se ingresan a la lista de ejes incompletos, valores relleno que facilitan la comparacion con la de ejes ordenados
     cont = 0
-    while len(lista_mid) != len(lista_aa):
-        lista_mid.append(Valor_xy(y=0, x=0, valor=0))
+    while len(lista_ejes_incompletos) != len(lista_ejes_ordenados):
+        lista_ejes_incompletos.append(Valor_xy(y=0, x=0, valor=0))
         cont += 1
 
-    for j in range(len(lista_aa)):
-            a = lista_aa[j].y
-            b = lista_aa[j].x
-            if lista_mid[j].y != a or lista_mid[j].x != b:
-                lista_mid.insert(j, Valor_xy(y=a, x=b, valor=100))
+    # se detectan los ejes faltantes y se ingresan en esas posiciones el valor 100 para indicar la falta del registro
+    for j in range(len(lista_ejes_ordenados)):
+            eje_y = lista_ejes_ordenados[j].y
+            eje_x = lista_ejes_ordenados[j].x
+            if lista_ejes_incompletos[j].y != eje_y or lista_ejes_incompletos[j].x != eje_x:
+                lista_ejes_incompletos.insert(j, Valor_xy(y=eje_y, x=eje_x, valor=VALOR_RELACION_NO_REGISTRADA))
 
+    # se eleiminan de la lista de ejes incompletos los valores relleno inicialmente ingresados para comparar
     while cont != 0:
-        lista_mid.pop()
+        lista_ejes_incompletos.pop()
         cont -= 1
 
-    lista_contexto = establecer_valores_mid(lista_mid, lista_actores)
+    lista_contexto = establecer_valores_mid(lista_ejes_incompletos, lista_actores)
 
     return lista_contexto
 
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Funciones matrices mao>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# Calcula los valores de la matriz de influencias directas e indirectas MIDIij = MID ij + Sum(Minimo [(MID ik, MID ik])
+def calcular_midi():
+
+    actores = Actor.objects.all().order_by('id')
+    influencias_mid = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
+    lista_comparacion_minimo = []   # contiene las sublistas de valores minimos por cada actores Y
+    lista_total = []                # contiene lista_comparacion_minimo concatenado
+    valores_midi = []               # contiene los valores correspondientes a MIDI
+
+    # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
+    for i in range(len(influencias_mid)):
+        if influencias_mid[i].idActorY == influencias_mid[i].idActorX:
+            # cada valor de pos permite el calculo de una fila de la matriz
+            lista_comparacion_minimo.append(sumar_valores_minimos(actorY=i, mid=influencias_mid))
+
+    # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
+    for i in lista_comparacion_minimo:
+        lista_total += i
+
+    # se realiza la suma MID ij + Sum(Minimo [(MID ik, MID ik])
+    indice = 0
+    posicion = 0
+    li = 0       # valor de la ultima columna
+    for i in range(len(influencias_mid)):
+        indice += 1
+        valores_midi.append(Valor_posicion(posicion=indice, valor=influencias_mid[i].valor + lista_total[i]))
+
+        # se calcula el valor li, donde no se incluye la influencia sobre si mismo
+        if influencias_mid[i].idActorY != influencias_mid[i].idActorX and indice <= actores.count():
+            li += influencias_mid[i].valor + lista_total[i]
+
+        # se determina la posicion donde se va a colocar el nombre corto de la nueva fila
+        if indice == actores.count():
+
+            # se determina la posicion del nombre cortose suma 2 debido a las columna extras (nombreCorto y li)
+            posicion_nombre = (actores.count() + 2) * posicion
+            valores_midi.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[posicion].nombreCorto))
+
+            # se determina la posición de la columna li y se inserta en la posicion establecida
+            posicion_li = posicion_nombre + actores.count() + 1
+            valores_midi.insert(posicion_li, Valor_posicion(posicion=actores.count() + 1, valor=li))
+
+            # se reinician los parametros paera recalcular
+            indice = 0
+            posicion += 1
+            li = 0
+
+    # se calculan los valores di (ultima fila)
+    valores_midi.append(Valor_posicion(posicion=0, valor="Di"))
+    indice = 1
+    di = 0
+    suma_di = 0
+    while indice <= actores.count():
+        for i in valores_midi:
+            if i.posicion == indice:
+                di += i.valor
+
+        # se obtiene el valor de influecia sobre si mismo para restarlo a di
+        valor_auto_influencia = valores_midi[((actores.count() + 2) * (indice - 1)) + indice].valor
+        di = di - valor_auto_influencia
+
+        # se inserta el valor di a la lista de valores midi
+        valores_midi.append(Valor_posicion(posicion="", valor=di))
+        # se actualizan los parametros de iteracion
+        suma_di += di     # sumatoria total de di
+        indice += 1
+        di = 0
+    # se inserta la sumatoria total di donde di_total = li_total, ultima celda
+    valores_midi.append(Valor_posicion(posicion="", valor=suma_di))
+
+    return valores_midi
 
 
-# Generacion de matriz de convergencias o divergencias
+# Realiza la parte derecha de la formula: Sum(Minimo [(MID ik, MID ik])
+def sumar_valores_minimos(actorY, mid):
+
+    actores = Actor.objects.all().order_by('id')
+    valores_izquierdos = []       # contiene los valores izquierdos a comparar
+    valores_derechos = []         # contiene los valores derechos a comparar
+    valores_minimos = []          # contiene los valores minimos establecidos al comparar valores_izquierdos vs derechos
+    lista_suma = []               # contiene la suma de los valores minimos establecidos al comparar
+
+    # Valores_derechos: influencias de los actores influenciados por Y sobre X excepto Y
+    indice = 1
+    aux = 0
+    for i in range(len(mid)):
+        lista_suma.append(0)
+        # se verifica si en el registro actual (i), el campo idActorY no corresponde al actorY recibido
+        if mid[i].idActorY != mid[actorY].idActorY:
+            valores_derechos.append(Valor_posicion(posicion=indice, valor=mid[i].valor))
+            aux += 1
+            if aux == actores.count():
+                indice += 1
+                aux = 0
+
+    # Valores_izquierdos del minimo: influencias del actorY recibido sobre los demas, excepto la de el mismo
+    indice = 0
+    for i in range(len(mid)):
+
+        longitud = len(valores_izquierdos)
+        cantidad_actores = actores.count() - 1
+        eje_y = mid[i].idActorY
+        eje_x = mid[i].idActorX
+
+        if mid[actorY].idActorY != eje_x and eje_y == mid[actorY].idActorY and longitud < cantidad_actores:
+            valores_izquierdos.append(Valor_posicion(posicion=indice + 1, valor=mid[i].valor))
+            indice += 1
+
+    # determinacion del valor minimo entre cada pareja izquierdo[i] - derecho[i]
+    indice = 0
+    for i in range(len(valores_derechos)):
+        if valores_izquierdos[indice].posicion == valores_derechos[i].posicion and indice < actores.count():
+            if valores_izquierdos[indice].valor <= valores_derechos[i].valor:
+                valores_minimos.append(valores_izquierdos[indice].valor)
+            else:
+                valores_minimos.append(valores_derechos[i].valor)
+        else:
+            indice += 1
+            if valores_izquierdos[indice].posicion == valores_derechos[i].posicion:
+                if valores_izquierdos[indice].valor <= valores_derechos[i].valor:
+                    valores_minimos.append(valores_izquierdos[indice].valor)
+                else:
+                    valores_minimos.append(valores_derechos[i].valor)
+
+    inicio_sublista = 0              # indica el punto inicial de la sublista
+    fin_sublista = actores.count()  # indica el punto final de la sublista
+
+    # la lista valores_minimos es divida y sumada
+    for i in range(fin_sublista):
+        if i < actores.count() - 1:
+            # se suman los valores minimos
+            lista_suma = map(sum, zip(lista_suma, valores_minimos[inicio_sublista:fin_sublista]))
+            inicio_sublista = fin_sublista                  # se actualiza el punto de inicio
+            fin_sublista = fin_sublista + actores.count()   # se actualiza el punto final
+
+    return lista_suma
+
+
+# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FUNCIONES MATRICES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+# Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
+def crear_contexto_mao(tipo_matriz_mao):
+
+    lista_objetivos = Objetivo.objects.all().order_by('id')
+    lista_actores = Actor.objects.all().order_by('id')
+    tamano_matriz_completa = (len(lista_actores)*len(lista_objetivos))
+    lista_mao = Relacion_MAO.objects.exclude(tipo=tipo_matriz_mao).order_by('idActorY', 'idObjetivoX')
+
+    if len(lista_mao) == tamano_matriz_completa:
+
+        lista = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao, MATRIZ_COMPLETA)
+
+        contexto = {'objetivos': lista_objetivos,
+                    'actores': lista_actores,
+                    'valores_mao': lista[0],
+                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
+                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
+                    'valores_caa': lista[1],
+                    'posicion_salto_caa_daa': lista_actores.count(),
+                    'valores_daa': lista[2],
+                    'estado_matriz': MATRIZ_COMPLETA}
+    else:
+        lista = generar_mao_incompleta(lista_mao, lista_actores, lista_objetivos)
+
+        contexto = {'objetivos': lista_objetivos,
+                    'actores': lista_actores,
+                    'valores_mao': lista,
+                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
+                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
+                    'estado_matriz': MATRIZ_INCOMPLETA}
+
+    return contexto
+
+
+# Generacion de matriz de convergencias Y divergencias
 def generar_caa_daa(lista, actores, cant_objetivos, tipo):
     valores_mao = []
     cont = 1
@@ -840,8 +843,8 @@ def generar_caa_daa(lista, actores, cant_objetivos, tipo):
     return valores_posicion
 
 
-# Agrega a la lista de valores mao, los valores de movilizacion (ultimas 3 filas) correspondientes
-def generar_lista_movilizacion(objetivos, valores):
+# Agrega a la lista de valores mao, los valores de movilizacion (ultimas 3 filas)
+def establecer_valores_movilizacion(objetivos, valores):
 
     lista_positivos = []
     lista_negativos = []
@@ -849,7 +852,7 @@ def generar_lista_movilizacion(objetivos, valores):
     movilizacion = 0
     suma_positivos = 0
     suma_negativos = 0
-    posicion_movilizacion = objetivos.count() + 4  # +4 debido a las cuatro columnas extras en la matriz (nombres cortos y sumatorias)
+    posicion_movilizacion = objetivos.count() + 4  # +4 por las cuatro columnas extras (nombresCortos y sumatorias)
     indice = 1
 
     # Determinacion de sumatorias de movilizacion (ultima fila) suma de columnas
@@ -890,7 +893,7 @@ def generar_lista_movilizacion(objetivos, valores):
     return valores
 
 
-# Establece los valores que se muestran en la matriz mao
+# Establece los valores de la matriz que se muestran en la matriz mao
 def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
 
     lista_valores_mao = []
@@ -917,9 +920,9 @@ def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
         # se agregan entonces las sumatorias de implicacion (ultimas 3 columnas)
         if posicion == objetivos.count():
             lista_valores_mao.extend([
-                Valor_posicion(posicion=posicion + 1, valor=suma_positivos),
-                Valor_posicion(posicion=posicion + 2, valor=suma_negativos),
-                Valor_posicion(posicion=posicion + 3, valor=suma_positivos + suma_negativos)])
+                Valor_posicion(posicion=posicion + 1, valor=round(suma_positivos, 1)),
+                Valor_posicion(posicion=posicion + 2, valor=round(suma_negativos, 1)),
+                Valor_posicion(posicion=posicion + 3, valor=round(suma_positivos + suma_negativos, 1))])
             # agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
             posicion_nombre = (objetivos.count() + 4) * indice
             lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto))
@@ -935,7 +938,7 @@ def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
         lista_valores_daa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 2)
 
     # se agrega a lista los valores de movilizacion
-    valores_mao = generar_lista_movilizacion(objetivos, lista_valores_mao)
+    valores_mao = establecer_valores_movilizacion(objetivos, lista_valores_mao)
 
     if estado_matriz == MATRIZ_COMPLETA:
         lista = []
@@ -1030,58 +1033,29 @@ def calcular_3mao(cant_objetivos, cant_actores):
 # View generadora de la matriz 3mao
 def Generar_matriz_3mao(request):
 
-        objetivo = Objetivo.objects.all().order_by('id')     # objetivos registrados
-        actor = Actor.objects.all().order_by('id')           # actores registrados
+    objetivo = Objetivo.objects.all().order_by('id')  # objetivos registrados
+    actor = Actor.objects.all().order_by('id')  # actores registrados
+    mid = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
+    mao2 = Relacion_MAO.objects.exclude(tipo=1).order_by('idActorY', 'idObjetivoX')
+    tamano_mid = len(actor)*len(actor)
+    tamano_2mao = len(actor)*len(objetivo)
+
+    if len(mid) == tamano_mid and len(mao2) == tamano_2mao:
         mao = calcular_3mao(cant_objetivos=objetivo.count(), cant_actores=actor.count())
-        valores = []                                         # contiene los valores que se muestran en la matriz
-        cont = 0                                             # cuenta las influencias
-        pos_list = 0                                         # auxiliar para el calculo de cont2
-        suma_positivos = 0                                   # sumatoria de los valores positivos de implicacion
-        suma_negativos = 0                                   # sumatoria de los valores negativos de implicacion
-
-        # agregado de las relaciones mao a la lista de valores que sera enviada como contexto
-        for i in range(len(mao)):
-            cont += 1
-            valores.append(Valor_posicion(posicion=cont, valor=mao[i].valor))
-            # se determinan las implicaciones positivas y negativas
-            if mao[i].valor == abs(mao[i].valor):
-                suma_positivos += mao[i].valor
-            else:
-                suma_negativos += abs(mao[i].valor)
-                # al agregar los valores correspondientes a una fila se agrega el nombre corto de la siguiente
-            if cont == objetivo.count():
-                valores.append(Valor_posicion(posicion=cont + 1, valor=round(suma_positivos, 1)))
-                valores.append(Valor_posicion(posicion=cont + 2, valor=round(suma_negativos, 1)))
-                valores.append(Valor_posicion(posicion=cont + 3, valor=round(suma_positivos + suma_negativos, 1))) #implicacion
-                # determina la posicion donde se va a colocar el nombre corto de la nueva fila
-                cont2 = (objetivo.count() + 4) * pos_list
-                # inserta el nombre corto de la nueva fila
-                valores.insert(cont2, Valor_posicion(posicion=0, valor=actor[pos_list].nombreCorto))
-                # reinicio de valores para iterar
-                cont = 0
-                pos_list += 1
-                suma_positivos = 0
-                suma_negativos = 0
-
-        # ---------------------Determinacion de convergencias-------------------->
-        valores_caa = generar_caa_daa(valores, actor, objetivo.count(), 1)
-        # ---------------------Determinacion de divergencias--------------------->
-        valores_daa = generar_caa_daa(valores, actor, objetivo.count(), 2)
-        # ---------------------Calculo de los Valores de movilizacion  ---------->
-        valores_mao = generar_lista_movilizacion(objetivo, valores)
+        lista = establecer_valores_mao(objetivo, actor, mao, MATRIZ_COMPLETA)
 
         contexto = {'objetivos': objetivo,
                     'actores': actor,
-                    'valores': valores_mao,            # valores de la matriz
-                    'cantidad': objetivo.count() + 3,  # cantidad de columnas para saber cuando hacer el salto de fila
-                                                       # +3 debido a la columna de nombrecorto y las 3 de implicacion
-                    'cantidad2': (objetivo.count() * 2) + 4, # cantidad de columnas para las sumatorias de movilizacion
-                    # x2 y +4  porque no tienen las mismas posiciones de columna que los anteriores valores.
-                    'valores_caa': valores_caa,  # valores de la  matriz de convergencia
-                    'cantidad3': actor.count(),  # cantidad de columnas para las matrices de conv y divergencia
-                    'valores_daa': valores_daa}  # valores de la matriz de divergencia
+                    'valores_mao': lista[0],
+                    'posicion_salto': objetivo.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
+                    'posicion_salto_movilizacion': (objetivo.count() * 2) + 4,
+                    'valores_caa': lista[1],
+                    'posicion_salto_caa_daa': actor.count(),
+                    'valores_daa': lista[2]}
+    else:
+        contexto = {}
 
-        return render(request, 'mao/matriz_3mao.html', contexto)
+    return render(request, 'mao/matriz_3mao.html', contexto)
 
 
 def generar_mao_incompleta(mao, lista_actores, lista_objetivos):

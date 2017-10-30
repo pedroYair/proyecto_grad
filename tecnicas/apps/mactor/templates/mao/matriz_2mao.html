@@ -23,7 +23,7 @@ Estudio:
 <table class="table table-bordered" id="tabla1mao">
     <thead>
         <tr>
-            {%if objetivos %}
+            {% if objetivos %}
             <input style='text-align: center;' readonly type="text" size="3" value="">
                 {% for objetivo in objetivos %}
                 <input id="obj{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{objetivo.nombreCorto}}" data-toggle="modal" href="#myModal2">
@@ -39,27 +39,29 @@ Estudio:
 
     <tbody>
 
-    {% if valores %}
+    {% if valores_mao %}
 <tr>
-{% for i in valores %}
-    <!--Inserta la ultima celda antes del salto de fila para insertar correctamente el nombre corto del actor-->
-    {%if i.posicion == cantidad%}
+{% for i in valores_mao %}
+    <!--Inserta la ultima celda antes del salto de fila (sumatoria de implicacion total)-->
+    {% if i.posicion == posicion_salto %}
         <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
         <br>
     <!--Inserta las sumatorias de movilizacion (ultima fila) -->
-    {%elif i.posicion == cantidad2%}
+    {% elif i.posicion == posicion_salto_movilizacion %}
         <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
         <br>
     <!--Inserta el nombre corto del actor-->
-    {%elif i.posicion == 0%}
+    {% elif i.posicion == 0 %}
         <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
-    <!--Inserta los valores de la matriz y las sumatorias de implicacion-->
-    {%else%}
-        <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-    {%endif%}
-{%endfor%}
+    <!--Inserta los valores de la matriz posteriores al nombre y corto y las sumatorias de implicacion - y +-->
     {% else %}
-        <h3>Finalize el registro de las posiciones 2MAO para visualizar esta matriz</h3>
+        {% if i.valor == 100 %}
+            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="X">
+        {% else %}
+            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+        {% endif %}
+    {% endif %}
+{% endfor %}
     {% endif %}
         <br>
 </tr>
@@ -94,7 +96,7 @@ Estudio:
 <table class="table table-bordered" id="tabla1">
     <thead>
         <tr>
-            {%if actores %}
+            {% if actores and estado_matriz != 0 %}
             <input style='text-align: center;'  type="text" size="3" readonly value="">
                 {% for actor in actores %}
                     <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
@@ -107,23 +109,23 @@ Estudio:
     <tbody>
 
 
-     {%if valores_caa %}
+     {% if valores_caa %}
     <tr>
-    {%for i in valores_caa %}
+    {% for i in valores_caa %}
         <!--Inserta el ultimo valor antes del salto de fila-->
-        {%if i.posicion == cantidad3%}
+        {% if i.posicion == posicion_salto_caa_daa %}
             <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
             <br>
         <!--Inserta los nombres cortos en el eje Y-->
-        {%elif i.posicion == 0%}
+        {% elif i.posicion == 0 %}
             <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
-        {%else%}
+        {% else %}
         <!--Inserta los valores caa-->
             <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        {%endif%}
-    {%endfor%}
+        {% endif %}
+    {% endfor %}
         {% else %}
-            <h3>Finalize el registro de las posiciones 2MAO para visualizar esta matriz</h3>
+            <h3>Finalice el registro de las posiciones 2MAO para visualizar esta matriz</h3>
         {% endif %}
             <br>
 
@@ -157,7 +159,7 @@ Estudio:
 <table class="table table-bordered" id="tabla3">
     <thead>
         <tr>
-            {%if actores %}
+            {%if actores and estado_matriz != 0 %}
             <input style='text-align: center;'  type="text" size="3" readonly value="">
                 {% for actor in actores %}
                     <input id="{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
@@ -168,23 +170,23 @@ Estudio:
     </thead>
 
     <tbody>
-     {%if valores_daa %}
+     {% if valores_daa %}
     <tr>
-    {%for i in valores_daa %}
+    {% for i in valores_daa %}
          <!--Inserta el ultimo valor antes del salto de linea-->
-        {%if i.posicion == cantidad3%}
+        {% if i.posicion == posicion_salto_caa_daa %}
             <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
             <br>
         <!--Inserta los nombres cortos-->
-        {%elif i.posicion == 0%}
+        {% elif i.posicion == 0 %}
             <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{i.valor}}">
         <!--Inserta los valores daa-->
-        {%else%}
-            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        {%endif%}
-    {%endfor%}
         {% else %}
-            <h3>Finalize el registro de las posiciones 2MAO para visualizar esta matriz</h3>
+            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+        {% endif %}
+    {% endfor %}
+        {% else %}
+            <h3>Finalice el registro de las posiciones 2MAO para visualizar esta matriz</h3>
         {% endif %}
             <br>
     </tr>
