@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudio:
+Estudio: {{posicion_salto}}
 {% endblock %}
 
 {% block content %}
@@ -205,7 +205,7 @@ Estudio:
                     <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
                     <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
-                    <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_3mao'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' 3%}">Siguiente <i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -238,7 +238,6 @@ Estudio:
 								    </div>
 								</div>
                     </div>
-
 
 <! INICIO MODAL DETALLE DEL OBJETIVO--------------------------->
 

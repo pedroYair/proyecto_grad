@@ -102,10 +102,10 @@ Estudio:
 
 												<div class="form-group">
 												  <div class="col-md-offset-2 col-md-8">
-													   <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_1mao'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+													   <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                                                      	<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> Guardar</button>
 													  	<a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                                                      	<a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_2mao'%}">Matriz <i class="fa fa-arrow-right"></i></a>
+                                                      	<a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' 2%}">Matriz <i class="fa fa-arrow-right"></i></a>
 												  </div>
 
       <! INICIO MODAL AYUDA--------------------------->

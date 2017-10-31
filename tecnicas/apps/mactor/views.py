@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User
 from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
-from django.shortcuts import render, redirect
-from django.core.urlresolvers import reverse_lazy
-from django.http import JsonResponse, HttpResponse, request
+from django.shortcuts import render, redirect, get_object_or_404
+from django.core.urlresolvers import reverse_lazy, reverse
+from django.http import JsonResponse, HttpResponse, request, Http404
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO
 from .forms import Form_Estudio, Form_Actor, Form_Ficha, Form_Objetivo, Form_MID, Form_1mao, Form_2mao
@@ -102,7 +102,7 @@ def Editar_actor(request):
         # se realiza la modificacion de los datos y se envia la respuesta
         if flag == False:
             try:
-                actor = Actor.objects.get(id=id)
+                actor = get_object_or_404(Actor, id=id)
                 actor.nombreLargo = nombreLargo
                 actor.nombreCorto = nombreCorto
                 actor.descripcion = descripcion
@@ -160,8 +160,7 @@ class Crear_ficha(CreateView):
     model = Ficha_actor
     form_class = Form_Ficha
     template_name = 'ficha/crear_ficha.html'
-    success_url = reverse_lazy('mactor:ficha')
-
+    success_url = reverse_lazy('mactor:lista_fichas')
 
 class Listar_ficha(ListView):
     model = Ficha_actor
@@ -244,6 +243,7 @@ def Crear_objetivo(request):
 class Listar_objetivo(ListView):
     model = Objetivo
     template_name = 'objetivo/lista_objetivos.html'
+    ordering = ('nombreLargo',)
 
 
 def Editar_objetivo(request):
@@ -272,7 +272,7 @@ def Editar_objetivo(request):
         # se realiza la modificacion de los datos y se envia la respuesta
         if flag == False:
             try:
-                objetivo = Objetivo.objects.get(id=id)
+                objetivo = get_object_or_404(Objetivo, id=id)
                 objetivo.nombreLargo = nombreLargo
                 objetivo.nombreCorto = nombreCorto
                 objetivo.descripcion = descripcion
@@ -361,18 +361,11 @@ def Generar_matriz_mid(request):
 
 # -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
 
-
 class Crear_1mao(CreateView):
     model = Relacion_MAO
     form_class = Form_1mao
     template_name = 'mao/create_1mao.html'
     success_url = reverse_lazy('mactor:1mao')
-
-
-def Generar_matriz_1mao(request):
-
-    contexto = crear_contexto_mao(2)
-    return render(request, 'mao/matriz_1mao.html', contexto)
 
 
 class Crear_2mao(CreateView):
@@ -381,13 +374,26 @@ class Crear_2mao(CreateView):
     template_name = 'mao/create_2mao.html'
     success_url = reverse_lazy('mactor:2mao')
 
+    """def get(self, request, *args, **kwargs):
+        self.tipo = kwargs.get('tipo', None)
+        print(type(self.tipo))
+        print(self.tipo)
+        return int(self.tipo)"""
 
-def Generar_matriz_2mao(request):
-
-    contexto = crear_contexto_mao(1)
-    return render(request, 'mao/matriz_2mao.html', contexto)
 
 
+def Generar_matriz_mao(request, numero_matriz_mao):
+
+    contexto = crear_contexto_mao(int(numero_matriz_mao))
+
+    if int(numero_matriz_mao) == 1:
+        return render(request, 'mao/matriz_1mao.html', contexto)
+    elif int(numero_matriz_mao) == 2:
+        return render(request, 'mao/matriz_2mao.html', contexto)
+    elif int(numero_matriz_mao) == 3:
+        return render(request, 'mao/matriz_3mao.html', contexto)
+    else:
+        raise Http404("Question does not exist")
 
 # ---------------------------------------------CLASES AUXILIARES-------------------------------------->
 
@@ -398,6 +404,7 @@ class Valor_posicion:
         self.posicion = posicion
         self.valor = valor
 
+
 # Clase auxiliar para la generacion de matrices, se asigna una posicion a un respectivo valor
 class Valor_xy:
     def __init__(self, x, y, valor):
@@ -405,10 +412,9 @@ class Valor_xy:
         self.y = y
         self.valor = valor
 
-
 # -------------------------------------FUNCIONES AUXILIARES------------------------------------------------------------>
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<Funciones influencias entre actores>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# <<<<FUNCIONES RELACIONES MID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
 # Ingresa las influencias con valor 0 de un actor sobre si mismo, necesario para que la matriz sea cuadrada
@@ -664,30 +670,39 @@ def sumar_valores_minimos(actorY, mid):
     return lista_suma
 
 
-# <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<FUNCIONES MATRICES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+# # <<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
-def crear_contexto_mao(tipo_matriz_mao):
+def crear_contexto_mao(numero_matriz_mao):
 
     lista_objetivos = Objetivo.objects.all().order_by('id')
     lista_actores = Actor.objects.all().order_by('id')
     tamano_matriz_completa = (len(lista_actores)*len(lista_objetivos))
-    lista_mao = Relacion_MAO.objects.exclude(tipo=tipo_matriz_mao).order_by('idActorY', 'idObjetivoX')
+    lista_mao = []
+
+    if numero_matriz_mao == 1 or numero_matriz_mao == 2:
+        lista_mao = Relacion_MAO.objects.filter(tipo=numero_matriz_mao).order_by('idActorY', 'idObjetivoX')
+    else:
+        estado_mao3 = verificar_mid_mao2(lista_objetivos, lista_actores)
+        if estado_mao3:
+            lista_mao = calcular_valores_3mao(lista_objetivos.count(), lista_actores.count())
 
     if len(lista_mao) == tamano_matriz_completa:
 
-        lista = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao, MATRIZ_COMPLETA)
+        lista_contexto = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao, MATRIZ_COMPLETA)
 
         contexto = {'objetivos': lista_objetivos,
                     'actores': lista_actores,
-                    'valores_mao': lista[0],
+                    'valores_mao': lista_contexto[0],
                     'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
                     'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
-                    'valores_caa': lista[1],
+                    'valores_caa': lista_contexto[1],
                     'posicion_salto_caa_daa': lista_actores.count(),
-                    'valores_daa': lista[2],
+                    'valores_daa': lista_contexto[2],
                     'estado_matriz': MATRIZ_COMPLETA}
-    else:
+
+    elif len(lista_mao) != tamano_matriz_completa and numero_matriz_mao != 3:
+
         lista = generar_mao_incompleta(lista_mao, lista_actores, lista_objetivos)
 
         contexto = {'objetivos': lista_objetivos,
@@ -696,6 +711,8 @@ def crear_contexto_mao(tipo_matriz_mao):
                     'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
                     'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
                     'estado_matriz': MATRIZ_INCOMPLETA}
+    else:
+        contexto = {}
 
     return contexto
 
@@ -950,6 +967,50 @@ def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
         return valores_mao
 
 
+# Verifica si las matrices MID y 2MAO estan totalmente diligenciadas para proceder al calculo de la matriz 3mao
+def verificar_mid_mao2(objetivos, actores):
+
+    mid = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
+    mao2 = Relacion_MAO.objects.filter(tipo=2).order_by('idActorY', 'idObjetivoX')
+    tamano_mid = len(actores) * len(actores)
+    tamano_2mao = len(actores) * len(objetivos)
+    estado_3mao = False
+
+    if len(mid) == tamano_mid and len(mao2) == tamano_2mao:
+        estado_3mao = True
+
+    return estado_3mao
+
+
+# Calculo de los valores 3mao = 2mao * ri
+def calcular_valores_3mao(cant_objetivos, cant_actores):
+
+    mao = Relacion_MAO.objects.filter(tipo=2).order_by('idActorY', 'idObjetivoX')  # relaciones 2mao registradas
+    valores_midi = calcular_midi()  # relaciones midi calculadas
+    valores_ri = calcular_ri(valores_midi, cant_actores)  # valores ri a partir de los midi
+    valores_3mao = []  # lista que contiene a los 3mao
+
+    # Multiplicacion de los valores 2mao por los valores ri para hallar los valores 3mao
+    cont = 0
+    cont2 = 0
+    for i in mao:
+        if cont2 < cant_objetivos:
+            valor = i.valor * valores_ri[cont]
+            # se agrega el valor calculado a la lista a mostrar
+            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1)))
+            cont2 += 1
+        # cuando se han calculado los valores (cantidad de objetivos) de una fila se reinician los parámetros
+        else:
+            cont2 = 0
+            cont += 1
+            valor = i.valor * valores_ri[cont]
+            # se agrega el valor calculado a la lista a mostrar
+            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1)))
+            cont2 += 1
+
+    return valores_3mao
+
+
 # Calculo del valor ri para la matriz 3mao
 def calcular_ri(valores_midi, cant_actor):
 
@@ -1001,63 +1062,6 @@ def calcular_ri(valores_midi, cant_actor):
     return valores_ri
 
 
-# Calculo de los valores 3mao = 2mao * ri
-def calcular_3mao(cant_objetivos, cant_actores):
-
-    mao = Relacion_MAO.objects.exclude(tipo=1).order_by('idActorY', 'idObjetivoX')  # relaciones 2mao registradas
-    valores_midi = calcular_midi()                                                  # relaciones midi calculadas
-    valores_ri = calcular_ri(valores_midi, cant_actores)                            # valores ri a partir de los midi
-    valores_3mao = []                                                               # lista que contiene a los 3mao
-
-    # Multiplicacion de los valores 2mao por los valores ri para hallar los valores 3mao
-    cont = 0
-    cont2 = 0
-    for i in mao:
-        if cont2 < cant_objetivos:
-            valor = i.valor * valores_ri[cont]
-            # se agrega el valor calculado a la lista a mostrar
-            valores_3mao.append(Valor_posicion(posicion=cont2+1, valor=round(valor, 1)))
-            cont2 += 1
-        # cuando se han calculado los valores (cantidad de objetivos) de una fila se reinician los parámetros
-        else:
-            cont2 = 0
-            cont += 1
-            valor = i.valor * valores_ri[cont]
-            # se agrega el valor calculado a la lista a mostrar
-            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1)))
-            cont2 += 1
-
-    return valores_3mao
-
-
-# View generadora de la matriz 3mao
-def Generar_matriz_3mao(request):
-
-    objetivo = Objetivo.objects.all().order_by('id')  # objetivos registrados
-    actor = Actor.objects.all().order_by('id')  # actores registrados
-    mid = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
-    mao2 = Relacion_MAO.objects.exclude(tipo=1).order_by('idActorY', 'idObjetivoX')
-    tamano_mid = len(actor)*len(actor)
-    tamano_2mao = len(actor)*len(objetivo)
-
-    if len(mid) == tamano_mid and len(mao2) == tamano_2mao:
-        mao = calcular_3mao(cant_objetivos=objetivo.count(), cant_actores=actor.count())
-        lista = establecer_valores_mao(objetivo, actor, mao, MATRIZ_COMPLETA)
-
-        contexto = {'objetivos': objetivo,
-                    'actores': actor,
-                    'valores_mao': lista[0],
-                    'posicion_salto': objetivo.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
-                    'posicion_salto_movilizacion': (objetivo.count() * 2) + 4,
-                    'valores_caa': lista[1],
-                    'posicion_salto_caa_daa': actor.count(),
-                    'valores_daa': lista[2]}
-    else:
-        contexto = {}
-
-    return render(request, 'mao/matriz_3mao.html', contexto)
-
-
 def generar_mao_incompleta(mao, lista_actores, lista_objetivos):
 
     lista_mao_incompleta = []               # contendra los valores de la matriz mao incompleta
@@ -1093,7 +1097,7 @@ def generar_mao_incompleta(mao, lista_actores, lista_objetivos):
     lista_contexto = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao_incompleta, MATRIZ_INCOMPLETA)
 
     for i in lista_contexto:
-        print(i.valor)
+        print(i.valor, "------------")
 
     return lista_contexto
 

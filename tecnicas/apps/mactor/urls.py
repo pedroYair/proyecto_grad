@@ -5,7 +5,7 @@ from .views import Listar_estudio, Editar_estudio, Consultar_estudio,\
     Crear_ficha, Listar_ficha, Editar_ficha, Consultar_ficha, Eliminar_ficha_ajax, \
     Crear_objetivo, Listar_objetivo, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo_ajax, \
     Crear_relacion_mid, Generar_matriz_mid, Crear_auto_influencia, \
-    Crear_1mao, Generar_matriz_1mao, Crear_2mao, Generar_matriz_2mao, Generar_matriz_3mao, \
+    Crear_1mao, Crear_2mao, Generar_matriz_mao, \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, probar
 
 # nombre de la url, view que respondera y el parametro name
@@ -49,13 +49,11 @@ urlpatterns = [
     url(r'^matriz_mid$', Generar_matriz_mid, name='matriz_mid'),
     url(r'^auto-influencia/$', Crear_auto_influencia),
 
-
     # Urls modelo Relacion_MAO y matrices
     url(r'^1mao$', Crear_1mao.as_view(), name='1mao'),
-    url(r'^matriz_1mao$', Generar_matriz_1mao, name='matriz_1mao'),
     url(r'^2mao$', Crear_2mao.as_view(), name='2mao'),
-    url(r'^matriz_2mao$', Generar_matriz_2mao, name='matriz_2mao'),
-    url(r'^matriz_3mao$', Generar_matriz_3mao, name='matriz_3mao'),
+    url(r'^matriz_mao/(\d)/$', Generar_matriz_mao, name='matriz_mao'),
+    #/(?P<tipo>\d+)/
 
     # Urls consultas ajax
     url(r'^mid-ajax/$', Consultar_actores_faltantes),  # obtiene lista actores X registrados en la mid
