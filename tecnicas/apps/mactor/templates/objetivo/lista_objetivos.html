@@ -41,10 +41,16 @@ Estudio:
             <td>{{objetivo.nombreCorto|upper}}</td>
             <td style="text-align: justify">{{objetivo.descripcion}}</td>
             <td>
-                <a id="obj{{objetivo.id}}" class="btn btn-warning" title="Editar" data-toggle="modal"
-                           href="#myModal3"><i class="fa fa-pencil"></i></a>
-                <a href="#myModal2" role="button" class="btn btn-danger delete" title="Eliminar" data-toggle="modal"
-                   id="{{objetivo.id}}" data-name="{{objetivo.nombreLargo}}"><i class="fa fa-times"></i></a>
+                <a id="ver{{objetivo.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal4">
+                    <i class="fa fa-eye"></i>
+                </a>
+                <a id="obj{{objetivo.id}}" class="btn btn-warning" title="Editar" data-toggle="modal" href="#myModal3">
+                    <i class="fa fa-pencil"></i>
+                </a>
+                <a id="{{objetivo.id}}" class="btn btn-danger delete" title="Eliminar" data-toggle="modal" href="#myModal2"
+                   role="button"  data-name="{{objetivo.nombreLargo}}">
+                    <i class="fa fa-times"></i>
+                </a>
             </td>
         </tr>
     {% endfor %}
@@ -83,7 +89,7 @@ Estudio:
                 <div class="col-md-offset-2 col-md-8">
                     <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</a>
-                    <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
+                    <a class="btn btn-primary" data-toggle="modal" href="#myModal5"><i class="fa fa-book"></i> Ayuda</a>
                     <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
@@ -97,10 +103,11 @@ Estudio:
     </div>
 
 {% block extrajs %}
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js_mactor_modals/agregar/agregar_objetivo.js'%}"></script>
 <script src="{% static 'js_mactor_modals/eliminar/eliminar_objetivo.js'%}"></script>
 <script src="{% static 'js_mactor_modals/editar/editar_objetivo.js'%}"></script>
-<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js_mactor_modals/consultar/consultar_objetivo.js'%}"></script>
 {% endblock %}
 
 

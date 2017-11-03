@@ -36,11 +36,11 @@ Estudios registrados VISTA COORDINADOR
         </thead>
         <tbody>
 
-            {%if object_list %}
-            {% for estudio in object_list %}
+            {%if lista_estudios %}
+            {% for estudio in lista_estudios %}
                 <tr>
                     <td>{{forloop.counter}}</td>
-                    <td ><a href="{%url 'mactor:lista_actores2'%}" onclick="pasar_id()" id="{{estudio.id}}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
+                    <td ><a href="{%url 'mactor:lista_actores' estudio.id%}" onclick="pasar_id()" id="{{estudio.id}}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
                     <td>{{estudio.fecha_inicio}}</td>
                     <td>{{estudio.fecha_final}}</td>
                     <td>
@@ -51,7 +51,7 @@ Estudios registrados VISTA COORDINADOR
             {% endfor %}
 
             {% else %}
-            <h2>No hay estudios registrados</h2>
+            <h2>No hay estudios MACTOR registrados</h2>
 
             {% endif %}
 
@@ -97,8 +97,8 @@ Estudios registrados VISTA COORDINADOR
     </div>
 
 {% block extrajs %}
-<script src="{% static 'js/js_mactor_consultas/detallar_estudio.js'%}"></script>
-<!--<script src="{% static 'js_mactor_consultas/pasar_id.js'%}"></script>-->
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js_mactor_modals/consultar/consultar_estudio.js'%}"></script>
 {% endblock %}
 
 {% endblock %}

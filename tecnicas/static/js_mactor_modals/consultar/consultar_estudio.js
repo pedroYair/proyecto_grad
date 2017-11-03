@@ -7,10 +7,11 @@
             console.log(id);
             //Si se pulsa el tr de un estudio
                 if(id.indexOf("est")!= -1){
+                    console.log(id)
                     $.ajax(
                         {
                             data: {'id': id},
-                            url: 'estudio-ajax',
+                            url: 'consultar_estudio',
                             type: 'get',
                             success: function (data) {
                                 var object = JSON.parse(data);

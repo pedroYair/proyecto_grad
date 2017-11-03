@@ -23,17 +23,22 @@ Estudio:
 <table class="table table-bordered" id="tabla1mao">
     <thead>
         <tr>
-            {% if objetivos %}
+            {%if objetivos %}
             <input style='text-align: center;' readonly type="text" size="3" value="">
                 {% for objetivo in objetivos %}
-                <input id="obj{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{objetivo.nombreCorto}}" data-toggle="modal" href="#myModal2">
+                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                           title="{{objetivo.nombreLargo}}:
+                    {{objetivo.descripcion}}" size="3" value="{{objetivo.nombreCorto}}">
                 {% endfor %}
-            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="+">
-            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="-">
-            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="Imp.">
+            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="Implicación positiva (Acuerdos)" value="+">
+            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="Implicación negativa (Desacuerdos)" value="-">
+            <input style='text-align: center; background-color: #5e5e5e; color: white;' readonly type="text" size="3"
+                     title="Implicación:
+                    Suma absoluta en fila que expresa el número de objetivos para los que cada actor tiene una posición activa,
+                    concordante o discordante." value="Imp.">
             <br>
             {% endif %}
-         </tr>
+        </tr>
     </thead>
 
     <tbody>
@@ -94,9 +99,11 @@ Estudio:
     <thead>
         <tr>
             {%if actores %}
-            <input style='text-align: center;'  type="text" readonly size="3" value="">
+                <input style='text-align: center;'  type="text" readonly size="3" value="">
                 {% for actor in actores %}
-                <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
+                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                           title="{{actor.nombreLargo}}:
+                           {{actor.descripcion}}" size="3" value="{{actor.nombreCorto}}">
                 {% endfor %}
             {% endif %}
             <br>
@@ -159,7 +166,9 @@ Estudio:
             {% if actores %}
             <input style='text-align: center;' readonly  type="text" size="3" value="">
                 {% for actor in actores %}
-                <input id="{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{actor.nombreCorto}}" data-toggle="modal" href="#myModal3">
+                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                           title="{{actor.nombreLargo}}:
+                           {{actor.descripcion}}" size="3" value="{{actor.nombreCorto}}">
                 {% endfor %}
             {% endif %}
             <br>
@@ -206,7 +215,7 @@ Estudio:
                 </div>
             </div>
 
-<! INICIO MODAL AYUDA--------------------------->
+<!--INICIO MODAL AYUDA--------------------------->
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 								<div class="modal-dialog">
@@ -235,23 +244,6 @@ Estudio:
 								    </div>
 								</div>
                     </div>
-
-
-<! INICIO MODAL DETALLE DEL OBJETIVO--------------------------->
-
-                   {%include 'objetivo/modal_detalle_objetivo.html '%}
-
-<! INICIO MODAL DETALLE DEL ACTOR--------------------------->
-
-                    {% include 'actor/modal_detalle_actor.html' %}
-
-
-{% block extrajs %}
-<script src="{% static 'jquery/jquery.min.js' %}"></script>
-<script src="{% static 'js_mactor_consultas/detalle_actor_objetivo_matriz.js'%}"></script>
-{% endblock %}
-
-
 
 {% endblock %}
 

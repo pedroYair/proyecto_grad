@@ -18,8 +18,10 @@ from django.contrib import admin
 from django.contrib.auth.views import login, logout_then_login
 
 urlpatterns = [
+    # urls vista administracion
     url(r'^admin/', admin.site.urls, ),
     # urls de la app mactor
     url(r'^mactor/', include('apps.mactor.urls', namespace="mactor")),
+    # urls vista control de usuarios paquete Registration
     url(r'^accounts/', include('registration.backends.default.urls'))
 ]

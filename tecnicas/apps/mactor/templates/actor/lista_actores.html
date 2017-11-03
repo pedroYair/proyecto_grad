@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudio:
+<input id="{{estudio.id}}" class="col-sm-1" type="number" name="codigo" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 {% endblock %}
 
 {% block content %}
@@ -33,14 +33,15 @@ Estudio:
 
     <tbody>
 
-    {%if object_list %}
-    {% for actor in object_list %}
+    {%if lista_actores %}
+    {% for actor in lista_actores %}
         <tr>
             <td>{{forloop.counter}}</td>
             <td>{{actor.nombreLargo|upper}}</td>
             <td>{{actor.nombreCorto|upper}}</td>
             <td style="text-align: justify">{{actor.descripcion}}</td>
             <td>
+                <a id="ver{{actor.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal5"><i class="fa fa-eye"></i></a>
                 <a id="act{{actor.id}}" class="btn btn-warning .edit" title="Editar" data-toggle="modal"
                            href="#myModal3"><i class="fa fa-pencil"></i></a>
                 <a href="#myModal2" role="button" class="btn btn-danger delete" title="Eliminar" data-toggle="modal"
@@ -82,7 +83,7 @@ Estudio:
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
                     <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                    <a class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</a>
+                    <a class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
                     <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
                 </div>
@@ -96,10 +97,11 @@ Estudio:
     </div>
 
 {% block extrajs %}
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js_mactor_modals/agregar/agregar_actor.js'%}"></script>
 <script src="{% static 'js_mactor_modals/eliminar/eliminar_actor.js'%}"></script>
 <script src="{% static 'js_mactor_modals/editar/editar_actor.js'%}"></script>
-<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js_mactor_modals/consultar/consultar_actor.js'%}"></script>
 {% endblock %}
 
 {% endblock %}

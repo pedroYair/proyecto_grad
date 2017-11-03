@@ -13,6 +13,7 @@ from .forms import Form_Estudio, Form_Actor, Form_Ficha, Form_Objetivo, Form_MID
 class Listar_estudio(ListView):
     model = Estudio_Mactor
     template_name = 'estudio/lista_estudios.html'
+    context_object_name = "lista_estudios"
 
 
 def Consultar_estudio(request):
@@ -23,7 +24,7 @@ def Consultar_estudio(request):
             id = id.lstrip("est")
         elif id.count("id"):
             id = id.lstrip("id")
-        estudio = Estudio_Mactor.objects.get(id=id)
+        estudio = get_object_or_404(Estudio_Mactor, id=id)
         response = JsonResponse(
             {'titulo': estudio.titulo, 'descripcion': estudio.descripcion})
         return HttpResponse(response.content)
@@ -45,7 +46,7 @@ def Crear_actor(request):
    nombreLargo = request.GET['nombreLargo']
    nombreCorto = request.GET['nombreCorto']
    descripcion = request.GET['descripcion']
-   #idEstudio = 1
+   estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
    mensaje = "El actor " + nombreLargo + " se ha registrado con exito"
    lista_actor = Actor.objects.all()
    flag = False
@@ -56,7 +57,10 @@ def Crear_actor(request):
 
    if flag is False:
         try:
-            actor = Actor(nombreLargo=nombreLargo, nombreCorto=nombreCorto, descripcion=descripcion)
+            actor = Actor(nombreLargo=nombreLargo,
+                          nombreCorto=nombreCorto,
+                          descripcion=descripcion,
+                          idEstudio=estudio)
             actor.save()
             response = JsonResponse({'info': mensaje})
             return HttpResponse(response.content)
@@ -74,6 +78,25 @@ class Listar_actor(ListView):
     model = Actor
     template_name = 'actor/lista_actores.html'
     ordering = ('nombreLargo',)
+    context_object_name = "lista_actores"
+
+    def get_context_data(self, **kwargs):
+        data = super(Listar_actor, self).get_context_data(**kwargs)
+        data.update({
+            'codigo': 1
+        })
+        return data
+
+    """def get_queryset(self):
+        #self.idEstudio = get_object_or_404(Estudio_Mactor, id=self.args[0])
+        #self.idEstudio = get_object_or_404(Estudio_Mactor, id=kwargs.get('pk', 0))
+        #print(self.idEstudio, "------------")
+        qs = super(Listar_actor, self).get_queryset()
+        return qs.filter(idEstudio=1).order_by('id')"""
+
+    """def get_queryset(self):
+        queryset = super(Listar_actor, self).get_queryset()
+        return queryset.exclude(nombreCorto="MB")"""
 
 
 def Editar_actor(request):
@@ -125,10 +148,12 @@ def Consultar_actor(request):
     if request.is_ajax():
         id = request.GET.get('id')
 
-        if id.count("act"):         # verifica si la cadena contiene la subcadena especificada
-            id = id.lstrip("act")   # elimina la subcadena especificada
+        if id.count("ver"):
+            id = id.lstrip("ver")
+        elif id.count("act"):
+            id = id.lstrip("act")
 
-        actor = Actor.objects.get(id=id)
+        actor = get_object_or_404(Actor, id=int(id))
 
         response = JsonResponse(
             {'nombreCorto': actor.nombreCorto,
@@ -137,6 +162,15 @@ def Consultar_actor(request):
         return HttpResponse(response.content)
     else:
         return redirect('/')        # redirecciona a la misma pagina
+
+
+def actores(request, idEstudio):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    print(estudio_mactor.id)
+    actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+    contexto = {'estudio': estudio_mactor, 'lista_actores': actores}
+    return render(request, 'actor/lista_actores.html', contexto)
 
 
 def Eliminar_actor_ajax(request):
@@ -160,12 +194,15 @@ class Crear_ficha(CreateView):
     model = Ficha_actor
     form_class = Form_Ficha
     template_name = 'ficha/crear_ficha.html'
-    success_url = reverse_lazy('mactor:lista_fichas')
+    success_message = "Agregado con exito"
+    success_url = reverse_lazy('mactor:ficha')
+
 
 class Listar_ficha(ListView):
     model = Ficha_actor
     template_name = 'ficha/lista_fichas.html'
     ordering = ('idActorY', 'idActorX',)
+    paginate_by = 15
 
 
 class Editar_ficha(UpdateView):
@@ -293,11 +330,15 @@ def Editar_objetivo(request):
 def Consultar_objetivo(request):
 
     if request.is_ajax():
-        id = request.GET['id']
+        id = request.GET.get('id')
         # se verifica si la cadena contiene la subcadena especificada
+
         if id.count("obj"):
             id = id.lstrip("obj")
-        objetivo = Objetivo.objects.get(id=id)
+        elif id.count("ver"):
+            id = id.lstrip("ver")
+        print(id)
+        objetivo = get_object_or_404(Objetivo, id=int(id))
         response = JsonResponse(
             {'nombreCorto': objetivo.nombreCorto,
              'nombreLargo': objetivo.nombreLargo,
@@ -381,7 +422,6 @@ class Crear_2mao(CreateView):
         return int(self.tipo)"""
 
 
-
 def Generar_matriz_mao(request, numero_matriz_mao):
 
     contexto = crear_contexto_mao(int(numero_matriz_mao))
@@ -393,7 +433,7 @@ def Generar_matriz_mao(request, numero_matriz_mao):
     elif int(numero_matriz_mao) == 3:
         return render(request, 'mao/matriz_3mao.html', contexto)
     else:
-        raise Http404("Question does not exist")
+        raise Http404("Error: Esta vista no existe")
 
 # ---------------------------------------------CLASES AUXILIARES-------------------------------------->
 
@@ -477,8 +517,9 @@ def establecer_valores_mid(lista_influencias, lista_actores):
             suma_fila_influencias = 0  # reinicio del valor de suma_fila_influencias
 
     # Agregado de la sumatoria de dependencias directas (suma de columnas)
-    lista_valores_mid.append(Valor_posicion(posicion=0, valor="Dep. D"))
+    lista_valores_mid.append(Valor_posicion(posicion=0, valor="D.D"))
     posicion = 1
+    suma_dependencia_total = 0
     while posicion <= lista_actores.count():
         for i in lista_valores_mid:
             # si posicion es igual al numero de la columna que se esta sumando
@@ -486,10 +527,12 @@ def establecer_valores_mid(lista_influencias, lista_actores):
                 # si se trata de un valor no valido (matriz incompleta)
                 if i.valor != VALOR_RELACION_NO_REGISTRADA:
                     suma_columna_dependencia += i.valor
+                    suma_dependencia_total += i.valor
         # se ingresa a la lista de valores_mid la sumatoria de la columna
         lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=suma_columna_dependencia))
         posicion += 1                 # iteracion de las posiciones
         suma_columna_dependencia = 0  # reinicio a o del valor movilizacion
+    lista_valores_mid.append(Valor_posicion(posicion="", valor=suma_dependencia_total))
 
     return lista_valores_mid
 
@@ -580,7 +623,7 @@ def calcular_midi():
             li = 0
 
     # se calculan los valores di (ultima fila)
-    valores_midi.append(Valor_posicion(posicion=0, valor="Di"))
+    valores_midi.append(Valor_posicion(posicion=0, valor="D.DI"))
     indice = 1
     di = 0
     suma_di = 0
@@ -1095,9 +1138,6 @@ def generar_mao_incompleta(mao, lista_actores, lista_objetivos):
         registros_relleno -= 1
 
     lista_contexto = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao_incompleta, MATRIZ_INCOMPLETA)
-
-    for i in lista_contexto:
-        print(i.valor, "------------")
 
     return lista_contexto
 

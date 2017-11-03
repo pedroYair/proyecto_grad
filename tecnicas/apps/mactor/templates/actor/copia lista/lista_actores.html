@@ -1,8 +1,8 @@
-{% extends 'base\baseMactor.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 
-{% block pull-left %}
-<h2>Lista de actores</h2>
+{% block head_title %}
+Estudio: {{codigo}}
 {% endblock %}
 
 {% block content %}
@@ -12,7 +12,7 @@
             <div class="col-md-12">
                 <div class="widget wgreen">
 <div class="widget-head">
-    <div class="pull-left"></div>
+    <div class="pull-left">Lista de actores</div>
     <div class="widget-icons pull-right">
         <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
         <a href="#" class="wclose"><i class="fa fa-times"></i></a>
@@ -33,8 +33,8 @@
 
     <tbody>
 
-    {%if object_list %}
-    {% for actor in object_list %}
+    {%if lista_actores %}
+    {% for actor in lista_actores %}
         <tr>
             <td>{{forloop.counter}}</td>
             <td>{{actor.nombreLargo|upper}}</td>
@@ -50,7 +50,7 @@
     {% endfor %}
 
     {% else %}
-    <h2>No hay objetivos registrados</h2>
+    <h2>No hay actores registrados</h2>
 
     {% endif %}
     </tbody>
@@ -81,13 +81,12 @@
 <! BOTONES--------------------------------------------------------------------------------->
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
-                    <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                    <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
-                    <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
-
 
  <! INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
 
@@ -97,11 +96,10 @@
     </div>
 
 {% block extrajs %}
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js_mactor_modals/agregar/agregar_actor.js'%}"></script>
 <script src="{% static 'js_mactor_modals/eliminar/eliminar_actor.js'%}"></script>
 <script src="{% static 'js_mactor_modals/editar/editar_actor.js'%}"></script>
-<script src="{% static 'jquery/jquery.min.js' %}"></script>
 {% endblock %}
-
 
 {% endblock %}

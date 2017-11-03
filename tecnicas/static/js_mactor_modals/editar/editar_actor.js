@@ -12,7 +12,7 @@
                 $.ajax(
                     {
                         data: {'id': id},
-                        url: 'actor-ajax',
+                        url: 'consultar_actor',
                         type: 'get',
                         // los datos retornados son asignados en el formulario
                         success: function (data) {
