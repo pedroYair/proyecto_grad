@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudio:
+<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 {% endblock %}
 
 {% block content %}
@@ -24,12 +24,29 @@ Estudio:
 											<form class="form-horizontal" role="form" method="post" id="form_mid">
                                             {% csrf_token %}
 
+												<div class="col-md-3 col-md-offset-1" hidden>
+                                                	<div  class="row">
+                                                		<div class="form-group">
+															<input class="form-control" type="number" value="{{estudio.id}}" name="idEstudio">
+														</div>
+                                                	</div>
+                                                </div>
+
 												<div class="row">
 													<div class="col-md-7 col-md-offset-1">
                                                 		<div class="form-group">
                                                     		{{form.idActorY.errors}}
 												  			<label class="control-label" style="text-align: left">Influencia del actor</label>
-                                                    		{{form.idActorY}}
+																<select name="idActorY" class="form-control" required id="id_idActorY">
+																			{% if actores %}
+																				<option value="" selected>----Seleccionar----</option>
+																				{% for actor in actores %}
+																				<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																				{% endfor %}
+																			{% else %}
+																			 <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
+																			{% endif %}
+																</select>
 														</div>
 													</div>
 												</div>
@@ -46,10 +63,18 @@ Estudio:
 												        <div class="form-group">
 													        {{form.idActorX.errors}}
 												            <label class="control-label" style="text-align: left">Sobre el actor</label>
-                                                            {{form.idActorX}}
+                                                            <select name="idActorX" class="form-control" required id="id_idActorX">
+  																		{% if actores %}
+																			<option value="" selected>----Seleccionar----</option>
+																			{% for actor in actores %}
+																			<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																			{% endfor %}
+                                                                        {% else %}
+                                                                         <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
+																		{% endif %}
+															</select>
 												        </div>
 													</div>
-
 
                                                     <div class="col-md-2 col-md-offset-1">
 												        <div class="form-group">
@@ -82,29 +107,24 @@ Estudio:
 												            <input class="form-control" type="text" value="{{user.id}}" name="idExperto">
 												        </div>
                                                     </div>
+												</div>
 
-                                                    <div class="col-md-3 col-md-offset-1">
-												        <div class="form-group">
-												            <label class="control-label" style="text-align: left">Estudio</label>
-												            {{form.idEstudio}}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-												<div class="form-group">
-												  <div class="col-md-offset-2 col-md-8">
-													  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_objetivos'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-													  <button type="submit" class="btn btn-primary" onclick="autoinfluencia()"><i class="fa fa-plus"></i> Guardar</button>
-													  <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                                                      <a class="btn btn-primary" data-toggle="modal" href="#myModal2" onclick="Consultar_ficha()"><i class="fa fa-eye"></i> Consultar</a>
-                                                      <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid'%}">Matriz <i class="fa fa-arrow-right"></i></a>
-												  </div>
+												<div class="row">
+													<div class="form-group">
+													  <div class="col-md-offset-2 col-md-8">
+														  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_objetivos' estudio.id%}"><i class="fa fa-arrow-left"></i> Objetivos</a>
+														  <button type="submit" class="btn btn-primary" onclick="autoinfluencia()"><i class="fa fa-plus"></i> Guardar</button>
+														  <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+														  <a class="btn btn-primary" data-toggle="modal" href="#myModal2" onclick="Consultar_ficha()"><i class="fa fa-eye"></i> Consultar</a>
+														  <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid'%}">Matriz MID <i class="fa fa-arrow-right"></i></a>
+													  </div>
+													</div>
 												</div>
 
 											</form>
 
-<! INICIO MODALS--------------------------->
-				{% include 'influencia/modals_create_influencia.html'%}
+<!--INICIO MODALS---------------------------"-->
+				{% include 'influencia/modals_influencia.html'%}
 
 									  </div>
 									</div>
@@ -124,7 +144,7 @@ Estudio:
 <script src="{% static 'js_mactor_consultas/crear_auto_influencias.js' %}"></script>
 {% endblock %}
 
-<! Desactiva el segundo select hasta que se seleccione una opcion en el primero-->
+<!--Desactiva el segundo select hasta que se seleccione una opcion en el primero-->
 <script type="text/javascript">
 	document.getElementById("id_idActorX").disabled = true;
 </script>

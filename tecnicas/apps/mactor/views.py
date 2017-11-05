@@ -46,6 +46,25 @@ class Editar_estudio(UpdateView):
 
 
 # -------------------------------------------VIEWS MODELO ACTOR--------------------------------------->
+"""SIN USO------------------"""
+class Listar_actor(ListView):
+    model = Actor
+    template_name = 'actor/lista_actores.html'
+    ordering = ('nombreLargo',)
+    context_object_name = "lista_actores"
+
+    def get_context_data(self, **kwargs):
+        data = super(Listar_actor, self).get_context_data(**kwargs)
+        data.update({
+            'codigo': 1
+        })
+        return data
+
+    def get_queryset(self):
+        self.idEstudio = get_object_or_404(Estudio_Mactor, id=self.args[0])
+        queryset = super(Listar_actor, self).get_queryset()
+        return queryset.exclude(nombreCorto="MB")
+
 
 def Crear_actor(request):
 
@@ -78,25 +97,6 @@ def Crear_actor(request):
        mensaje = "Ya existe un actor con el nombre corto " + nombreCorto
        response = JsonResponse({'info': mensaje})
        return HttpResponse(response.content)
-
-"""SIN USO------------------"""
-class Listar_actor(ListView):
-    model = Actor
-    template_name = 'actor/lista_actores.html'
-    ordering = ('nombreLargo',)
-    context_object_name = "lista_actores"
-
-    def get_context_data(self, **kwargs):
-        data = super(Listar_actor, self).get_context_data(**kwargs)
-        data.update({
-            'codigo': 1
-        })
-        return data
-
-    def get_queryset(self):
-        self.idEstudio = get_object_or_404(Estudio_Mactor, id=self.args[0])
-        queryset = super(Listar_actor, self).get_queryset()
-        return queryset.exclude(nombreCorto="MB")
 
 
 def Editar_actor(request):
@@ -164,7 +164,7 @@ def Consultar_actor(request):
         return redirect('/')        # redirecciona a la misma pagina
 
 
-def Lista_actores(request, idEstudio):
+def Listar_actores(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
@@ -284,13 +284,18 @@ def Eliminar_ficha(request):
         # VIEWS MODELO OBJETIVO------------------------------------------------------------------------------------->
 
 # ------------------------------------------VIEWS MODELO OBJETIVO------------------------------------>
+class Listar_objetivo(ListView):
+    model = Objetivo
+    template_name = 'objetivo/lista_objetivos.html'
+    ordering = ('nombreLargo',)
+
 
 def Crear_objetivo(request):
 
     nombreLargo = request.GET['nombreLargo']
     nombreCorto = request.GET['nombreCorto']
     descripcion = request.GET['descripcion']
-    #idEstudio = request.GET['idEstudio']
+    estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
     mensaje = "El objetivo " + nombreLargo + " se ha registrado con exito"
     lista_objetivo = Objetivo.objects.all()
     flag = False
@@ -301,7 +306,10 @@ def Crear_objetivo(request):
 
     if flag is False:
         try:
-            objetivo = Objetivo(nombreLargo=nombreLargo, nombreCorto=nombreCorto, descripcion=descripcion)
+            objetivo = Objetivo(nombreLargo=nombreLargo,
+                                nombreCorto=nombreCorto,
+                                descripcion=descripcion,
+                                idEstudio=estudio)
             objetivo.save()
             response = JsonResponse({'info': mensaje})
             return HttpResponse(response.content)
@@ -315,21 +323,21 @@ def Crear_objetivo(request):
         return HttpResponse(response.content)
 
 
-class Listar_objetivo(ListView):
-    model = Objetivo
-    template_name = 'objetivo/lista_objetivos.html'
-    ordering = ('nombreLargo',)
+def Listar_objetivos(request, idEstudio):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+    contexto = {'estudio': estudio_mactor, 'lista_objetivos': objetivos}
+    return render(request, 'objetivo/lista_objetivos.html', contexto)
 
 
 def Editar_objetivo(request):
 
     if request.is_ajax():
-        # se obtienen los datos modificados
         id = request.GET.get('id')
         nombreLargo = request.GET['nombreLargo']
         nombreCorto = request.GET['nombreCorto']
         descripcion = request.GET['descripcion']
-        # idEstudio = 1
 
         # se elimina del id obtenido la subcadena "id"
         if id.count("obj"):
@@ -345,7 +353,7 @@ def Editar_objetivo(request):
                 flag = True
 
         # se realiza la modificacion de los datos y se envia la respuesta
-        if flag == False:
+        if flag is False:
             try:
                 objetivo = get_object_or_404(Objetivo, id=id)
                 objetivo.nombreLargo = nombreLargo
@@ -385,7 +393,7 @@ def Consultar_objetivo(request):
         return redirect('/')
 
 
-def Eliminar_objetivo_ajax(request):
+def Eliminar_objetivo(request):
 
     if request.is_ajax():
         objetivo = Objetivo.objects.get(id=request.GET['id'])
@@ -403,11 +411,27 @@ def Eliminar_objetivo_ajax(request):
 # -----------------------------------------VIEWS MODELO RELACION_MID--------------------------------->
 
 
-class Crear_relacion_mid(CreateView):
+class Crear_relacion_mi(CreateView):
     model = Relacion_MID
     form_class = Form_MID
     template_name = 'influencia/create_influencia.html'
     success_url = reverse_lazy('mactor:influencia')
+
+
+def Crear_relacion_mid(request, idEstudio):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    if request.method == 'POST':
+        form = Form_MID(request.POST)
+        if form.is_valid():
+            form.save()
+            print("es valido")
+        return redirect('mactor:influencia', estudio_mactor.id)
+    else:
+        actores = Actor.objects.filter(idEstudio=estudio_mactor.id)
+        form = Form_MID()
+        print("no es valido")
+    return render(request, 'influencia/crear_influencia.html', {'form': form, 'estudio': estudio_mactor, 'actores': actores})
 
 
 # View generadora de la matriz MID

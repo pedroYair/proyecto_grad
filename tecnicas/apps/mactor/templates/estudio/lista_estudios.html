@@ -27,24 +27,23 @@ Estudios registrados VISTA COORDINADOR
 
         <thead>
         <tr>
-            <th>#</th>
-            <th>Título</th>
-            <th>Fecha Inicio</th>
-            <th>Fecha Final</th>
-            <th>Acciones</th>
+            <th style="text-align: center">#</th>
+            <th style="text-align: center">Título</th>
+            <th style="text-align: center">Fecha Inicio</th>
+            <th style="text-align: center">Fecha Final</th>
+            <th style="text-align: center">Acciones</th>
         </tr>
         </thead>
         <tbody>
-
             {%if lista_estudios %}
             {% for estudio in lista_estudios %}
                 <tr>
                     <td>{{forloop.counter}}</td>
-                    <td ><a href="{%url 'mactor:lista_actores' estudio.id%}" onclick="pasar_id()" id="{{estudio.id}}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
+                    <td ><a href="{%url 'mactor:lista_actores' estudio.id%}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
                     <td>{{estudio.fecha_inicio}}</td>
                     <td>{{estudio.fecha_final}}</td>
                     <td>
-                        <a id="est{{estudio.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal1"><i class="fa fa-eye"></i></a>
+                        <a id="est{{estudio.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modal_Consultar"><i class="fa fa-eye"></i></a>
                         <a class="btn btn-warning" title="Editar" href="{%url 'mactor:editar_estudio' estudio.id%}"><i class="fa fa-pencil"></i></a>
                     </td>
                 </tr>
@@ -60,7 +59,7 @@ Estudios registrados VISTA COORDINADOR
     </table>
 </div>
 
-<! PAGINACION ----------------------------------->
+<!--PAGINACION ----------------------------------->
                     <div class="widget-foot">
 										<ul class="pagination pull-right">
 										  <li>
@@ -82,15 +81,15 @@ Estudios registrados VISTA COORDINADOR
                 </div>
             </div>
 
-<! BOTONES ------------------------------------->
+<!--BOTONES ------------------------------------->
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
-                    <a class="btn btn-primary" data-toggle="modal" href="#myModal2"><i class="fa fa-book"></i> Ayuda</a>
+                    <a class="btn btn-primary" data-toggle="modal" href="#modal_Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                 </div>
             </div>
 
-<! INICIO MODAL DETALLE DEL ESTUDIO--------------------------->
+<!--INICIO MODAL DETALLE DEL ESTUDIO--------------------------->
 
                     {% include 'estudio/modals_estudio.html'%}
         </div>

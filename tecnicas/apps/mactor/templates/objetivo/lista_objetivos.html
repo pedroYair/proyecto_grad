@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudio:
+<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 {% endblock %}
 
 {% block content %}
@@ -33,8 +33,8 @@ Estudio:
 
     <tbody>
 
-    {%if object_list %}
-    {% for objetivo in object_list %}
+    {%if lista_objetivos %}
+    {% for objetivo in lista_objetivos %}
         <tr>
             <td>{{forloop.counter}}</td>
             <td>{{objetivo.nombreLargo|upper}}</td>
@@ -63,7 +63,7 @@ Estudio:
 </table>
 </div>
 
-<! SECCION DE PAGINACION ----------------------------------->
+<!--SECCION DE PAGINACION ----------------------------------->
                     <div class="widget-foot">
 										<ul class="pagination pull-right">
 										  <li>
@@ -84,18 +84,18 @@ Estudio:
                 </div>
             </div>
 
-<! BOTONES--------------------------------------------------------------------------------->
+<!--BOTONES--------------------------------------------------------------------------------->
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
-                    <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                    <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}"><i class="fa fa-arrow-left"></i> Estrategias</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal5"><i class="fa fa-book"></i> Ayuda</a>
-                    <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id%}">Influencias MID<i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
 
 
- <! INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
+ <!--INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
 
         {% include 'objetivo/modals_CRUD_objetivo.html'%}
 
@@ -109,6 +109,5 @@ Estudio:
 <script src="{% static 'js_mactor_modals/editar/editar_objetivo.js'%}"></script>
 <script src="{% static 'js_mactor_modals/consultar/consultar_objetivo.js'%}"></script>
 {% endblock %}
-
 
 {% endblock %}

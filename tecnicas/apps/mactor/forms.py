@@ -160,8 +160,8 @@ class Form_MID(forms.ModelForm):
         model = Relacion_MID
 
         fields = [
-            'idActorX',
             'idActorY',
+            'idActorX',
             'valor',
             'justificacion',
             'idExperto',
@@ -169,12 +169,12 @@ class Form_MID(forms.ModelForm):
         ]
 
         widgets = {
-            'idActorX': forms.Select(attrs={'class': 'form-control'}),
             'idActorY': forms.Select(attrs={'class': 'form-control'}),
+            'idActorX': forms.Select(attrs={'class': 'form-control'}),
             'valor': forms.Select(choices=VALORES, attrs={'class': 'regDropDown'}),
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
-            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
+            'idEstudio': forms.TextInput(attrs={'class': 'form-control'}, ),
         }
 
 

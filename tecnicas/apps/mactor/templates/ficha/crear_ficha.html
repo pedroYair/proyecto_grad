@@ -38,14 +38,16 @@
                                                 		<div class="form-group">
                                                     		{{form.idActorY.errors}}
 												  			<label class="control-label" style="text-align: left">Estrategias del actor</label>
-                                                    			{% if actores %}
 																	<select name="idActorY" class="form-control" required id="id_idActorY">
-  																		<option value="" selected>----Seleccionar----</option>
-																		{% for actor in actores %}
-  																		<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
-																		{% endfor %}
+  																		{% if actores %}
+																			<option value="" selected>----Seleccionar----</option>
+																			{% for actor in actores %}
+																			<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																			{% endfor %}
+                                                                        {% else %}
+                                                                         <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
+																		{% endif %}
 																	</select>
-																{% endif %}
 														</div>
 													</div>
 												</div>
@@ -62,14 +64,17 @@
 												        <div class="form-group">
 													        {{form.idActorX.errors}}
 												            <label class="control-label" style="text-align: left">Sobre el actor</label>
-                                                            {% if actores %}
 																	<select name="idActorX" class="form-control" required id="id_idActorX">
-  																		<option value="" selected>----Seleccionar----</option>
-																		{% for actor in actores %}
-  																		<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
-																		{% endfor %}
+																		{% if actores %}
+																			<option value="" selected>----Seleccionar----</option>
+																			{% for actor in actores %}
+																			<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																			{% endfor %}
+                                                                        {% else %}
+                                                                         <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
+																		{% endif %}
 																	</select>
-																{% endif %}
+
 												        </div>
 													</div>
                                                 </div>

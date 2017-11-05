@@ -12,7 +12,7 @@
                 $.ajax(
                     {
                         data: {'id': id},
-                        url: 'objetivo-ajax',
+                        url: 'consultar_objetivo',
                         type: 'get',
                         // los datos retornados son asignados en el formulario
                         success: function (data) {
@@ -48,7 +48,7 @@ function actualizar() {
                     'nombreCorto': nombreCorto,
                     'descripcion': descripcion
                 },
-                url: 'objetivo-editar',
+                url: 'editar_objetivo',
                 type: 'get',
                 success: function (data) {
                     var object = JSON.parse(data);

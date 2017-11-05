@@ -8,7 +8,7 @@
         var nombreLargo = $('input[name="nombreLargo"]').val();
         var nombreCorto = $('input[name="nombreCorto"]').val();
         var descripcion = $('textarea[name="descripcion"]').val();
-        var codigo_Estudio = $('input[name="codigo_Estudio"]').val();
+        var codigo_Estudio = $('input[name="idEstudio"]').val();
 
          if(nombreCorto=="" || nombreLargo=="" || codigo_Estudio=="")
         {
@@ -16,7 +16,6 @@
         }
         else
          {
-
              $.ajax({
                  data: {
                      'nombreLargo': nombreLargo,
@@ -24,7 +23,7 @@
                      'descripcion': descripcion,
                      'codigo_Estudio': codigo_Estudio
                  },
-                 url: 'objetivo',
+                 url: 'agregar_objetivo',
                  type: 'get',
                  success: function (data) {
                      var object = JSON.parse(data);

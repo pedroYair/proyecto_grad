@@ -8,8 +8,7 @@
         var nombreLargo = $('input[name="nombreLargo"]').val();
         var nombreCorto = $('input[name="nombreCorto"]').val();
         var descripcion = $('textarea[name="descripcion"]').val();
-        var codigo_Estudio = $('input[name="codigo"]').val();
-        console.log(codigo_Estudio);
+        var codigo_Estudio = $('input[name="idEstudio"]').val();
 
          if(nombreCorto=="" || nombreLargo=="" || codigo_Estudio=="")
         {

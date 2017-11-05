@@ -33,7 +33,7 @@ function actualizar() {
         var nombreLargo = $('input[name="nombreLargo2"]').val();
         var nombreCorto = $('input[name="nombreCorto2"]').val();
         var descripcion = $('textarea[name="descripcion2"]').val();
-        var estudio = $('input[name="codigo"]').val();
+        var estudio = $('input[name="idEstudio"]').val();
 
         if(nombreCorto=="" || nombreLargo=="")
         {
