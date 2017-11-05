@@ -17,63 +17,56 @@ Estudio:
                         <div class="widget-icons pull-right"></div>
                         <div class="clearfix"></div>
                     </div>
-
-<div class="widget-content">
-
-<table class="table table-bordered" id="tabla1mao">
-    <thead>
-        <tr>
-            {%if objetivos %}
-            <input style='text-align: center;' readonly type="text" size="3" value="">
-                {% for objetivo in objetivos %}
-                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
-                           title="{{objetivo.nombreLargo}}:
-                    {{objetivo.descripcion}}" size="3" value="{{objetivo.nombreCorto}}">
-                {% endfor %}
-            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="Implicación positiva (Acuerdos)" value="+">
-            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="Implicación negativa (Desacuerdos)" value="-">
-            <input style='text-align: center; background-color: #5e5e5e; color: white;' readonly type="text" size="3"
-                     title="Implicación:
-                    Suma absoluta en fila que expresa el número de objetivos para los que cada actor tiene una posición activa,
-                    concordante o discordante." value="Imp.">
-            <br>
-            {% endif %}
-         </tr>
-    </thead>
-
-    <tbody>
-
-    {% if valores_mao %}
-<tr>
-{% for i in valores_mao %}
-    <!--Inserta la ultima celda antes del salto de fila para insertar correctamente el nombre corto del actor-->
-    {% if i.posicion == posicion_salto %}
-        <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        <br>
-    <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
-    {% elif i.posicion == posicion_salto_movilizacion %}
-        <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        <br>
-    <!--Inserta el nombre corto del actor en el eje Y-->
-    {% elif i.posicion == 0 %}
-        <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
-    <!--Inserta los valores de la matriz posteriores al nombrecorto en Y y previos al valor de la ultima celda-->
-    {% else %}
-        {% if i.valor == 100 %}
-            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="Influencia sin registrar" value="X">
-        {% else %}
-            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        {% endif %}
-    {% endif %}
-{% endfor %}
-    {% endif %}
-        <br>
-</tr>
-
-    </tbody>
-</table>
-
-</div>
+                        <div class="widget-content">
+                            <table class="table table-bordered" id="tabla1mao">
+                                <thead>
+                                    <tr>
+                                        {%if objetivos %}
+                                        <input style='text-align: center;' readonly type="text" size="3" value="">
+                                            {% for objetivo in objetivos %}
+                                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                                                       title="{{objetivo.nombreLargo}}: {{objetivo.descripcion}}" size="3" value="{{objetivo.nombreCorto}}">
+                                            {% endfor %}
+                                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="Implicación positiva (Acuerdos)" value="+">
+                                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="Implicación negativa (Desacuerdos)" value="-">
+                                        <input style='text-align: center; background-color: #5e5e5e; color: white;' readonly type="text" size="3"
+                                                 title="Implicación:
+                                                Suma absoluta en fila que expresa el número de objetivos para los que cada actor tiene una posición activa,
+                                                concordante o discordante." value="Imp.">
+                                        <br>
+                                        {% endif %}
+                                     </tr>
+                                </thead>
+                                <tbody>
+                                        {% if valores_mao %}
+                                    <tr>
+                                    {% for i in valores_mao %}
+                                        <!--Inserta la ultima celda antes del salto de fila para insertar correctamente el nombre corto del actor-->
+                                        {% if i.posicion == posicion_salto %}
+                                            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+                                            <br>
+                                        <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
+                                        {% elif i.posicion == posicion_salto_movilizacion %}
+                                            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+                                            <br>
+                                        <!--Inserta el nombre corto del actor en el eje Y-->
+                                        {% elif i.posicion == 0 %}
+                                            <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
+                                        <!--Inserta los valores de la matriz posteriores al nombrecorto en Y y previos al valor de la ultima celda-->
+                                        {% else %}
+                                            {% if i.valor == 100 %}
+                                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="Influencia sin registrar" value="X">
+                                            {% else %}
+                                                <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endfor %}
+                                        {% endif %}
+                                            <br>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                 </div>
             </div>
         </div>
@@ -94,51 +87,45 @@ Estudio:
                         <div class="widget-icons pull-right"></div>
                         <div class="clearfix"></div>
                     </div>
-
-<div class="widget-content">
-
-<table class="table table-bordered" id="tabla1">
-    <thead>
-        <tr>
-            {%if actores and estado_matriz != 0 %}
-                <input style='text-align: center;'  type="text" size="3" readonly value="">
-                {% for actor in actores %}
-                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
-                           title="{{actor.nombreLargo}}:
-                           {{actor.descripcion}}" size="3" value="{{actor.nombreCorto}}">
-                {% endfor %}
-            {% endif %}
-            <br>
-         </tr>
-    </thead>
-
-    <tbody>
-
-     {% if valores_caa %}
-    <tr>
-    {% for i in valores_caa %}
-        <!-- Inserta el ultimo valor de la fila antes del salto de linea-->
-        {% if i.posicion == posicion_salto_caa_daa %}
-            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-            <br>
-        <!--Inserta los nombres cortos en el eje Y-->
-        {% elif i.posicion == 0 %}
-            <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
-        {% else %}
-        <!--Inserta los valores caa posteriores al nombreCorto y previos al valor de la ultima celda-->
-            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        {% endif %}
-    {% endfor %}
-        {% else %}
-            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
-        {% endif %}
-            <br>
-
-    </tr>
-    </tbody>
-</table>
-
-</div>
+                        <div class="widget-content">
+                            <table class="table table-bordered" id="tabla1">
+                                <thead>
+                                    <tr>
+                                        {%if actores and estado_matriz != 0 %}
+                                            <input style='text-align: center;'  type="text" size="3" readonly value="">
+                                            {% for actor in actores %}
+                                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                                                       title="{{actor.nombreLargo}}:
+                                                       {{actor.descripcion}}" size="3" value="{{actor.nombreCorto}}">
+                                            {% endfor %}
+                                        {% endif %}
+                                        <br>
+                                     </tr>
+                                </thead>
+                                <tbody>
+                                     {% if valores_caa %}
+                                    <tr>
+                                    {% for i in valores_caa %}
+                                        <!-- Inserta el ultimo valor de la fila antes del salto de linea-->
+                                        {% if i.posicion == posicion_salto_caa_daa %}
+                                            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+                                            <br>
+                                        <!--Inserta los nombres cortos en el eje Y-->
+                                        {% elif i.posicion == 0 %}
+                                            <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}">
+                                        {% else %}
+                                        <!--Inserta los valores caa posteriores al nombreCorto y previos al valor de la ultima celda-->
+                                            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                        {% else %}
+                                            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
+                                        {% endif %}
+                                            <br>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                 </div>
             </div>
         </div>
@@ -158,49 +145,45 @@ Estudio:
                         <div class="widget-icons pull-right"></div>
                         <div class="clearfix"></div>
                     </div>
-
-<div class="widget-content">
-
-<table class="table table-bordered" id="tabla3">
-    <thead>
-        <tr>
-            {%if actores and estado_matriz != 0 %}
-             <input style='text-align: center;'  type="text" size="3" readonly value="">
-                {% for actor in actores %}
-                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
-                           title="{{actor.nombreLargo}}:
-                    {{actor.descripcion}}" size="3" value="{{actor.nombreCorto}}">
-                {% endfor %}
-            {% endif %}
-            <br>
-         </tr>
-    </thead>
-
-    <tbody>
-     {% if valores_daa %}
-    <tr>
-    {% for i in valores_daa %}
-        <!--Inserta el ultimo valor de la fila antes del salto de linea-->
-        {% if i.posicion ==  posicion_salto_caa_daa %}
-            <input id="{{i}}" style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-            <br>
-        <!--Inserta los nombres cortos-->
-        {% elif i.posicion == 0 %}
-            <input id="{{i2}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{i.valor}}">
-        <!--Inserta los valores daa posteriores al nombreCorto y previos al valor de la ultima fila-->
-        {% else %}
-            <input id="{{i3}}" style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
-        {% endif %}
-    {% endfor %}
-        {% else %}
-            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
-        {% endif %}
-            <br>
-    </tr>
-    </tbody>
-</table>
-
-</div>
+                        <div class="widget-content">
+                            <table class="table table-bordered" id="tabla3">
+                                <thead>
+                                    <tr>
+                                        {%if actores and estado_matriz != 0 %}
+                                         <input style='text-align: center;'  type="text" size="3" readonly value="">
+                                            {% for actor in actores %}
+                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                                                       title="{{actor.nombreLargo}}:
+                                                {{actor.descripcion}}" size="3" value="{{actor.nombreCorto}}">
+                                            {% endfor %}
+                                        {% endif %}
+                                        <br>
+                                     </tr>
+                                </thead>
+                                <tbody>
+                                     {% if valores_daa %}
+                                    <tr>
+                                    {% for i in valores_daa %}
+                                        <!--Inserta el ultimo valor de la fila antes del salto de linea-->
+                                        {% if i.posicion ==  posicion_salto_caa_daa %}
+                                            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+                                            <br>
+                                        <!--Inserta los nombres cortos-->
+                                        {% elif i.posicion == 0 %}
+                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" value="{{i.valor}}">
+                                        <!--Inserta los valores daa posteriores al nombreCorto y previos al valor de la ultima fila-->
+                                        {% else %}
+                                            <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                        {% else %}
+                                            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
+                                        {% endif %}
+                                            <br>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                 </div>
             </div>
         </div>

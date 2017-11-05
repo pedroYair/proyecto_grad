@@ -11,14 +11,14 @@
                     $.ajax(
                         {
                             data: {'id': id},
-                            url: 'consultar_objetivo',
+                            url: 'consultar_ficha',
                             type: 'get',
                             success: function (data) {
                                 var object = JSON.parse(data);
-                                var html = "<p>" + 'Nombre Corto:' + "</p><p>" + object.nombreCorto +
-                                "</p><br><p>" + 'Nombre Largo:' + "</p><p>" + object.nombreLargo +
-                                "</p><br><p>" + 'Descripción:' + "</p><p>" + object.descripcion + "</p><p>";
-                            $('#mod_body4').html(html);
+                                var html = "<p>" + 'Estrategias del actor:' + "</p><p>" + object.actorY +
+                                "</p><br><p>" + 'Sobre el actor:' + "</p><p>" + object.actorX  +
+                                "</p><br><p>" + 'Estrategias:' + "</p><p>" + object.estrategia + "</p><p>";
+                            $('#mod_body5').html(html);
                             }
                         });
                 }

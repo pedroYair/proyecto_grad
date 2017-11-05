@@ -2,63 +2,56 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudio:
+<input hidden class="col-sm-1" type="number" name="codigo" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 {% endblock %}
 
 {% block content %}
 
-    <div class="container">
+<div class="container">
         <div class="row">
             <div class="col-md-12">
-
                 <div class="widget wgreen">
-<div class="widget-head">
-    <div class="pull-left">Lista de estrategias de los actores</div>
-    <div class="widget-icons pull-right">
-        <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
-        <a href="#" class="wclose"><i class="fa fa-times"></i></a>
-    </div>
-    <div class="clearfix"></div>
-</div>
-<div class="widget-content">
-
-<table class="table table-bordered" id="tabla_actores">
-    <thead>
-    <tr>
-        <th>#</th>
-        <th>Inf de</th>
-        <th>Sobre</th>
-        <th>Estrategias</th>
-        <th>Acciones</th>
-    </tr>
-    </thead>
-
-    <tbody>
-
-    {%if object_list %}
-    {% for ficha in object_list %}
-        <tr>
-            <td>{{forloop.counter}}</td>
-            <td>{{ficha.idActorY|upper}}</td>
-            <td>{{ficha.idActorX|upper}}</td>
-            <td style="text-align: justify">{{ficha.estrategia}}</td>
-            <td>
-                <a class="btn btn-warning" title="Editar" href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
-                <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete"
-                   data-toggle="modal" id="{{ficha.id}}"><i class="fa fa-times"></i></a>
-            </td>
-        </tr>
-
-    {% endfor %}
-
-    {% else %}
-    <h2>No hay fichas de estrategias registradas</h2>
-
-    {% endif %}
-
-    </tbody>
-</table>
-</div>
+                    <div class="widget-head">
+                        <div class="pull-left">Lista de estrategias de los actores</div>
+                        <div class="widget-icons pull-right">
+                            <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
+                            <a href="#" class="wclose"><i class="fa fa-times"></i></a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="widget-content">
+                        <table class="table table-bordered" id="tabla_actores">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Inf de</th>
+                                    <th>Sobre</th>
+                                    <th>Estrategias</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%if lista_fichas %}
+                                {% for ficha in lista_fichas %}
+                                    <tr>
+                                        <td>{{forloop.counter}}</td>
+                                        <td>{{ficha.idActorY|upper}}</td>
+                                        <td>{{ficha.idActorX|upper}}</td>
+                                        <td style="text-align: justify">{{ficha.estrategia}}</td>
+                                        <td>
+                                            <a id="ver{{ficha.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modalConsultar"><i class="fa fa-eye"></i></a>
+                                            <a class="btn btn-warning" id="editarFicha" title="Editar" href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
+                                            <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete"
+                                               data-toggle="modal" id="{{ficha.id}}"><i class="fa fa-times"></i></a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                {% else %}
+                                <h2>No hay fichas de estrategias registradas</h2>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
 
 <! PAGINACION ----------------------------------->
                     <div class="widget-foot">
@@ -78,7 +71,6 @@ Estudio:
 
 										<div class="clearfix"></div>
                     </div>
-
                 </div>
             </div>
 
@@ -86,25 +78,23 @@ Estudio:
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
-                   <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_actores'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                   <a class="btn btn-primary" href="{%url 'mactor:ficha'%}"><i class="fa fa-plus"></i> Agregar</a>
+                   <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_actores' estudio.id%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                   <a class="btn btn-primary" id="agregarFicha" href="{%url 'mactor:ficha' estudio.id%}"><i class="fa fa-plus"></i> Agregar</a>
                    <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
                    <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_objetivos'%}">Siguiente <i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
 
-<!-MODALES ELIMINAR Y AYUDA-->
+<!-MODALES ELIMINAR Y AYUDA--------------------->
 
             {% include 'ficha/modals_ficha.html'%}
-
         </div>
-    </div>
+</div>
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js_mactor_modals/eliminar/eliminar_ficha.js'%}"></script>
+<script src="{% static 'js_mactor_modals/consultar/consultar_ficha.js'%}"></script>
 {% endblock %}
-
-
 
 {% endblock %}

@@ -25,7 +25,7 @@
                      'descripcion': descripcion,
                      'codigo_Estudio': codigo_Estudio
                  },
-                 url: 'new-actor',
+                 url: 'agregar_actor',
                  type: 'get',
                  // obtencion e impresion de la respuesta
                  success: function (data) {

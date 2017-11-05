@@ -18,7 +18,7 @@ function Eliminar(){
             console.log(id);
             $.ajax({
                 data : {'id' : id},
-                url : 'eliminar_ficha-ajax',
+                url : 'eliminar_ficha',
                 type : 'get',
                 success : function (data)
                 {

@@ -48,7 +48,7 @@ class Ficha_actor(models.Model):
     idActorY = models.ForeignKey(Actor, null=True, blank=False, related_name='mactor_actorY_ficha', on_delete=models.CASCADE)
     idActorX = models.ForeignKey(Actor, null=True, blank=False, related_name='mactor_actorX_ficha', on_delete=models.CASCADE)
     estrategia = models.TextField(null=True, blank=True)
-    idEstudio = models.ForeignKey(Estudio_Mactor)
+    idEstudio = models.ForeignKey(Estudio_Mactor, null=True, blank=False, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Ficha_actor'

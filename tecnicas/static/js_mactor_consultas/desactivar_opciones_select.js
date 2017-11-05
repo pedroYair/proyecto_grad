@@ -6,6 +6,7 @@ $('#id_idActorY').on('change', Desactivar);
         {
             // se obtiene el id del actor
             var id = $(this).val();
+            console.log(id)
             // se obtiene el id del formulario
             var tipo = $(this).closest("form").attr('id');
             // se envia mediante ajax el id del actor y el tipo de formulario
@@ -66,7 +67,6 @@ function eliminar_subcadena(cadena){
                                 cadena = cadena.substring(0, y);
                             }
                         }
-
                         return cadena;
         }
 

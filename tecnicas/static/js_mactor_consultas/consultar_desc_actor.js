@@ -7,7 +7,7 @@ $('#id_idActorY').on('change', DescripcionY);
             var id = $(this).val();
             $.ajax({
                 data : {'id' : id},
-                url : 'actor-ajax',
+                url : 'consultar_actor',
                 type : 'get',
                 success : function (data)
                 {
@@ -27,7 +27,7 @@ $('#id_idActorX').on('change', DescripcionX);
             var id = $(this).val()
             $.ajax({
                 data : {'id' : id},
-                url : 'actor-ajax',
+                url : 'consultar_actor',
                 type : 'get',
                 success : function (data)
                 {

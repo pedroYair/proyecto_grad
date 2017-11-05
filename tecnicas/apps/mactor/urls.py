@@ -1,36 +1,34 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .views import Listar_estudio, Editar_estudio, Consultar_estudio,\
-    Crear_actor, Listar_actor, Editar_actor, Consultar_actor, Eliminar_actor_ajax, \
-    Crear_ficha, Listar_ficha, Editar_ficha, Consultar_ficha, Eliminar_ficha_ajax, \
+from .views import  Listar_estudios, Listar_estudio, Editar_estudio, Consultar_estudio,\
+    Crear_actor, Lista_actores, Listar_actor, Editar_actor, Consultar_actor, Eliminar_actor, \
+    Crear_ficha, Lista_fichas, Listar_ficha, Editar_ficha, Consultar_ficha, Eliminar_ficha, \
     Crear_objetivo, Listar_objetivo, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo_ajax, \
     Crear_relacion_mid, Generar_matriz_mid, Crear_auto_influencia, \
     Crear_1mao, Crear_2mao, Generar_matriz_mao, \
-    Consultar_actores_faltantes, Consultar_objetivos_faltantes, probar, actores
+    Consultar_actores_faltantes, Consultar_objetivos_faltantes
 
 # nombre de la url, view que respondera y el parametro name
 urlpatterns = [
 
     # Urls modelo Estudio_mactor
-    url(r'^lista_estudios', login_required(Listar_estudio.as_view()), name='lista_estudios'),
+    url(r'^lista_estudios', login_required(Listar_estudios), name='lista_estudios'),
     url(r'^editar_estudio/(?P<pk>\d+)/$', Editar_estudio.as_view(), name='editar_estudio'),
-    url(r'^consultar_estudio/$', Consultar_estudio),
+    url(r'^consultar_estudio/$', login_required(Consultar_estudio)),
 
     # Urls modelo Actor
-    url(r'new-actor$', Crear_actor),
-    url(r'eliminar_actor-ajax/$', Eliminar_actor_ajax),
-    url(r'update_actor-ajax$', Editar_actor),
-    url(r'^lista_actores/(\d+)/$', actores, name='lista_actores'),
+    url(r'agregar_actor$', login_required(Crear_actor)),
+    url(r'eliminar_actor/$', login_required(Eliminar_actor)),
+    url(r'editar_actor$', login_required(Editar_actor)),
+    url(r'^lista_actores/(\d+)/$', login_required(Lista_actores), name='lista_actores'),
     url(r'consultar_actor/$', login_required(Consultar_actor)),
 
-    #url(r'actores/(\d+)/$', login_required(actores), name='actores'),
-
     # Urls modelo ficha_actor
-    url(r'^ficha$', Crear_ficha.as_view(), name='ficha'),
-    url(r'^lista_fichas', Listar_ficha.as_view(), name='lista_fichas'),
-    url(r'^eliminar_ficha-ajax/$', Eliminar_ficha_ajax),
-    url(r'^ficha-editar/(?P<pk>\d+)/$', Editar_ficha.as_view(), name='editar_ficha'),
-    url(r'^ficha-ajax/$', Consultar_ficha),
+    url(r'^ficha/(?P<idEstudio>\d+)/$', login_required(Crear_ficha), name='ficha'),
+    url(r'eliminar_ficha/$', login_required(Eliminar_ficha)),
+    url(r'consultar_ficha/$', Consultar_ficha),
+    url(r'^editar_ficha/(?P<idFicha>\d+)/$', login_required(Editar_ficha), name='editar_ficha'),
+    url(r'lista_fichas/(\d+)/$', Lista_fichas, name='lista_fichas'),
 
     # Urls modelo Objetivo
     url(r'^objetivo$', Crear_objetivo),
@@ -50,6 +48,6 @@ urlpatterns = [
     url(r'^matriz_mao/(\d)/', Generar_matriz_mao, name='matriz_mao'),
 
     # Urls consultas ajax
-    url(r'^mid-ajax/$', Consultar_actores_faltantes),  # obtiene lista actores X registrados en la mid
+    url(r'mid-ajax/$', Consultar_actores_faltantes),  # obtiene lista actores X registrados en la mid
     url(r'^mao-ajax/$', Consultar_objetivos_faltantes) # obtiene lista objetivos X registrados en la mao
 ]

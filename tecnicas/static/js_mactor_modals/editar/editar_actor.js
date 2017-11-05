@@ -33,6 +33,7 @@ function actualizar() {
         var nombreLargo = $('input[name="nombreLargo2"]').val();
         var nombreCorto = $('input[name="nombreCorto2"]').val();
         var descripcion = $('textarea[name="descripcion2"]').val();
+        var estudio = $('input[name="codigo"]').val();
 
         if(nombreCorto=="" || nombreLargo=="")
         {
@@ -46,9 +47,10 @@ function actualizar() {
                     'id': id,
                     'nombreLargo': nombreLargo,
                     'nombreCorto': nombreCorto,
-                    'descripcion': descripcion
+                    'descripcion': descripcion,
+                    'idEstudio': estudio
                 },
-                url: 'update_actor-ajax',
+                url: 'editar_actor',
                 type: 'get',
                 // se obtiene e imprime en el modal la respuesta
                 success: function (data) {

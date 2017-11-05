@@ -10,6 +10,12 @@ from .forms import Form_Estudio, Form_Actor, Form_Ficha, Form_Objetivo, Form_MID
 
 # ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
 
+def Listar_estudios(request):
+    estudios = Estudio_Mactor.objects.filter(idCoordinador=request.user).order_by('titulo')
+    contexto = {'lista_estudios': estudios}
+    return render(request, 'estudio/lista_estudios.html', contexto)
+
+"""SIN USO"""
 class Listar_estudio(ListView):
     model = Estudio_Mactor
     template_name = 'estudio/lista_estudios.html'
@@ -73,7 +79,7 @@ def Crear_actor(request):
        response = JsonResponse({'info': mensaje})
        return HttpResponse(response.content)
 
-
+"""SIN USO------------------"""
 class Listar_actor(ListView):
     model = Actor
     template_name = 'actor/lista_actores.html'
@@ -87,16 +93,10 @@ class Listar_actor(ListView):
         })
         return data
 
-    """def get_queryset(self):
-        #self.idEstudio = get_object_or_404(Estudio_Mactor, id=self.args[0])
-        #self.idEstudio = get_object_or_404(Estudio_Mactor, id=kwargs.get('pk', 0))
-        #print(self.idEstudio, "------------")
-        qs = super(Listar_actor, self).get_queryset()
-        return qs.filter(idEstudio=1).order_by('id')"""
-
-    """def get_queryset(self):
+    def get_queryset(self):
+        self.idEstudio = get_object_or_404(Estudio_Mactor, id=self.args[0])
         queryset = super(Listar_actor, self).get_queryset()
-        return queryset.exclude(nombreCorto="MB")"""
+        return queryset.exclude(nombreCorto="MB")
 
 
 def Editar_actor(request):
@@ -107,13 +107,13 @@ def Editar_actor(request):
         nombreLargo = request.GET.get('nombreLargo')
         nombreCorto = request.GET.get('nombreCorto')
         descripcion = request.GET.get('descripcion')
-        # idEstudio = 1
+        idEstudio = int(request.GET.get('idEstudio'))
 
-        # se elimina del id obtenido la subcadena "id"
+        # se elimina del id obtenido la subcadena "act"
         if id.count("act"):
             id = id.lstrip("act")
 
-        # se obtiene el registro del actor a modificar
+        # se obtiene de los actores exceptuando el que se va a modificar para comparar
         lista_actor = Actor.objects.all().exclude(id=id)
         flag = False
 
@@ -123,9 +123,9 @@ def Editar_actor(request):
                 flag = True
 
         # se realiza la modificacion de los datos y se envia la respuesta
-        if flag == False:
+        if flag is False:
             try:
-                actor = get_object_or_404(Actor, id=id)
+                actor = get_object_or_404(Actor, id=id, idEstudio=idEstudio)
                 actor.nombreLargo = nombreLargo
                 actor.nombreCorto = nombreCorto
                 actor.descripcion = descripcion
@@ -164,16 +164,15 @@ def Consultar_actor(request):
         return redirect('/')        # redirecciona a la misma pagina
 
 
-def actores(request, idEstudio):
+def Lista_actores(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    print(estudio_mactor.id)
     actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
     contexto = {'estudio': estudio_mactor, 'lista_actores': actores}
     return render(request, 'actor/lista_actores.html', contexto)
 
 
-def Eliminar_actor_ajax(request):
+def Eliminar_actor(request):
 
     if request.is_ajax():
         actor = Actor.objects.get(id=request.GET.get('id'))
@@ -189,46 +188,85 @@ def Eliminar_actor_ajax(request):
 
 
 # -------------------------------------------VIEWS MODELO FICHA ACTOR----------------------------------->
-
-class Crear_ficha(CreateView):
+"""SIN USO"""
+class Crear_fichas(CreateView):
     model = Ficha_actor
     form_class = Form_Ficha
     template_name = 'ficha/crear_ficha.html'
     success_message = "Agregado con exito"
     success_url = reverse_lazy('mactor:ficha')
 
+class Edita_ficha(UpdateView):
+    model = Ficha_actor
+    form_class = Form_Ficha
+    template_name = 'ficha/editar_ficha.html'
+    success_url = reverse_lazy('mactor:lista_fichas/1/j')
 
 class Listar_ficha(ListView):
     model = Ficha_actor
     template_name = 'ficha/lista_fichas.html'
     ordering = ('idActorY', 'idActorX',)
+    context_object_name = "lista_fichas"
     paginate_by = 15
+    """SIN USO"""
+    """SIN USO---------------------"""
 
 
-class Editar_ficha(UpdateView):
-    model = Ficha_actor
-    form_class = Form_Ficha
-    template_name = 'ficha/editar_ficha.html'
-    success_url = reverse_lazy('mactor:lista_fichas')
+def Crear_ficha(request, idEstudio):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    if request.method == 'POST':
+        form = Form_Ficha(request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect('mactor:lista_fichas', estudio_mactor.id)
+    else:
+        actores = Actor.objects.filter(idEstudio=estudio_mactor.id)
+        form = Form_Ficha()
+    return render(request, 'ficha/crear_ficha.html', {'form': form, 'estudio': estudio_mactor, 'actores': actores})
+
+
+def Lista_fichas(request, idEstudio):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    fichas = Ficha_actor.objects.filter(idEstudio=estudio_mactor.id).order_by('idActorY', 'idActorX')
+    contexto = {'estudio': estudio_mactor, 'lista_fichas': fichas}
+    return render(request, 'ficha/lista_fichas.html', contexto)
+
+
+def Editar_ficha(request, idFicha):
+
+    ficha = get_object_or_404(Ficha_actor, id=int(idFicha))
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=ficha.idEstudio.id)
+
+    if request.method == 'GET':
+        form = Form_Ficha(instance=ficha)
+    else:
+        form = Form_Ficha(request.POST, instance=ficha)
+        if form.is_valid():
+            form.save()
+            return redirect('mactor:lista_fichas', estudio_mactor.id)
+    return render(request, 'ficha/editar_ficha.html', {'form': form, 'estudio': estudio_mactor})
 
 
 def Consultar_ficha(request):
 
     if request.is_ajax():
-        # se verifica que ninguno de los parametros recibidos sea una cadena vacia
-        if request.GET['id'] == "" or request.GET['id2'] == "":
-            response = JsonResponse({'info': "Seleccione el par de actores a consultar"})
-            return HttpResponse(response.content)
-        else:
-            # si los parametros son validos se busca la ficha de estrategias correspondiente
-            ficha = Ficha_actor.objects.get(idActorX=request.GET['id'], idActorY=request.GET['id2'])
-            response = JsonResponse({'info': ficha.estrategia})
-            return HttpResponse(response.content)
+        id = request.GET['id']
+
+        if id.count("ver"):
+            id = id.lstrip("ver")
+
+        ficha = get_object_or_404(Ficha_actor, id=int(id))
+        actorY = ficha.idActorY.nombreLargo
+        actorX = ficha.idActorX.nombreLargo
+        response = JsonResponse({'actorY': actorY, 'actorX': actorX, 'estrategia': ficha.estrategia})
+        return HttpResponse(response.content)
     else:
         return redirect('/')
 
 
-def Eliminar_ficha_ajax(request):
+def Eliminar_ficha(request):
 
     if request.is_ajax():
         ficha = Ficha_actor.objects.get(id=request.GET['id'])
@@ -331,13 +369,12 @@ def Consultar_objetivo(request):
 
     if request.is_ajax():
         id = request.GET.get('id')
-        # se verifica si la cadena contiene la subcadena especificada
 
         if id.count("obj"):
             id = id.lstrip("obj")
         elif id.count("ver"):
             id = id.lstrip("ver")
-        print(id)
+
         objetivo = get_object_or_404(Objetivo, id=int(id))
         response = JsonResponse(
             {'nombreCorto': objetivo.nombreCorto,

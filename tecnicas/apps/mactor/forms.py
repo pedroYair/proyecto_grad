@@ -103,7 +103,7 @@ class Form_Ficha(forms.ModelForm):
             'idActorX': forms.Select(attrs={'class': 'form-control'}),
             'idActorY': forms.Select(attrs={'class': 'form-control'}),
             'estrategia': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
-            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
+            'idEstudio': forms.TextInput(attrs={'class': 'form-control'}, ),
         }
 
 

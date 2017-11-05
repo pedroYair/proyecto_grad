@@ -3,7 +3,7 @@
 {% load crispy_forms_tags %}
 
 {% block head_title %}
-Estudio:
+<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 {% endblock %}
 
 {% block content %}
@@ -25,16 +25,32 @@ Estudio:
 											<form class="form-horizontal" role="form" method="post" id="form_ficha">
                                             {% csrf_token %}
 
+												<div class="col-md-3 col-md-offset-1" hidden>
+                                                	<div  class="row">
+                                                		<div class="form-group">
+															<input class="form-control" type="number" value="{{estudio.id}}" name="idEstudio">
+														</div>
+                                                	</div>
+                                                </div>
+
 												<div class="row">
 													<div class="col-md-7 col-md-offset-1">
                                                 		<div class="form-group">
                                                     		{{form.idActorY.errors}}
 												  			<label class="control-label" style="text-align: left">Estrategias del actor</label>
-                                                    		{{form.idActorY}}
+                                                    			{% if actores %}
+																	<select name="idActorY" class="form-control" required id="id_idActorY">
+  																		<option value="" selected>----Seleccionar----</option>
+																		{% for actor in actores %}
+  																		<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																		{% endfor %}
+																	</select>
+																{% endif %}
 														</div>
 													</div>
 												</div>
 
+                                                 <!--DIV DESCRIPCION DEL ACTOR Y-->
 												<div class="row">
 													<div class="col-md-7 col-md-offset-1">
 														<div id="info"></div>
@@ -46,11 +62,19 @@ Estudio:
 												        <div class="form-group">
 													        {{form.idActorX.errors}}
 												            <label class="control-label" style="text-align: left">Sobre el actor</label>
-                                                            {{form.idActorX}}
+                                                            {% if actores %}
+																	<select name="idActorX" class="form-control" required id="id_idActorX">
+  																		<option value="" selected>----Seleccionar----</option>
+																		{% for actor in actores %}
+  																		<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																		{% endfor %}
+																	</select>
+																{% endif %}
 												        </div>
 													</div>
                                                 </div>
 
+                                                <!--DIV DESCRIPCION DEL ACTOR X-->
 												<div class="row">
 													<div class="col-md-7 col-md-offset-1">
 														<div id="info2"></div>
@@ -66,18 +90,9 @@ Estudio:
                                                     </div>
                                                 </div>
 
-                                                <div  class="row">
-                                                    <div class="col-md-3 col-md-offset-1">
-												        <div class="form-group">
-												            <label class="control-label" style="text-align: left">Estudio</label>
-												            {{form.idEstudio}}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
 												<div class="form-group">
 												  <div class="col-md-offset-2 col-md-8">
-													  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+													  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}"><i class="fa fa-arrow-left"></i> Atrás</a>
 													  <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
 													  <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
 												  </div>
@@ -85,7 +100,7 @@ Estudio:
 
 											</form>
 
-<! INICIO MODAL AYUDA--------------------------->
+<!--INICIO MODAL AYUDA--------------------------->
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 								<div class="modal-dialog">
 								     <div class="modal-content">
@@ -123,7 +138,7 @@ Estudio:
 <script src="{% static 'js_mactor_consultas/desactivar_opciones_select.js'%}"></script>
 {% endblock %}
 
-<! Desactiva el segundo select hasta que se seleccione una opcion en el primero-->
+<!--Desactiva el segundo select hasta que se seleccione una opcion en el primero-->
 <script type="text/javascript">
 	document.getElementById("id_idActorX").disabled = true;
 </script>

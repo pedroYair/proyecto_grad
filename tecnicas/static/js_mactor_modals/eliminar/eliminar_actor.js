@@ -24,7 +24,7 @@ function Eliminar(){
           // se envia el id mediante ajax
             $.ajax({
                 data : {'id' : id},
-                url : 'eliminar_actor-ajax',
+                url : 'eliminar_actor',
                 type : 'get',
                 // se obtiene e imprime la respuesta
                 success : function (data)
