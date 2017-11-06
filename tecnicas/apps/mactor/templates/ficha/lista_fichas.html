@@ -23,29 +23,29 @@
                         <table class="table table-bordered" id="tabla_actores">
                             <thead>
                                 <tr>
-                                    <th>#</th>
-                                    <th>Inf de</th>
-                                    <th>Sobre</th>
-                                    <th>Estrategias</th>
-                                    <th>Acciones</th>
+                                    <th style="text-align: center">#</th>
+                                    <th style="text-align: center">Inf. de</th>
+                                    <th style="text-align: center">Sobre</th>
+                                    <th style="text-align: center">Estrategias</th>
+                                    <th style="text-align: center">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {%if lista_fichas %}
-                                {% for ficha in lista_fichas %}
-                                    <tr>
-                                        <td>{{forloop.counter}}</td>
-                                        <td>{{ficha.idActorY|upper}}</td>
-                                        <td>{{ficha.idActorX|upper}}</td>
-                                        <td style="text-align: justify">{{ficha.estrategia}}</td>
-                                        <td>
-                                            <a id="ver{{ficha.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modalConsultar"><i class="fa fa-eye"></i></a>
-                                            <a class="btn btn-warning" id="editarFicha" title="Editar" href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
-                                            <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete"
-                                               data-toggle="modal" id="{{ficha.id}}"><i class="fa fa-times"></i></a>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
+                                    {% for ficha in lista_fichas %}
+                                        <tr>
+                                            <td>{{forloop.counter}}</td>
+                                            <td>{{ficha.idActorY|upper}}</td>
+                                            <td>{{ficha.idActorX|upper}}</td>
+                                            <td style="text-align: justify">{{ficha.estrategia}}</td>
+                                            <td>
+                                                <a id="ver{{ficha.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modalConsultar"><i class="fa fa-eye"></i></a>
+                                                <a class="btn btn-warning" id="editarFicha" title="Editar" href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
+                                                <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete"
+                                                   data-toggle="modal" id="{{ficha.id}}"><i class="fa fa-times"></i></a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
                                 {% else %}
                                 <h2>No hay fichas de estrategias registradas</h2>
                                 {% endif %}

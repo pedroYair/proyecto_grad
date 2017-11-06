@@ -39,15 +39,15 @@ urlpatterns = [
 
     # Urls modelo Relacion_MID y matrices
     url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', Crear_relacion_mid, name='influencia'),
-    url(r'^matriz_mid', Generar_matriz_mid, name='matriz_mid'),
+    url(r'^matriz_mid/(?P<idEstudio>\d+)/$', Generar_matriz_mid, name='matriz_mid'),
     url(r'^auto-influencia/$', Crear_auto_influencia),
 
     # Urls modelo Relacion_MAO y matrices
-    url(r'^1mao$', Crear_1mao.as_view(), name='1mao'),
+    url(r'^1mao/(?P<idEstudio>\d+)/$', Crear_1mao, name='1mao'),
     url(r'^2mao$', Crear_2mao.as_view(), name='2mao'),
-    url(r'^matriz_mao/(\d)/', Generar_matriz_mao, name='matriz_mao'),
+    url(r'^matriz_mao/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', Generar_matriz_mao, name='matriz_mao'),
 
     # Urls consultas ajax
     url(r'mid-ajax/$', Consultar_actores_faltantes),  # obtiene lista actores X registrados en la mid
-    url(r'^mao-ajax/$', Consultar_objetivos_faltantes) # obtiene lista objetivos X registrados en la mao
+    url(r'mao-ajax/$', Consultar_objetivos_faltantes) # obtiene lista objetivos X registrados en la mao
 ]

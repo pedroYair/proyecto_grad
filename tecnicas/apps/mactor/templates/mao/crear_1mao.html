@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudio:
+<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 {% endblock %}
 
 {% block content %}
@@ -27,6 +27,14 @@ Estudio:
 												<div class="col-md-3 col-md-offset-1" hidden>
                                                 	<div  class="row">
                                                 		<div class="form-group">
+															<input class="form-control" type="number" value="{{estudio.id}}" name="idEstudio">
+														</div>
+                                                	</div>
+                                                </div>
+
+												<div class="col-md-3 col-md-offset-1" hidden>
+                                                	<div  class="row">
+                                                		<div class="form-group">
 															<label class="control-label">Tipo</label>
 															<input class="form-control" type="number" value="1" name="tipo">
 														</div>
@@ -38,7 +46,16 @@ Estudio:
                                                 		<div class="form-group">
                                                     		{{form.idActorY.errors}}
 												  			<label class="control-label" style="text-align: left">Relación del actor</label>
-                                                    		{{form.idActorY}}
+                                                    		<select name="idActorY" class="form-control" required id="id_idActorY">
+																			{% if actores %}
+																				<option value="" selected>----Seleccionar----</option>
+																				{% for actor in actores %}
+																				<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
+																				{% endfor %}
+																			{% else %}
+																			 <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
+																			{% endif %}
+																</select>
 														</div>
 													</div>
 												</div>
@@ -54,7 +71,16 @@ Estudio:
 														<div class="form-group">
 															{{form.idObjetivoX.errors}}
 												  			<label class="control-label" style="text-align: left">Sobre el objetivo</label>
-                                                    		{{form.idObjetivoX}}
+                                                    		<select name="idObjetivoX" class="form-control" required id="id_idObjetivoX">
+																			{% if objetivos %}
+																				<option value="" selected>----Seleccionar----</option>
+																				{% for objetivo in objetivos %}
+																				<option value="{{objetivo.id}}">{{objetivo.nombreCorto}} - {{objetivo.nombreLargo}}</option>
+																				{% endfor %}
+																			{% else %}
+																			 <option value="" selected>----NO SE HAN REGISTRADO OBJETIVOS EN ESTE ESTUDIO----</option>
+																			{% endif %}
+																</select>
 														</div>
 													</div>
 
@@ -91,21 +117,14 @@ Estudio:
                                                             <input class="form-control" type="text" value="{{user.id}}" name="idExperto">
 														</div>
                                                 	</div>
-
-                                                	<div class="col-md-3 col-md-offset-1">
-														<div class="form-group">
-												  			<label class="control-label" style="text-align: left">Estudio</label>
-												 			{{form.idEstudio}}
-														</div>
-                                               		 </div>
 												</div>
 
 												<div class="form-group">
 												  <div class="col-md-offset-2 col-md-8">
-													   <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mid'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+													   <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mid' estudio.id %}"><i class="fa fa-arrow-left"></i> Matriz MID</a>
                                                      	<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> Guardar</button>
 													  	<a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                                                      	<a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' 1%}">Matriz <i class="fa fa-arrow-right"></i></a>
+                                                      	<a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}">Matriz 1MAO <i class="fa fa-arrow-right"></i></a>
 												  </div>
 
 

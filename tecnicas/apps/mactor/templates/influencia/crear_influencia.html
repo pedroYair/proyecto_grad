@@ -41,7 +41,7 @@
 																			{% if actores %}
 																				<option value="" selected>----Seleccionar----</option>
 																				{% for actor in actores %}
-																				<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																				<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
 																				{% endfor %}
 																			{% else %}
 																			 <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
@@ -67,7 +67,7 @@
   																		{% if actores %}
 																			<option value="" selected>----Seleccionar----</option>
 																			{% for actor in actores %}
-																			<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																			<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
 																			{% endfor %}
                                                                         {% else %}
                                                                          <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
@@ -116,7 +116,7 @@
 														  <button type="submit" class="btn btn-primary" onclick="autoinfluencia()"><i class="fa fa-plus"></i> Guardar</button>
 														  <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
 														  <a class="btn btn-primary" data-toggle="modal" href="#myModal2" onclick="Consultar_ficha()"><i class="fa fa-eye"></i> Consultar</a>
-														  <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid'%}">Matriz MID <i class="fa fa-arrow-right"></i></a>
+														  <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id%}">Matriz MID <i class="fa fa-arrow-right"></i></a>
 													  </div>
 													</div>
 												</div>
