@@ -42,7 +42,7 @@
   																		{% if actores %}
 																			<option value="" selected>----Seleccionar----</option>
 																			{% for actor in actores %}
-																			<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																			<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
 																			{% endfor %}
                                                                         {% else %}
                                                                          <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
@@ -68,7 +68,7 @@
 																		{% if actores %}
 																			<option value="" selected>----Seleccionar----</option>
 																			{% for actor in actores %}
-																			<option value="{{actor.id}}">{{actor.nombreCorto}}--{{actor.nombreLargo}}</option>
+																			<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
 																			{% endfor %}
                                                                         {% else %}
                                                                          <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>

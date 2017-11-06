@@ -2,12 +2,12 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudio:
+<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 {% endblock %}
 
 {% block content %}
 
-<! Matriz 3MAO-------------------------------------------------------------------------------------------------->
+<!--Matriz 3MAO-------------------------------------------------------------------------------------------------->
     <div class="container">
         <div class="row">
             <div class="col-md-10">
@@ -208,10 +208,10 @@ Estudio:
             <div class="form-group">
 
                 <div class="col-md-offset-2 col-md-8">
-                    <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' 2%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 2%}"><i class="fa fa-arrow-left"></i> Matriz 2MAO</a>
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
                     <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
-                    <a class="btn btn-sm btn-success" href="#">Siguiente <i class="fa fa-arrow-right"></i></a>
+                    <a class="btn btn-sm btn-success" href="#">Informe <i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
 

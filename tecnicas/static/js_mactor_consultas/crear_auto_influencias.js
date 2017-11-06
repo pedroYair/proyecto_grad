@@ -3,11 +3,10 @@
 
 function autoinfluencia() {
 
-    var id = "matriz";
-            console.log(id);
+    var idEstudio = $('input[name="idEstudio"]').val();
             $.ajax({
-                data : {'id' : id},
-                url : 'auto-influencia',
+                data : {'idEstudio' : idEstudio},
+                url : 'auto_influencia',
                 type : 'get',
                 success : function (data)
                 {
@@ -15,7 +14,6 @@ function autoinfluencia() {
                     console.log(object.resp);
                 }
             });
-    console.log("holaaaaaaaaaaaaaa");
 }
 
 

@@ -5,59 +5,56 @@
 Estudios registrados VISTA COORDINADOR
 {% endblock %}
 
-
 {% block content %}
 
-    <div class="container">
+<div class="container">
         <div class="row">
             <div class="col-md-12">
-
-<div class="widget wgreen">
-<div class="widget-head">
-    <div class="pull-left"></div>
-    <div class="widget-icons pull-right">
-        <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
-        <a href="#" class="wclose"><i class="fa fa-times"></i></a>
-    </div>
-    <div class="clearfix"></div>
-</div>
-<div class="widget-content">
-
-    <table class="table table-bordered" id="tabla_estudios">
-
-        <thead>
-        <tr>
-            <th style="text-align: center">#</th>
-            <th style="text-align: center">Título</th>
-            <th style="text-align: center">Fecha Inicio</th>
-            <th style="text-align: center">Fecha Final</th>
-            <th style="text-align: center">Acciones</th>
-        </tr>
-        </thead>
-        <tbody>
-            {%if lista_estudios %}
-            {% for estudio in lista_estudios %}
-                <tr>
-                    <td>{{forloop.counter}}</td>
-                    <td ><a href="{%url 'mactor:lista_actores' estudio.id%}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
-                    <td>{{estudio.fecha_inicio}}</td>
-                    <td>{{estudio.fecha_final}}</td>
-                    <td>
-                        <a id="est{{estudio.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modal_Consultar"><i class="fa fa-eye"></i></a>
-                        <a class="btn btn-warning" title="Editar" href="{%url 'mactor:editar_estudio' estudio.id%}"><i class="fa fa-pencil"></i></a>
-                    </td>
-                </tr>
-            {% endfor %}
-
-            {% else %}
-            <h2>No hay estudios MACTOR registrados</h2>
-
-            {% endif %}
-
-    </tbody>
-
-    </table>
-</div>
+                <div class="widget wgreen">
+                    <div class="widget-head">
+                        <div class="pull-left"></div>
+                        <div class="widget-icons pull-right">
+                            <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
+                            <a href="#" class="wclose"><i class="fa fa-times"></i></a>
+                        </div>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="widget-content">
+                        <table class="table table-bordered" id="tabla_estudios">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center">#</th>
+                                    <th style="text-align: center">Título</th>
+                                    <th style="text-align: center">Fecha Inicio</th>
+                                    <th style="text-align: center">Fecha Final</th>
+                                    <th style="text-align: center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {%if lista_estudios %}
+                                    {% for estudio in lista_estudios %}
+                                        <tr>
+                                            <td>{{forloop.counter}}</td>
+                                            <td ><a href="{%url 'mactor:lista_actores' estudio.id%}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
+                                            <td>{{estudio.fecha_inicio}}</td>
+                                            <td>{{estudio.fecha_final}}</td>
+                                            <td>
+                                                <a id="est{{estudio.id}}" class="btn btn-primary" title="Ver"
+                                                   data-toggle="modal" href="#modal_Consultar"><i class="fa fa-eye"></i>
+                                                </a>
+                                                <a class="btn btn-warning" title="Editar"
+                                                   href="{%url 'mactor:editar_estudio' estudio.id%}">
+                                                    <i class="fa fa-pencil"></i>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                <h2>No hay estudios MACTOR registrados</h2>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
 
 <!--PAGINACION ----------------------------------->
                     <div class="widget-foot">
@@ -80,8 +77,9 @@ Estudios registrados VISTA COORDINADOR
 
                 </div>
             </div>
+        </div>
 
-<!--BOTONES ------------------------------------->
+<!--BOTONES --------------------------------------------------->
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
@@ -91,9 +89,8 @@ Estudios registrados VISTA COORDINADOR
 
 <!--INICIO MODAL DETALLE DEL ESTUDIO--------------------------->
 
-                    {% include 'estudio/modals_estudio.html'%}
-        </div>
-    </div>
+            {% include 'estudio/modals_estudio.html'%}
+</div>
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>

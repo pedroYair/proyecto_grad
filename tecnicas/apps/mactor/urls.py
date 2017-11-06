@@ -2,7 +2,7 @@ from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
 from .views import Listar_estudios, Editar_estudio, Consultar_estudio,\
     Crear_actor, Listar_actores, Editar_actor, Consultar_actor, Eliminar_actor, \
-    Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, \
+    Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
     Crear_relacion_mid, Generar_matriz_mid, Crear_auto_influencia, \
     Crear_1mao, Crear_2mao, Generar_matriz_mao, \
@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'consultar_ficha/$', login_required(Consultar_ficha)),
     url(r'^editar_ficha/(?P<idFicha>\d+)/$', login_required(Editar_ficha), name='editar_ficha'),
     url(r'lista_fichas/(?P<idEstudio>\d+)/$', login_required(Lista_fichas), name='lista_fichas'),
+    url(r'consultar_ficha_mid/$', login_required(Consultar_ficha_mid)),
 
     # Urls modelo Objetivo
     url(r'agregar_objetivo/$', login_required(Crear_objetivo)),
@@ -40,11 +41,11 @@ urlpatterns = [
     # Urls modelo Relacion_MID y matrices
     url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', Crear_relacion_mid, name='influencia'),
     url(r'^matriz_mid/(?P<idEstudio>\d+)/$', Generar_matriz_mid, name='matriz_mid'),
-    url(r'^auto-influencia/$', Crear_auto_influencia),
+    url(r'auto_influencia/$', Crear_auto_influencia),
 
     # Urls modelo Relacion_MAO y matrices
     url(r'^1mao/(?P<idEstudio>\d+)/$', Crear_1mao, name='1mao'),
-    url(r'^2mao$', Crear_2mao.as_view(), name='2mao'),
+    url(r'^2mao/(?P<idEstudio>\d+)/$', Crear_2mao, name='2mao'),
     url(r'^matriz_mao/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', Generar_matriz_mao, name='matriz_mao'),
 
     # Urls consultas ajax

@@ -3,9 +3,9 @@ from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO,
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import JsonResponse, HttpResponse, request, Http404
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import UpdateView
 from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO
-from .forms import Form_Estudio, Form_Actor, Form_Ficha, Form_Objetivo, Form_MID, Form_1mao, Form_2mao
+from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao
 
 
 # ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
@@ -14,12 +14,6 @@ def Listar_estudios(request):
     estudios = Estudio_Mactor.objects.filter(idCoordinador=request.user).order_by('titulo')
     contexto = {'lista_estudios': estudios}
     return render(request, 'estudio/lista_estudios.html', contexto)
-
-"""SIN USO"""
-class Listar_estudio(ListView):
-    model = Estudio_Mactor
-    template_name = 'estudio/lista_estudios.html'
-    context_object_name = "lista_estudios"
 
 
 def Consultar_estudio(request):
@@ -44,26 +38,7 @@ class Editar_estudio(UpdateView):
     template_name = 'estudio/update_estudio.html'
     success_url = reverse_lazy('mactor:lista_estudios')
 
-
 # -------------------------------------------VIEWS MODELO ACTOR--------------------------------------->
-"""SIN USO------------------"""
-class Listar_actor(ListView):
-    model = Actor
-    template_name = 'actor/lista_actores.html'
-    ordering = ('nombreLargo',)
-    context_object_name = "lista_actores"
-
-    def get_context_data(self, **kwargs):
-        data = super(Listar_actor, self).get_context_data(**kwargs)
-        data.update({
-            'codigo': 1
-        })
-        return data
-
-    def get_queryset(self):
-        self.idEstudio = get_object_or_404(Estudio_Mactor, id=self.args[0])
-        queryset = super(Listar_actor, self).get_queryset()
-        return queryset.exclude(nombreCorto="MB")
 
 
 def Crear_actor(request):
@@ -188,29 +163,6 @@ def Eliminar_actor(request):
 
 
 # -------------------------------------------VIEWS MODELO FICHA ACTOR----------------------------------->
-"""SIN USO"""
-class Crear_fichas(CreateView):
-    model = Ficha_actor
-    form_class = Form_Ficha
-    template_name = 'ficha/crear_ficha.html'
-    success_message = "Agregado con exito"
-    success_url = reverse_lazy('mactor:ficha')
-
-class Edita_ficha(UpdateView):
-    model = Ficha_actor
-    form_class = Form_Ficha
-    template_name = 'ficha/editar_ficha.html'
-    success_url = reverse_lazy('mactor:lista_fichas/1/j')
-
-class Listar_ficha(ListView):
-    model = Ficha_actor
-    template_name = 'ficha/lista_fichas.html'
-    ordering = ('idActorY', 'idActorX',)
-    context_object_name = "lista_fichas"
-    paginate_by = 15
-    """SIN USO"""
-    """SIN USO---------------------"""
-
 
 def Crear_ficha(request, idEstudio):
 
@@ -267,7 +219,6 @@ def Consultar_ficha(request):
 
 
 def Eliminar_ficha(request):
-
     if request.is_ajax():
         ficha = Ficha_actor.objects.get(id=request.GET['id'])
         mensaje = "Registro de estrategias eliminado con exito"
@@ -281,14 +232,30 @@ def Eliminar_ficha(request):
             return HttpResponse(response.content)
 
 
-        # VIEWS MODELO OBJETIVO------------------------------------------------------------------------------------->
+            # VIEWS MODELO OBJETIVO------------------------------------------------------------------------------------->
+
+
+# Obtiene la ficha de influencias del par de actores seleccionado en el formulario de influencias mid
+def Consultar_ficha_mid(request):
+
+    if request.is_ajax():
+        if request.GET['id'] == "" or request.GET['id2'] == "":
+            response = JsonResponse({'info': "Seleccione el par de actores a consultar"})
+            return HttpResponse(response.content)
+        else:
+            actorX = int(request.GET['id'])
+            actorY = int(request.GET['id2'])
+            idEstudio = int(request.GET['idEstudio'])
+            ficha = get_object_or_404(Ficha_actor, idActorX=actorX, idActorY=actorY, idEstudio=idEstudio)
+            response = JsonResponse({'actorY': ficha.idActorY.nombreLargo,
+                                     'actorX': ficha.idActorX.nombreLargo,
+                                     'estrategia': ficha.estrategia})
+            return HttpResponse(response.content)
+    else:
+        return redirect('/')
+
 
 # ------------------------------------------VIEWS MODELO OBJETIVO------------------------------------>
-class Listar_objetivo(ListView):
-    model = Objetivo
-    template_name = 'objetivo/lista_objetivos.html'
-    ordering = ('nombreLargo',)
-
 
 def Crear_objetivo(request):
 
@@ -410,14 +377,6 @@ def Eliminar_objetivo(request):
 
 # -----------------------------------------VIEWS MODELO RELACION_MID--------------------------------->
 
-
-class Crear_relacion_mi(CreateView):
-    model = Relacion_MID
-    form_class = Form_MID
-    template_name = 'influencia/create_influencia.html'
-    success_url = reverse_lazy('mactor:influencia')
-
-
 def Crear_relacion_mid(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -442,7 +401,7 @@ def Generar_matriz_mid(request, idEstudio):
     tamano_matriz_completa = len(lista_actores)*len(lista_actores)
     posicion_salto_linea = lista_actores.count() + 1
 
-    if len(lista_influencias) == tamano_matriz_completa:
+    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
 
         valores_mid = establecer_valores_mid(lista_influencias, lista_actores)
         valores_midi = calcular_midi(idEstudio)
@@ -453,36 +412,19 @@ def Generar_matriz_mid(request, idEstudio):
                     'valores_midi': valores_midi,
                     'estudio': estudio_mactor}
 
-    else:
+    elif len(lista_influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
         valores_mid = generar_mid_incompleta(lista_influencias, lista_actores)
 
         contexto = {'actores': lista_actores, 'posicion_salto': posicion_salto_linea,
                     'valores': valores_mid, 'estudio': estudio_mactor}
+    # si no se han registrado actores
+    else:
+        contexto = {'estudio': estudio_mactor}
 
     return render(request, 'influencia/matriz_mid.html', contexto)
 
 
 # -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
-
-class Crear_1ma(CreateView):
-    model = Relacion_MAO
-    form_class = Form_1mao
-    template_name = 'mao/create_1mao.html'
-    success_url = reverse_lazy('mactor:1mao')
-
-
-class Crear_2mao(CreateView):
-    model = Relacion_MAO
-    form_class = Form_2mao
-    template_name = 'mao/create_2mao.html'
-    success_url = reverse_lazy('mactor:2mao')
-
-    """def get(self, request, *args, **kwargs):
-        self.tipo = kwargs.get('tipo', None)
-        print(type(self.tipo))
-        print(self.tipo)
-        return int(self.tipo)"""
-
 
 def Crear_1mao(request, idEstudio):
 
@@ -497,6 +439,24 @@ def Crear_1mao(request, idEstudio):
         objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
         form = Form_1mao()
     return render(request, 'mao/crear_1mao.html', {'form': form,
+                                                   'estudio': estudio_mactor,
+                                                   'actores': actores,
+                                                   'objetivos': objetivos})
+
+
+def Crear_2mao(request, idEstudio):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    if request.method == 'POST':
+        form = Form_2mao(request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect('mactor:2mao', estudio_mactor.id)
+    else:
+        actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+        objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+        form = Form_2mao()
+    return render(request, 'mao/crear_2mao.html', {'form': form,
                                                    'estudio': estudio_mactor,
                                                    'actores': actores,
                                                    'objetivos': objetivos})
@@ -541,11 +501,11 @@ class Valor_xy:
 def Crear_auto_influencia(request):
 
     if request.is_ajax():
-        id_b = request.GET['id'] # posteriormente este debe ser el codigo del estudio
-        actor = Actor.objects.all().order_by('id')
-        inf = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
+        idEstudio = request.GET.get('idEstudio')
+        estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+        actor = Actor.objects.filter(idEstudio=int(idEstudio)).order_by('id')
+        inf = Relacion_MID.objects.filter(idEstudio=int(idEstudio)).order_by('idActorY', 'idActorX')
         lista_registrados = []
-        print(id_b)
 
         # se verifica si estas influencias ya existen
         for i in actor:
@@ -560,12 +520,12 @@ def Crear_auto_influencia(request):
                     a.idActorY = i
                     a.idActorX = i
                     a.valor = 0
-                    a.justificacion = "auto_inf"
+                    a.justificacion = "auto_influencia"
                     a.idExperto = request.user
-                    a.idEstudio = inf[0].idEstudio  # posible error cuando hay cero registros de inf
+                    a.idEstudio = estudio_mactor
                     a.save()
 
-        response = JsonResponse({'resp': "listo"})
+        response = JsonResponse({'resp': "Auto influencias agregadas"})
         return HttpResponse(response.content)
 
 
@@ -793,7 +753,7 @@ def sumar_valores_minimos(actorY, idEstudio):
     return lista_suma
 
 
-# # <<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+#<<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
 def crear_contexto_mao(idEstudio, numero_matriz):
@@ -807,12 +767,12 @@ def crear_contexto_mao(idEstudio, numero_matriz):
     if numero_matriz == 1 or numero_matriz == 2:
         lista_mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=numero_matriz).order_by('idActorY', 'idObjetivoX')
     else:
-        estado_mao3 = verificar_mid_mao2(lista_objetivos, lista_actores)
+        estado_mao3 = verificar_mid_mao2(idEstudio)
         if estado_mao3:
-            lista_mao = calcular_valores_3mao(lista_objetivos.count(), lista_actores.count())
+            lista_mao = calcular_valores_3mao(idEstudio)
 
+    print(len(lista_mao), tamano_matriz_completa)
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
-
         lista_contexto = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao, MATRIZ_COMPLETA)
         contexto = {'objetivos': lista_objetivos,
                     'actores': lista_actores,
@@ -836,9 +796,68 @@ def crear_contexto_mao(idEstudio, numero_matriz):
                     'estado_matriz': MATRIZ_INCOMPLETA,
                     'estudio': estudio_mactor}
     else:
-        contexto = {}
+        contexto = {'estudio': estudio_mactor}
 
     return contexto
+
+
+# Establece los valores de la matriz que se muestran en la matriz mao
+def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
+
+    lista_valores_mao = []
+    list_valores_caa = []
+    lista_valores_daa = []
+    posicion = 0        # referencia a la lista de valores mao
+    indice = 0          # referencia a las lista de actores y objetivos
+    suma_positivos = 0  # sumatoria de los valores positivos de implicacion
+    suma_negativos = 0  # sumatoria de los valores negativos de implicacion
+
+    # se agregan las relaciones mao a la lista de valores que sera enviada como contexto
+    for i in range(len(mao)):
+        posicion += 1
+        # se agregan las relaciones mao registradas asignandoles una posicion para facilitar su impresion
+        lista_valores_mao.append(Valor_posicion(posicion=posicion, valor=mao[i].valor))
+
+        # se determinan las implicaciones positivas, negativas y totales (columnas +, - , Imp)
+        if mao[i].valor == abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
+            suma_positivos += mao[i].valor
+        elif mao[i].valor != abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
+            suma_negativos += abs(mao[i].valor)
+
+        # cuando el numero de registros alcanza la cantidad de objetivos se tiene una fila de la matriz
+        # se agregan entonces las sumatorias de implicacion (ultimas 3 columnas)
+        if posicion == objetivos.count():
+            lista_valores_mao.extend([
+                Valor_posicion(posicion=posicion + 1, valor=round(suma_positivos, 1)),
+                Valor_posicion(posicion=posicion + 2, valor=round(suma_negativos, 1)),
+                Valor_posicion(posicion=posicion + 3, valor=round(suma_positivos + suma_negativos, 1))])
+            # agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
+            posicion_nombre = (objetivos.count() + 4) * indice
+            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto))
+            # se reinician los valores para crear la nueva fila
+            posicion = 0
+            indice += 1
+            suma_positivos = 0
+            suma_negativos = 0
+
+    # si la matriz esta totalmente diligenciada
+    if estado_matriz == MATRIZ_COMPLETA:
+        list_valores_caa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 1)
+        lista_valores_daa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 2)
+
+    # se agrega a lista los valores de movilizacion
+    valores_mao = []
+    if objetivos.count() > 0:
+        valores_mao = establecer_valores_movilizacion(objetivos, lista_valores_mao)
+
+    if estado_matriz == MATRIZ_COMPLETA:
+        lista= []
+        lista.append(valores_mao)
+        lista.append(list_valores_caa)
+        lista.append(lista_valores_daa)
+        return lista
+    else:
+        return valores_mao
 
 
 # Generacion de matriz de convergencias Y divergencias
@@ -975,7 +994,6 @@ def generar_caa_daa(lista, actores, cant_objetivos, tipo):
     while cont <= actores.count():
         for i in valores_posicion:
             if i.posicion == cont:
-                print(i.valor)
                 suma += i.valor
         valores_posicion.append(
             Valor_posicion(posicion="", valor="{0:.1f}".format(suma)))  # posicion = "" para que no agregue el salto al final
@@ -1035,68 +1053,13 @@ def establecer_valores_movilizacion(objetivos, valores):
     return valores
 
 
-# Establece los valores de la matriz que se muestran en la matriz mao
-def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
-
-    lista_valores_mao = []
-    list_valores_caa = []
-    lista_valores_daa = []
-    posicion = 0        # referencia a la lista de valores mao
-    indice = 0          # referencia a las lista de actores y objetivos
-    suma_positivos = 0  # sumatoria de los valores positivos de implicacion
-    suma_negativos = 0  # sumatoria de los valores negativos de implicacion
-
-    # se agregan las relaciones mao a la lista de valores que sera enviada como contexto
-    for i in range(len(mao)):
-        posicion += 1
-        # se agregan las relaciones mao registradas asignandoles una posicion para facilitar su impresion
-        lista_valores_mao.append(Valor_posicion(posicion=posicion, valor=mao[i].valor))
-
-        # se determinan las implicaciones positivas, negativas y totales (columnas +, - , Imp)
-        if mao[i].valor == abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
-            suma_positivos += mao[i].valor
-        elif mao[i].valor != abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
-            suma_negativos += abs(mao[i].valor)
-
-        # cuando el numero de registros alcanza la cantidad de objetivos se tiene una fila de la matriz
-        # se agregan entonces las sumatorias de implicacion (ultimas 3 columnas)
-        if posicion == objetivos.count():
-            lista_valores_mao.extend([
-                Valor_posicion(posicion=posicion + 1, valor=round(suma_positivos, 1)),
-                Valor_posicion(posicion=posicion + 2, valor=round(suma_negativos, 1)),
-                Valor_posicion(posicion=posicion + 3, valor=round(suma_positivos + suma_negativos, 1))])
-            # agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
-            posicion_nombre = (objetivos.count() + 4) * indice
-            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto))
-            # se reinician los valores para crear la nueva fila
-            posicion = 0
-            indice += 1
-            suma_positivos = 0
-            suma_negativos = 0
-
-    # si la matriz esta totalmente diligenciada
-    if estado_matriz == MATRIZ_COMPLETA:
-        list_valores_caa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 1)
-        lista_valores_daa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 2)
-
-    # se agrega a lista los valores de movilizacion
-    valores_mao = establecer_valores_movilizacion(objetivos, lista_valores_mao)
-
-    if estado_matriz == MATRIZ_COMPLETA:
-        lista = []
-        lista.append(valores_mao)
-        lista.append(list_valores_caa)
-        lista.append(lista_valores_daa)
-        return lista
-    else:
-        return valores_mao
-
-
 # Verifica si las matrices MID y 2MAO estan totalmente diligenciadas para proceder al calculo de la matriz 3mao
-def verificar_mid_mao2(objetivos, actores):
+def verificar_mid_mao2(idEstudio):
 
-    mid = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
-    mao2 = Relacion_MAO.objects.filter(tipo=2).order_by('idActorY', 'idObjetivoX')
+    objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    mid = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
+    mao2 = Relacion_MAO.objects.filter(tipo=2, idEstudio=idEstudio).order_by('idActorY', 'idObjetivoX')
     tamano_mid = len(actores) * len(actores)
     tamano_2mao = len(actores) * len(objetivos)
     estado_3mao = False
@@ -1108,10 +1071,12 @@ def verificar_mid_mao2(objetivos, actores):
 
 
 # Calculo de los valores 3mao = 2mao * ri
-def calcular_valores_3mao(cant_objetivos, cant_actores):
+def calcular_valores_3mao(idEstudio):
 
-    mao = Relacion_MAO.objects.filter(tipo=2).order_by('idActorY', 'idObjetivoX')  # relaciones 2mao registradas
-    valores_midi = calcular_midi()  # relaciones midi calculadas
+    cant_objetivos = len(Objetivo.objects.filter(idEstudio=idEstudio).order_by('id'))
+    cant_actores = len(Actor.objects.filter(idEstudio=idEstudio).order_by('id'))
+    mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2).order_by('idActorY', 'idObjetivoX')
+    valores_midi = calcular_midi(idEstudio)  # relaciones midi calculadas
     valores_ri = calcular_ri(valores_midi, cant_actores)  # valores ri a partir de los midi
     valores_3mao = []  # lista que contiene a los 3mao
 
@@ -1308,6 +1273,3 @@ def Consultar_objetivos_faltantes(request):
                                  'valores': lista_valores})
         return HttpResponse(response.content)
 
-
-def probar(request):
-    print('hola')
