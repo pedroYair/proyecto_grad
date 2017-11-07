@@ -403,7 +403,7 @@ def Generar_matriz_mid(request, idEstudio):
 
     if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
 
-        valores_mid = establecer_valores_mid(lista_influencias, lista_actores)
+        valores_mid = establecer_valores_mid(idEstudio, lista_influencias)
         valores_midi = calcular_midi(idEstudio)
 
         contexto = {'actores': lista_actores,
@@ -413,7 +413,7 @@ def Generar_matriz_mid(request, idEstudio):
                     'estudio': estudio_mactor}
 
     elif len(lista_influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
-        valores_mid = generar_mid_incompleta(lista_influencias, lista_actores)
+        valores_mid = generar_mid_incompleta(idEstudio)
 
         contexto = {'actores': lista_actores, 'posicion_salto': posicion_salto_linea,
                     'valores': valores_mid, 'estudio': estudio_mactor}
@@ -480,9 +480,10 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
 
 # Clase auxiliar para la generacion de matrices, se asigna una posicion a un respectivo valor
 class Valor_posicion:
-    def __init__(self, posicion, valor):
+    def __init__(self, posicion, valor, descripcion):
         self.posicion = posicion
         self.valor = valor
+        self.descripcion = descripcion
 
 
 # Clase auxiliar para la generacion de matrices, se asigna una posicion a un respectivo valor
@@ -530,37 +531,47 @@ def Crear_auto_influencia(request):
 
 
 # Establece la lista de valores mid enviandos por contexto mostrados en la matriz
-def establecer_valores_mid(lista_influencias, lista_actores):
+def establecer_valores_mid(idEstudio, influencias):
 
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     lista_valores_mid = []
-    posicion = 0                    # permite controlar y asignar la posicion de acuerdo al numero de actores e influencias
+    posicion = 0                    # controla y asignar la posicion de acuerdo al numero de actores e influencias
     indice = 0                      # representa el indice del nombreCorto que se ha de colocar en valores
     suma_fila_influencias = 0
     suma_columna_dependencia = 0
 
-    for i in range(len(lista_influencias)):
+    for i in range(len(influencias)):
+
         posicion += 1
+
         # se obtienen los valores de las influencias registradas colocando una posicion para facilitar su visualizacion
-        lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=lista_influencias[i].valor))
-        # si el valor no es valido (matriz incompleta)
-        if lista_influencias[i].valor != VALOR_RELACION_NO_REGISTRADA:
-            suma_fila_influencias += lista_influencias[i].valor
-        # cuando la cantidad de valores ingresada llega a la cantidad de actores se agrega el valor de influencias
-        if posicion == lista_actores.count():
-            lista_valores_mid.append(Valor_posicion(posicion=posicion + 1, valor=suma_fila_influencias))
-            # determina la posicion donde se va a colocar el nombre corto de la nueva fila
-            pos_nombre = (lista_actores.count() + 2) * indice
-            # inserta el nombre corto de la nueva fila
-            lista_valores_mid.insert(pos_nombre, Valor_posicion(posicion=0, valor=lista_actores[indice].nombreCorto))
+        lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=influencias[i].valor, descripcion=""))
+
+        # Se calcula el valor de influencia directa I.D
+        if influencias[i].valor != VALOR_RELACION_NO_REGISTRADA:
+            suma_fila_influencias += influencias[i].valor
+
+        # Si cantidad de valores igual a la cantidad de actores se agrega el valor de influencias
+        if posicion == actores.count():
+            lista_valores_mid.append(Valor_posicion(posicion=posicion + 1,
+                                                    valor=suma_fila_influencias,
+                                                    descripcion=suma_fila_influencias))
+            # Se determina la posicion donde se va a colocar el nombre corto de la nueva fila
+            pos_nombre = (actores.count() + 2) * indice
+            # Se inserta el nombre corto de la nueva fila
+            lista_valores_mid.insert(pos_nombre, Valor_posicion(posicion=0,
+                                                                valor=actores[indice].nombreCorto,
+                                                                descripcion=""))
             posicion = 0               # reinicio de la posicion (nueva fila)
             indice += 1                # indice hace referencia al siguiente actor
             suma_fila_influencias = 0  # reinicio del valor de suma_fila_influencias
 
-    # Agregado de la sumatoria de dependencias directas (suma de columnas)
-    lista_valores_mid.append(Valor_posicion(posicion=0, valor="D.D"))
+    # Se calculan las dependencias directas D.D (suma de columnas)
+    lista_valores_mid.append(Valor_posicion(posicion=0, valor="D.D", descripcion="Dependencia Directa"))
     posicion = 1
     suma_dependencia_total = 0
-    while posicion <= lista_actores.count():
+
+    while posicion <= actores.count():
         for i in lista_valores_mid:
             # si posicion es igual al numero de la columna que se esta sumando
             if i.posicion == posicion:
@@ -568,18 +579,24 @@ def establecer_valores_mid(lista_influencias, lista_actores):
                 if i.valor != VALOR_RELACION_NO_REGISTRADA:
                     suma_columna_dependencia += i.valor
                     suma_dependencia_total += i.valor
-        # se ingresa a la lista de valores_mid la sumatoria de la columna
-        lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=suma_columna_dependencia))
+        # Se ingresa a la lista de valores_mid la sumatoria de la columna
+        lista_valores_mid.append(Valor_posicion(posicion="",
+                                                valor=suma_columna_dependencia,
+                                                descripcion=suma_columna_dependencia))
         posicion += 1                 # iteracion de las posiciones
         suma_columna_dependencia = 0  # reinicio a o del valor movilizacion
-    lista_valores_mid.append(Valor_posicion(posicion="", valor=suma_dependencia_total))
+    lista_valores_mid.append(Valor_posicion(posicion="", valor=suma_dependencia_total, descripcion=suma_dependencia_total))
+
+    lista_valores_mid = agregar_descripcion_mid(idEstudio, "mid", lista_valores_mid)
 
     return lista_valores_mid
 
 
 # Establece como se mostrara la matriz mid en caso de que no este completamente diligenciada
-def generar_mid_incompleta(mid, lista_actores):
+def generar_mid_incompleta(idEstudio):
 
+    lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    mid = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
     lista_ejes_incompletos = []
     lista_ejes_ordenados = []
 
@@ -610,7 +627,7 @@ def generar_mid_incompleta(mid, lista_actores):
         lista_ejes_incompletos.pop()
         cont -= 1
 
-    lista_contexto = establecer_valores_mid(lista_ejes_incompletos, lista_actores)
+    lista_contexto = establecer_valores_mid(idEstudio, lista_ejes_incompletos)
 
     return lista_contexto
 
@@ -640,22 +657,23 @@ def calcular_midi(idEstudio):
     li = 0       # valor de la ultima columna
     for i in range(len(influencias_mid)):
         indice += 1
-        valores_midi.append(Valor_posicion(posicion=indice, valor=influencias_mid[i].valor + lista_total[i]))
-
+        valores_midi.append(Valor_posicion(posicion=indice,
+                                           valor=influencias_mid[i].valor + lista_total[i],
+                                           descripcion=influencias_mid[i].valor + lista_total[i]))
         # se calcula el valor li, donde no se incluye la influencia sobre si mismo
         if influencias_mid[i].idActorY != influencias_mid[i].idActorX and indice <= actores.count():
             li += influencias_mid[i].valor + lista_total[i]
 
         # se determina la posicion donde se va a colocar el nombre corto de la nueva fila
         if indice == actores.count():
-
             # se determina la posicion del nombre cortose suma 2 debido a las columna extras (nombreCorto y li)
             posicion_nombre = (actores.count() + 2) * posicion
-            valores_midi.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[posicion].nombreCorto))
-
+            valores_midi.insert(posicion_nombre, Valor_posicion(posicion=0,
+                                                                valor=actores[posicion].nombreCorto,
+                                                                descripcion=""))
             # se determina la posición de la columna li y se inserta en la posicion establecida
             posicion_li = posicion_nombre + actores.count() + 1
-            valores_midi.insert(posicion_li, Valor_posicion(posicion=actores.count() + 1, valor=li))
+            valores_midi.insert(posicion_li, Valor_posicion(posicion=actores.count() + 1, valor=li, descripcion=li))
 
             # se reinician los parametros paera recalcular
             indice = 0
@@ -663,7 +681,7 @@ def calcular_midi(idEstudio):
             li = 0
 
     # se calculan los valores di (ultima fila)
-    valores_midi.append(Valor_posicion(posicion=0, valor="D.DI"))
+    valores_midi.append(Valor_posicion(posicion=0, valor="D.DI", descripcion="Dependencia Directa e Indirecta"))
     indice = 1
     di = 0
     suma_di = 0
@@ -677,13 +695,15 @@ def calcular_midi(idEstudio):
         di = di - valor_auto_influencia
 
         # se inserta el valor di a la lista de valores midi
-        valores_midi.append(Valor_posicion(posicion="", valor=di))
+        valores_midi.append(Valor_posicion(posicion="", valor=di, descripcion=di))
         # se actualizan los parametros de iteracion
         suma_di += di     # sumatoria total de di
         indice += 1
         di = 0
     # se inserta la sumatoria total di donde di_total = li_total, ultima celda
-    valores_midi.append(Valor_posicion(posicion="", valor=suma_di))
+    valores_midi.append(Valor_posicion(posicion="", valor=suma_di, descripcion=suma_di))
+
+    valores_midi = agregar_descripcion_mid(idEstudio, "midi", valores_midi)
 
     return valores_midi
 
@@ -705,7 +725,7 @@ def sumar_valores_minimos(actorY, idEstudio):
         lista_suma.append(0)
         # se verifica si en el registro actual (i), el campo idActorY no corresponde al actorY recibido
         if mid[i].idActorY != mid[actorY].idActorY:
-            valores_derechos.append(Valor_posicion(posicion=indice, valor=mid[i].valor))
+            valores_derechos.append(Valor_posicion(posicion=indice, valor=mid[i].valor, descripcion=""))
             aux += 1
             if aux == actores.count():
                 indice += 1
@@ -720,7 +740,7 @@ def sumar_valores_minimos(actorY, idEstudio):
         eje_x = mid[i].idActorX
 
         if mid[actorY].idActorY != eje_x and eje_y == mid[actorY].idActorY and longitud < cantidad_actores:
-            valores_izquierdos.append(Valor_posicion(posicion=indice + 1, valor=mid[i].valor))
+            valores_izquierdos.append(Valor_posicion(posicion=indice + 1, valor=mid[i].valor, descripcion=""))
             indice += 1
 
     # determinacion del valor minimo entre cada pareja izquierdo[i] - derecho[i]
@@ -753,6 +773,37 @@ def sumar_valores_minimos(actorY, idEstudio):
     return lista_suma
 
 
+# Agrega a la lista de valores mid y midi la descripcion del valor
+def agregar_descripcion_mid(idEstudio, tipo_matriz, lista, ):
+
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    indice = 0
+
+    if tipo_matriz == "mid":
+        for i in lista:
+            if i.posicion == 0 and indice < actores.count():
+                i.descripcion = actores[indice].nombreLargo
+                indice += 1
+            elif i.posicion in range(actores.count()+1):
+                if i.valor == 0:
+                    i.descripcion = "Sin influencia"
+                elif i.valor == 1:
+                    i.descripcion = "Procesos"
+                elif i.valor == 2:
+                    i.descripcion = "Proyectos"
+                elif i.valor == 3:
+                    i.descripcion = "Misión"
+                elif i.valor == 4:
+                    i.descripcion = "Existencia"
+
+    elif tipo_matriz == "midi":
+        for i in lista:
+            if i.posicion == 0 and indice < actores.count():
+                i.descripcion = actores[indice].nombreLargo
+                print(i.descripcion)
+                indice += 1
+
+    return lista
 #<<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
@@ -1272,4 +1323,9 @@ def Consultar_objetivos_faltantes(request):
                                  'lista': lista_registrados,
                                  'valores': lista_valores})
         return HttpResponse(response.content)
+
+
+
+
+
 
