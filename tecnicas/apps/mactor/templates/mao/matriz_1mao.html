@@ -24,11 +24,10 @@
                                         {%if objetivos %}
                                             <input style='text-align: center;' readonly type="text" size="3" value="">
                                                 {% for objetivo in objetivos %}
-                                                    <input  id="obj{objetivo.id}" style='text-align: center; background-color: #5e5e5e; color: white'
+                                                    <input  id="obj{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white'
                                                             readonly type="text" title="{{objetivo.nombreLargo|upper}}"
                                                             size="3" value="{{objetivo.nombreCorto}}"
-                                                            data-toggle="modal"
-                                                            href="#modal_Consultar_objetivo">
+                                                            data-toggle="modal" href="#modal_Consultar_objetivo">
                                                 {% endfor %}
                                             <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="IMPLICACIÓN POSITIVA (ACUERDOS)" value="+">
                                             <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="IMPLICACION NEGATIVA (DESACUERDOS)" value="-">
@@ -98,8 +97,7 @@
                                             {% for actor in actores %}
                                                 <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
                                                        title="{{actor.nombreLargo|upper}}" size="3" value="{{actor.nombreCorto}}"
-                                                       data-toggle="modal"
-                                                       href="#modal_Consultar_actor">
+                                                       data-toggle="modal" href="#modal_Consultar_actor">
                                             {% endfor %}
                                         {% endif %}
                                         <br>

@@ -1159,7 +1159,7 @@ def calcular_valores_3mao(idEstudio):
         if cont2 < cant_objetivos:
             valor = i.valor * valores_ri[cont]
             # se agrega el valor calculado a la lista a mostrar
-            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1)))
+            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1), descripcion=round(valor, 1)))
             cont2 += 1
         # cuando se han calculado los valores (cantidad de objetivos) de una fila se reinician los parámetros
         else:
@@ -1167,7 +1167,7 @@ def calcular_valores_3mao(idEstudio):
             cont += 1
             valor = i.valor * valores_ri[cont]
             # se agrega el valor calculado a la lista a mostrar
-            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1)))
+            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1), descripcion=round(valor, 1)))
             cont2 += 1
 
     return valores_3mao
@@ -1284,12 +1284,38 @@ def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
                 elif i.valor == -1:
                     i.descripcion = "En contra"
 
-    elif tipo_matriz == "midi":
+    elif tipo_matriz == 2:
         for i in lista:
             if i.posicion == 0 and indice < actores.count():
                 i.descripcion = actores[indice].nombreLargo
                 indice += 1
+            if i.posicion in range(objetivos.count() + 1):
+                if i.valor == -4:
+                    i.descripcion = "Desacuerdo"
+                elif i.valor == -3:
+                    i.descripcion = "Desacuerdo"
+                elif i.valor == -2:
+                    i.descripcion = "Desacuerdo"
+                elif i.valor == -1:
+                    i.descripcion = "Desacuerdo"
+                elif i.valor == 0:
+                    i.descripcion = "Neutro"
+                elif i.valor == 1:
+                    i.descripcion = "Acuerdo"
+                elif i.valor == 2:
+                    i.descripcion = "Acuerdo"
+                elif i.valor == 3:
+                    i.descripcion = "Acuerdo"
+                elif i.valor == 4:
+                    i.descripcion = "Acuerdo"
 
+    elif tipo_matriz == 3:
+        for i in lista:
+            if i.posicion == 0 and indice < actores.count():
+                i.descripcion = actores[indice].nombreLargo
+                indice += 1
+            if i.posicion in range(objetivos.count() + 1):
+                i.descripcion = i.valor
     return lista
 
 

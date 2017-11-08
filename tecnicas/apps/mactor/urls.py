@@ -21,7 +21,7 @@ urlpatterns = [
     url(r'eliminar_actor/$', login_required(Eliminar_actor)),
     url(r'editar_actor/$', login_required(Editar_actor)),
     url(r'^lista_actores/(?P<idEstudio>\d+)/$', login_required(Listar_actores), name='lista_actores'),
-    url(r'consultar_actor/$', login_required(Consultar_actor)),
+    url(r'consultar_actor', login_required(Consultar_actor)),
 
     # Urls modelo Ficha_actor
     url(r'^agregar_ficha/(?P<idEstudio>\d+)/$', login_required(Crear_ficha), name='ficha'),
@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^lista_objetivos/(?P<idEstudio>\d+)/$', login_required(Listar_objetivos), name='lista_objetivos'),
     url(r'eliminar_objetivo/$', login_required(Eliminar_objetivo)),
     url(r'editar_objetivo/$', login_required(Editar_objetivo)),
-    url(r'consultar_objetivo/$', login_required(Consultar_objetivo)),
+    url(r'consultar_objetivo', login_required(Consultar_objetivo)),
 
     # Urls modelo Relacion_MID y matrices
     url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', Crear_relacion_mid, name='influencia'),
