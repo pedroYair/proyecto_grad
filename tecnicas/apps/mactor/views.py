@@ -543,7 +543,6 @@ def establecer_valores_mid(idEstudio, influencias):
     for i in range(len(influencias)):
 
         posicion += 1
-
         # se obtienen los valores de las influencias registradas colocando una posicion para facilitar su visualizacion
         lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=influencias[i].valor, descripcion=""))
 
@@ -561,7 +560,7 @@ def establecer_valores_mid(idEstudio, influencias):
             # Se inserta el nombre corto de la nueva fila
             lista_valores_mid.insert(pos_nombre, Valor_posicion(posicion=0,
                                                                 valor=actores[indice].nombreCorto,
-                                                                descripcion=""))
+                                                                descripcion=actores[indice].nombreLargo))
             posicion = 0               # reinicio de la posicion (nueva fila)
             indice += 1                # indice hace referencia al siguiente actor
             suma_fila_influencias = 0  # reinicio del valor de suma_fila_influencias
@@ -781,10 +780,10 @@ def agregar_descripcion_mid(idEstudio, tipo_matriz, lista, ):
 
     if tipo_matriz == "mid":
         for i in lista:
-            if i.posicion == 0 and indice < actores.count():
+            """if i.posicion == 0 and indice < actores.count():
                 i.descripcion = actores[indice].nombreLargo
-                indice += 1
-            elif i.posicion in range(actores.count()+1):
+                indice += 1"""
+            if i.posicion in range(actores.count()+1):
                 if i.valor == 0:
                     i.descripcion = "Sin influencia"
                 elif i.valor == 1:
@@ -800,11 +799,12 @@ def agregar_descripcion_mid(idEstudio, tipo_matriz, lista, ):
         for i in lista:
             if i.posicion == 0 and indice < actores.count():
                 i.descripcion = actores[indice].nombreLargo
-                print(i.descripcion)
                 indice += 1
 
     return lista
-#<<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+
+# <<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
 def crear_contexto_mao(idEstudio, numero_matriz):
@@ -822,26 +822,30 @@ def crear_contexto_mao(idEstudio, numero_matriz):
         if estado_mao3:
             lista_mao = calcular_valores_3mao(idEstudio)
 
-    print(len(lista_mao), tamano_matriz_completa)
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
-        lista_contexto = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao, MATRIZ_COMPLETA)
+        lista_contexto = establecer_valores_mao(idEstudio, lista_mao, MATRIZ_COMPLETA)
+        valores_mao = agregar_descripcion_mao(idEstudio, numero_matriz, lista_contexto[0])
+        valores_caa = agregar_descripcion_caa_daa(idEstudio, lista_contexto[1])
+        valores_daa = agregar_descripcion_caa_daa(idEstudio, lista_contexto[2])
+
         contexto = {'objetivos': lista_objetivos,
                     'actores': lista_actores,
-                    'valores_mao': lista_contexto[0],
+                    'valores_mao': valores_mao,
                     'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
                     'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
-                    'valores_caa': lista_contexto[1],
+                    'valores_caa': valores_caa,
                     'posicion_salto_caa_daa': lista_actores.count(),
-                    'valores_daa': lista_contexto[2],
+                    'valores_daa': valores_daa,
                     'estado_matriz': MATRIZ_COMPLETA,
                     'estudio': estudio_mactor}
 
     elif len(lista_mao) != tamano_matriz_completa and numero_matriz != 3 or len(lista_mao) == 0 and numero_matriz != 3:
 
-        lista = generar_mao_incompleta(lista_mao, lista_actores, lista_objetivos)
+        valores_mao = generar_mao_incompleta(idEstudio, lista_mao)
+        valores_mao = agregar_descripcion_mao(idEstudio, numero_matriz, valores_mao)
         contexto = {'objetivos': lista_objetivos,
                     'actores': lista_actores,
-                    'valores_mao': lista,
+                    'valores_mao': valores_mao,
                     'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
                     'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
                     'estado_matriz': MATRIZ_INCOMPLETA,
@@ -853,8 +857,10 @@ def crear_contexto_mao(idEstudio, numero_matriz):
 
 
 # Establece los valores de la matriz que se muestran en la matriz mao
-def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
+def establecer_valores_mao(idEstudio, mao, estado_matriz):
 
+    objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     lista_valores_mao = []
     list_valores_caa = []
     lista_valores_daa = []
@@ -867,7 +873,7 @@ def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
     for i in range(len(mao)):
         posicion += 1
         # se agregan las relaciones mao registradas asignandoles una posicion para facilitar su impresion
-        lista_valores_mao.append(Valor_posicion(posicion=posicion, valor=mao[i].valor))
+        lista_valores_mao.append(Valor_posicion(posicion=posicion, valor=mao[i].valor, descripcion=""))
 
         # se determinan las implicaciones positivas, negativas y totales (columnas +, - , Imp)
         if mao[i].valor == abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
@@ -878,13 +884,19 @@ def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
         # cuando el numero de registros alcanza la cantidad de objetivos se tiene una fila de la matriz
         # se agregan entonces las sumatorias de implicacion (ultimas 3 columnas)
         if posicion == objetivos.count():
+            positivo = round(suma_positivos, 1)
+            negativo = round(suma_negativos, 1)
+            total = round(suma_positivos + suma_negativos, 1)
             lista_valores_mao.extend([
-                Valor_posicion(posicion=posicion + 1, valor=round(suma_positivos, 1)),
-                Valor_posicion(posicion=posicion + 2, valor=round(suma_negativos, 1)),
-                Valor_posicion(posicion=posicion + 3, valor=round(suma_positivos + suma_negativos, 1))])
-            # agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
+                Valor_posicion(posicion=posicion + 1, valor=positivo, descripcion=positivo),
+                Valor_posicion(posicion=posicion + 2, valor=negativo, descripcion=negativo),
+                Valor_posicion(posicion=posicion + 3, valor=total, descripcion=total)])
+
+            # Agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
             posicion_nombre = (objetivos.count() + 4) * indice
-            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto))
+            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0,
+                                                                     valor=actores[indice].nombreCorto,
+                                                                     descripcion=actores[indice].nombreLargo))
             # se reinician los valores para crear la nueva fila
             posicion = 0
             indice += 1
@@ -893,8 +905,8 @@ def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
 
     # si la matriz esta totalmente diligenciada
     if estado_matriz == MATRIZ_COMPLETA:
-        list_valores_caa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 1)
-        lista_valores_daa = generar_caa_daa(lista_valores_mao, actores, objetivos.count(), 2)
+        list_valores_caa = generar_caa_daa(idEstudio, lista_valores_mao, 1)
+        lista_valores_daa = generar_caa_daa(idEstudio, lista_valores_mao, 2)
 
     # se agrega a lista los valores de movilizacion
     valores_mao = []
@@ -912,7 +924,10 @@ def establecer_valores_mao(objetivos, actores, mao, estado_matriz):
 
 
 # Generacion de matriz de convergencias Y divergencias
-def generar_caa_daa(lista, actores, cant_objetivos, tipo):
+def generar_caa_daa(idEstudio, lista_mao, tipo):
+
+    cant_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id').count()
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     valores_mao = []
     cont = 1
     cont2 = 0
@@ -920,9 +935,9 @@ def generar_caa_daa(lista, actores, cant_objetivos, tipo):
     # filtrado del contenido de la matriz 2mao (solo lo valores de relacion actor x objetivo)
     # al conjunto de valores de una fila se le asigna el una misma posicion para facilitar
     # los filtros y la posterior comparacion
-    for i in lista:
+    for i in lista_mao:
         if i.posicion > 0 and i.posicion <= cant_objetivos:
-            valores_mao.append(Valor_posicion(posicion=cont, valor=i.valor))
+            valores_mao.append(Valor_posicion(posicion=cont, valor=i.valor, descripcion=""))
             cont2 += 1
             if cont2 == cant_objetivos:
                 cont += 1
@@ -1010,10 +1025,10 @@ def generar_caa_daa(lista, actores, cant_objetivos, tipo):
                     suma = 0
             pos += 1
 
+# posible corte-----------------------------------------------------------------------------
     # Agregado a la lista de los nombres cortos y de los ceros de la diagonal
     cont = 0
     pos_list = 1
-
 
     for i in range(actores.count()):
         # agregado de los nombres cortos de los actores
@@ -1028,16 +1043,16 @@ def generar_caa_daa(lista, actores, cant_objetivos, tipo):
     cont = 0
     valores_posicion = []
     for i in valores:
-        valores_posicion.append(Valor_posicion(posicion=cont, valor=i))
+        valores_posicion.append(Valor_posicion(posicion=cont, valor=i, descripcion=i))
         if cont == actores.count():
             cont = 0
         else:
             cont += 1
 
     if tipo == 1:
-        valores_posicion.append(Valor_posicion(posicion=0, valor="Ci"))
+        valores_posicion.append(Valor_posicion(posicion=0, valor="Ci", descripcion="Convergencia"))
     else:
-        valores_posicion.append(Valor_posicion(posicion=0, valor="Di"))
+        valores_posicion.append(Valor_posicion(posicion=0, valor="Di", descripcion="Divergencia"))
 
     # Calculo del numero de convergencias o divergencias totales de cada actor
     cont = 1
@@ -1047,7 +1062,7 @@ def generar_caa_daa(lista, actores, cant_objetivos, tipo):
             if i.posicion == cont:
                 suma += i.valor
         valores_posicion.append(
-            Valor_posicion(posicion="", valor="{0:.1f}".format(suma)))  # posicion = "" para que no agregue el salto al final
+            Valor_posicion(posicion="", valor="{0:.1f}".format(suma), descripcion="{0:.1f}".format(suma)))
         cont += 1
         suma = 0
 
@@ -1078,28 +1093,34 @@ def establecer_valores_movilizacion(objetivos, valores):
                     suma_negativos += abs(i.valor)
 
         # se agregan a la lista los valores de movilizacion
-        lista_negativos.append(Valor_posicion(posicion=0, valor=suma_negativos))
-        lista_positivos.append(Valor_posicion(posicion=0, valor=suma_positivos))
-        lista_movilizacion.append(Valor_posicion(posicion=0, valor=movilizacion))
+        lista_negativos.append(Valor_posicion(posicion=0, valor=suma_negativos, descripcion=suma_negativos))
+        lista_positivos.append(Valor_posicion(posicion=0, valor=suma_positivos, descripcion=suma_positivos))
+        lista_movilizacion.append(Valor_posicion(posicion=0, valor=movilizacion, descripcion=movilizacion))
         indice += 1         # iteracion de las posiciones
         movilizacion = 0    # reinicio del valor movilizacion
         suma_positivos = 0  # reinicio de la suma positiva
         suma_negativos = 0  # reinicio de la suma negativa
 
-    # agregado de las sumatorias de movilizacion positiva a la lista de valores
-    valores.append(Valor_posicion(posicion=0, valor="+"))
+    # Se agregan las sumatorias de movilizacion positiva
+    valores.append(Valor_posicion(posicion=0, valor="+", descripcion="MOVILIZACIÓN POSITIVA"))
     for i in range(len(lista_positivos)):
-        valores.append(Valor_posicion(posicion=posicion_movilizacion + i + 1, valor=lista_positivos[i].valor))
+        valores.append(Valor_posicion(posicion=posicion_movilizacion + i + 1,
+                                      valor=lista_positivos[i].valor,
+                                      descripcion=lista_positivos[i].valor))
 
-    # agregado de las sumatorias de movilizacion negativa a la lista de valores
-    valores.append(Valor_posicion(posicion=0, valor="-"))
+    # Se agregan las sumatorias de movilizacion negativa
+    valores.append(Valor_posicion(posicion=0, valor="-", descripcion="MOVILIZACIÓN NEGATIVA"))
     for i in range(len(lista_negativos)):
-        valores.append(Valor_posicion(posicion=posicion_movilizacion + i + 1, valor=lista_negativos[i].valor))
+        valores.append(Valor_posicion(posicion=posicion_movilizacion + i + 1,
+                                      valor=lista_negativos[i].valor,
+                                      descripcion=lista_negativos[i].valor))
 
-    # agregado de las sumatorias de movilizacion total a la lista de valores
-    valores.append(Valor_posicion(posicion=0, valor="Mov."))
+    # Se agregan la sumatoria de movilizacion total (Suma absoluta)
+    valores.append(Valor_posicion(posicion=0, valor="Mov.", descripcion="MOVILIZACIÓN"))
     for i in range(len(lista_movilizacion)):
-        valores.append(Valor_posicion(posicion="", valor=lista_movilizacion[i].valor))
+        valores.append(Valor_posicion(posicion="",
+                                      valor=lista_movilizacion[i].valor,
+                                      descripcion=lista_movilizacion[i].valor))
 
     return valores
 
@@ -1203,8 +1224,10 @@ def calcular_ri(valores_midi, cant_actor):
     return valores_ri
 
 
-def generar_mao_incompleta(mao, lista_actores, lista_objetivos):
+def generar_mao_incompleta(idEstudio, mao):
 
+    lista_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
+    lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     lista_mao_incompleta = []               # contendra los valores de la matriz mao incompleta
     lista_actores_objetivos = []            # establece el orden de los ejes de la matriz
 
@@ -1235,9 +1258,55 @@ def generar_mao_incompleta(mao, lista_actores, lista_objetivos):
         lista_mao_incompleta.pop()
         registros_relleno -= 1
 
-    lista_contexto = establecer_valores_mao(lista_objetivos, lista_actores, lista_mao_incompleta, MATRIZ_INCOMPLETA)
+    lista_contexto = establecer_valores_mao(idEstudio, lista_mao_incompleta, MATRIZ_INCOMPLETA)
 
     return lista_contexto
+
+
+# Agrega a la lista de valores mid y midi la descripcion del valor
+def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
+
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
+
+    indice = 0
+
+    if tipo_matriz == 1:
+        for i in lista:
+            if i.posicion == 0 and indice < actores.count():
+                i.descripcion = actores[indice].nombreLargo
+                indice += 1
+            if i.posicion in range(objetivos.count() + 1):
+                if i.valor == 0:
+                    i.descripcion = "Neutro"
+                elif i.valor == 1:
+                    i.descripcion = "A favor"
+                elif i.valor == -1:
+                    i.descripcion = "En contra"
+
+    elif tipo_matriz == "midi":
+        for i in lista:
+            if i.posicion == 0 and indice < actores.count():
+                i.descripcion = actores[indice].nombreLargo
+                indice += 1
+
+    return lista
+
+
+# Agrega a la lista de valores mid y midi la descripcion del valor
+def agregar_descripcion_caa_daa(idEstudio, lista):
+
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    indice = 0
+
+    for i in lista:
+        if i.posicion == 0 and indice < actores.count():
+                i.descripcion = actores[indice].nombreLargo
+                indice += 1
+        elif i.valor != "Ci" and i.valor != "Di":
+            i.descripcion = i.valor
+
+    return lista
 
 
 # ------------------------------------VIEWS AJAX----------------------------------------------------

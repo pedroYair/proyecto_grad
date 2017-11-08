@@ -14,7 +14,9 @@
                         type: 'get',
                         success: function (data) {
                             var object = JSON.parse(data);
-                            var html = "<p>" + 'Nombre Corto:' + "</p><p>" + object.nombreCorto + "</p><br><p>" + 'Nombre Largo:' + "</p><p>" + object.nombreLargo + "</p><br><p>" + 'Descripción:' + "</p><p>" + object.descripcion + "</p><p>";
+                            var html = "<p>" + 'Nombre Corto:' + "</p><p>" + object.nombreCorto
+                                + "</p><br><p>" + 'Nombre Largo:' + "</p><p>" + object.nombreLargo
+                                + "</p><br><p>" + 'Descripción:' + "</p><p>" + object.descripcion + "</p><p>";
                             $('#mod_body_actor').html(html);
                         }
                     });
