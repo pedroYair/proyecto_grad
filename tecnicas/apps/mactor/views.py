@@ -3,16 +3,33 @@ from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO,
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import JsonResponse, HttpResponse, request, Http404
-from django.views.generic import UpdateView
+from django.views.generic import CreateView, UpdateView
 from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO
 from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao
 
 
 # ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
 
+class Crear_estudio(CreateView):
+    model = Estudio_Mactor
+    form_class = Form_Estudio
+    template_name = 'estudio/crear_estudio_mactor.html'
+    success_url = reverse_lazy('mactor:lista_estudios')
+
+
 def Listar_estudios(request):
-    estudios = Estudio_Mactor.objects.filter(idCoordinador=request.user).order_by('titulo')
-    contexto = {'lista_estudios': estudios}
+
+    estudios = Estudio_Mactor.objects.all().order_by('fecha_final')
+    estudios_usuario = []
+
+    for i in estudios:
+        estudio = Estudio_Mactor.objects.get(id=i.id)
+        lista_expertos = estudio.idExpertos.all()
+        if request.user in lista_expertos or request.user == i.idCoordinador:
+            estudios_usuario.append(i)
+
+
+    contexto = {'lista_estudios': estudios_usuario}
     return render(request, 'estudio/lista_estudios.html', contexto)
 
 
@@ -143,7 +160,8 @@ def Listar_actores(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
-    contexto = {'estudio': estudio_mactor, 'lista_actores': actores}
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_actores': actores}
     return render(request, 'actor/lista_actores.html', contexto)
 
 
@@ -166,6 +184,7 @@ def Eliminar_actor(request):
 
 def Crear_ficha(request, idEstudio):
 
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     if request.method == 'POST':
         form = Form_Ficha(request.POST)
@@ -175,14 +194,18 @@ def Crear_ficha(request, idEstudio):
     else:
         actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
         form = Form_Ficha()
-    return render(request, 'ficha/crear_ficha.html', {'form': form, 'estudio': estudio_mactor, 'actores': actores})
+    return render(request, 'ficha/crear_ficha.html', {'form': form,
+                                                      'estudio': estudio_mactor,
+                                                      'usuario': tipo_usuario,
+                                                      'actores': actores})
 
 
 def Lista_fichas(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     fichas = Ficha_actor.objects.filter(idEstudio=estudio_mactor.id).order_by('idActorY', 'idActorX')
-    contexto = {'estudio': estudio_mactor, 'lista_fichas': fichas}
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_fichas': fichas}
     return render(request, 'ficha/lista_fichas.html', contexto)
 
 
@@ -190,6 +213,7 @@ def Editar_ficha(request, idFicha):
 
     ficha = get_object_or_404(Ficha_actor, id=int(idFicha))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=ficha.idEstudio.id)
+    tipo_usuario = obtener_tipo_usuario(request, ficha.idEstudio.id)
 
     if request.method == 'GET':
         form = Form_Ficha(instance=ficha)
@@ -198,7 +222,7 @@ def Editar_ficha(request, idFicha):
         if form.is_valid():
             form.save()
             return redirect('mactor:lista_fichas', estudio_mactor.id)
-    return render(request, 'ficha/editar_ficha.html', {'form': form, 'estudio': estudio_mactor})
+    return render(request, 'ficha/editar_ficha.html', {'form': form, 'estudio': estudio_mactor, 'usuario':tipo_usuario})
 
 
 def Consultar_ficha(request):
@@ -1418,6 +1442,25 @@ def Consultar_objetivos_faltantes(request):
                                  'lista': lista_registrados,
                                  'valores': lista_valores})
         return HttpResponse(response.content)
+
+# --------------------------------------------------------------------------------------------------
+
+
+def obtener_tipo_usuario(request, idEstudio):
+
+    estudio = Estudio_Mactor.objects.get(id=idEstudio)
+    lista_expertos = estudio.idExpertos.all()
+    tipo = "EXPERTO"
+
+    if request.user in lista_expertos and estudio.idCoordinador == request.user:
+        tipo = "COORDINADOR"
+    elif estudio.idCoordinador == request.user:
+        tipo = "COORDINADOR"
+
+    return tipo
+
+
+
 
 
 

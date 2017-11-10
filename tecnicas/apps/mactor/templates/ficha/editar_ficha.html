@@ -21,6 +21,7 @@
 
 										<hr />
 										<!-- Form starts.  -->
+										  {% if usuario == 'COORDINADOR' %}
 											<form class="form-horizontal" role="form" method="post" id="form_ficha">
                                             {% csrf_token %}
 
@@ -82,6 +83,9 @@
 												</div>
 
 											</form>
+										  {% else %}
+										  <h2>NO TIENE PERMISOS PARA EDITAR FICHAS DE ESTRATEGIAS</h2>
+										  {% endif %}
 
 <! INICIO MODAL AYUDA--------------------------->
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">

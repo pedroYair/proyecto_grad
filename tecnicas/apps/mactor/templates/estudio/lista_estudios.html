@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Estudios registrados VISTA COORDINADOR
+Bienvenido: {{user.username}}
 {% endblock %}
 
 {% block content %}
@@ -22,6 +22,7 @@ Estudios registrados VISTA COORDINADOR
                     <div class="widget-content">
                         <table class="table table-bordered" id="tabla_estudios">
                             <thead>
+                            {% if lista_estudios %}
                                 <tr>
                                     <th style="text-align: center">#</th>
                                     <th style="text-align: center">Título</th>
@@ -29,6 +30,7 @@ Estudios registrados VISTA COORDINADOR
                                     <th style="text-align: center">Fecha Final</th>
                                     <th style="text-align: center">Acciones</th>
                                 </tr>
+                            {% endif %}
                             </thead>
                             <tbody>
                                 {%if lista_estudios %}
@@ -50,7 +52,7 @@ Estudios registrados VISTA COORDINADOR
                                         </tr>
                                     {% endfor %}
                                 {% else %}
-                                <h2>No hay estudios MACTOR registrados</h2>
+                                <h3>No hay estudios MACTOR registrados</h3>
                                 {% endif %}
                             </tbody>
                         </table>
@@ -83,6 +85,9 @@ Estudios registrados VISTA COORDINADOR
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
+                    {% if request.user.is_superuser %}
+                    <a class="btn btn-primary" id="boton_agregar" href="{% url 'mactor:estudio' %}"><i class="fa fa-plus"></i> Agregar</a>
+                    {%  endif %}
                     <a class="btn btn-primary" data-toggle="modal" href="#modal_Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                 </div>
             </div>

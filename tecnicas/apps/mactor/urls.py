@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-from .views import Listar_estudios, Editar_estudio, Consultar_estudio,\
+from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_estudio,\
     Crear_actor, Listar_actores, Editar_actor, Consultar_actor, Eliminar_actor, \
     Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
@@ -12,6 +12,7 @@ from .views import Listar_estudios, Editar_estudio, Consultar_estudio,\
 urlpatterns = [
 
     # Urls modelo Estudio_mactor
+    url(r'^agregar_estudio/$', Crear_estudio.as_view(), name='estudio'),
     url(r'^lista_estudios', login_required(Listar_estudios), name='lista_estudios'),
     url(r'^editar_estudio/(?P<pk>\d+)/$', Editar_estudio.as_view(), name='editar_estudio'),
     url(r'^consultar_estudio/$', login_required(Consultar_estudio)),

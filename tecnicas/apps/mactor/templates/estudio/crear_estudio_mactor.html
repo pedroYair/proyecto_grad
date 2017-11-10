@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}
+Agregar estudio
+{% endblock %}
+
+{% block content %}
+
+<div class="matter">
+					<div class="container">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="widget wgreen">
+              						<div class="widget-head">
+									  <div class="pull-left">Formulario</div>
+									  <div class="clearfix"></div>
+									</div>
+									<div class="widget-content">
+									  <div class="padd">
+
+										<hr />
+										<!-- Form starts.  -->
+
+											<form class="form-horizontal" role="form" method="post">
+                                            {% csrf_token %}
+
+                                                <div class="row">
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div class="form-group">
+                                                            {{form.titulo.errors}}
+                                                            <label class="control-label" style="text-align: left">Título</label>
+                                                            {{form.titulo}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div class="form-group">
+                                                          <label class="control-label" style="text-align: left">Descripción</label>
+                                                          {{form.descripcion}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div class="form-group">
+                                                          <label class="control-label" style="text-align: left">Coordinador</label>
+                                                          {{form.idCoordinador}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+												<div class="row">
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div class="form-group">
+                                                          <label class="control-label" style="text-align: left">Expertos</label>
+                                                          {{form.idExpertos}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+												<div class="row">
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div class="datepicker">
+                                                          <label class="form-group" style="text-align: left">Fecha inicio</label>
+                                                            <br>
+                                                          {{form.fecha_inicio}}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div class="datepicker">
+                                                          <label class="form-group" style="text-align: left">Fecha final</label>
+                                                            <br>
+                                                          {{form.fecha_final}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+												<div class="row">
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div>
+                                                          <label class="control-label">Estado</label>
+                                                          {{form.estado}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="row">
+                                                    <div class="col-md-8 col-md-offset-1">
+                                                        <div class="form-group">
+                                                          <label class="control-label" style="text-align: left">Proyecto</label>
+                                                          {{form.idProyecto}}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+												<div class="form-group">
+
+												  <div class="col-md-8 col-md-offset-3">
+													<button type="submit" class="btn btn-primary pull-right">Guardar
+														<i class="fa fa-check"></i>
+													</button>
+												  </div>
+												</div>
+											</form>
+
+									  </div>
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+</div>
+
+{% endblock %}
+
+

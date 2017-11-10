@@ -40,10 +40,12 @@
                                             <td style="text-align: justify">{{actor.descripcion}}</td>
                                             <td>
                                                 <a id="ver{{actor.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal5"><i class="fa fa-eye"></i></a>
+                                                {% if usuario == 'COORDINADOR' %}
                                                 <a id="act{{actor.id}}" class="btn btn-warning .edit" title="Editar" data-toggle="modal"
                                                            href="#myModal3"><i class="fa fa-pencil"></i></a>
                                                 <a href="#myModal2" role="button" class="btn btn-danger delete" title="Eliminar" data-toggle="modal"
                                                    id="{{actor.id}}" data-name="{{actor.nombreLargo}}"><i class="fa fa-times"></i></a>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -54,7 +56,7 @@
                         </table>
                     </div>
 
-<! SECCION DE PAGINACION ----------------------------------->
+<! SECCION DE PAGINACION ------------------------------------------------------------------->
                     <div class="widget-foot">
 										<ul class="pagination pull-right">
 										  <li>
@@ -79,7 +81,9 @@
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
                     <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Estudios</a>
+                    {% if usuario == 'COORDINADOR' %}
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</a>
+                    {% endif %}
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
                     <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas' estudio.id%}">Estrategias <i class="fa fa-arrow-right"></i></a>
                 </div>
