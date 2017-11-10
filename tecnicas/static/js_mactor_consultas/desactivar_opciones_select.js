@@ -6,12 +6,14 @@ $('#id_idActorY').on('change', Desactivar);
         {
             // se obtiene el id del actor
             var id = $(this).val();
-            console.log(id)
+            var idEstudio = $('input[name="idEstudio"]').val();
             // se obtiene el id del formulario
             var tipo = $(this).closest("form").attr('id');
             // se envia mediante ajax el id del actor y el tipo de formulario
             $.ajax({
-                data : {'id' : id, 'tipo': tipo},
+                data : {'id' : id,
+                        'estudio': idEstudio,
+                        'tipo': tipo},
                 url : 'mid-ajax',
                 type : 'get',
                 success : function (data)

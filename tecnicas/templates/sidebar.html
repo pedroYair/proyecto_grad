@@ -17,9 +17,9 @@
                     <i class="fa fa-list"></i> Sesiones abiertas
                 </a>
             </li>
-
+            {%if request.user.is_superuser %}
             <li class="has_submenu norange">
-                <a href="">
+                <a href="http://localhost:8000/admin/">
                     <!-- Menu name with icon -->
                     <i class="fa fa-th"></i> Administracion
                     <!-- Icon for dropdown -->
@@ -30,7 +30,8 @@
                     <li><a href="">Nuevo proyecto</a></li>
                 </ul>
             </li>
-            <li><a href=""><i class="fa fa-sign-out"></i>Salir</a>
+            {% endif %}
+            <li><a href=""><i class="fa fa-sign-out"></i>Salir</a></li>
         </ul>
     </div>
     {% endif %}

@@ -41,7 +41,7 @@ class Actor(models.Model):
         return u'{0} - {1}'.format(self.nombreCorto, self.nombreLargo)
 
 
-# MODELO FICHA DE ESTRATEGIAS------------------------------------------------>
+# MODELO FICHA DE ESTRATEGIAS--------------------------------------------------------------------------------->
 
 
 class Ficha_actor(models.Model):

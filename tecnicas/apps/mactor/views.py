@@ -318,7 +318,8 @@ def Listar_objetivos(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
-    contexto = {'estudio': estudio_mactor, 'lista_objetivos': objetivos}
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_objetivos': objetivos}
     return render(request, 'objetivo/lista_objetivos.html', contexto)
 
 
@@ -408,6 +409,7 @@ def Crear_relacion_mid(request, idEstudio):
         form = Form_MID(request.POST)
         if form.is_valid():
             form.save()
+            Crear_auto_influencia(request, idEstudio)
         return redirect('mactor:influencia', estudio_mactor.id)
     else:
         actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
@@ -421,14 +423,14 @@ def Generar_matriz_mid(request, idEstudio):
     idEstudio = int(idEstudio)
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
+    lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
     tamano_matriz_completa = len(lista_actores)*len(lista_actores)
     posicion_salto_linea = lista_actores.count() + 1
 
     if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
 
         valores_mid = establecer_valores_mid(idEstudio, lista_influencias)
-        valores_midi = calcular_midi(idEstudio)
+        valores_midi = calcular_midi(request, idEstudio)
 
         contexto = {'actores': lista_actores,
                     'posicion_salto': posicion_salto_linea,
@@ -437,7 +439,7 @@ def Generar_matriz_mid(request, idEstudio):
                     'estudio': estudio_mactor}
 
     elif len(lista_influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
-        valores_mid = generar_mid_incompleta(idEstudio)
+        valores_mid = generar_mid_incompleta(request, idEstudio)
 
         contexto = {'actores': lista_actores, 'posicion_salto': posicion_salto_linea,
                     'valores': valores_mid, 'estudio': estudio_mactor}
@@ -488,7 +490,7 @@ def Crear_2mao(request, idEstudio):
 
 def Generar_matriz_mao(request, idEstudio, numero_matriz):
 
-    contexto = crear_contexto_mao(int(idEstudio), int(numero_matriz))
+    contexto = crear_contexto_mao(request, int(idEstudio), int(numero_matriz))
 
     if int(numero_matriz) == 1:
         return render(request, 'mao/matriz_1mao.html', contexto)
@@ -522,36 +524,31 @@ class Valor_xy:
 # <<<<FUNCIONES RELACIONES MID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-# Ingresa las influencias con valor 0 de un actor sobre si mismo, necesario para que la matriz sea cuadrada
-def Crear_auto_influencia(request):
+def Crear_auto_influencia(request, idEstudio):
 
-    if request.is_ajax():
-        idEstudio = request.GET.get('idEstudio')
         estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
         actor = Actor.objects.filter(idEstudio=int(idEstudio)).order_by('id')
-        inf = Relacion_MID.objects.filter(idEstudio=int(idEstudio)).order_by('idActorY', 'idActorX')
+        inf = Relacion_MID.objects.filter(idEstudio=int(idEstudio), idExperto=request.user.id).order_by('idActorY',
+                                                                                                        'idActorX')
         lista_registrados = []
 
         # se verifica si estas influencias ya existen
         for i in actor:
             for j in inf:
-                if j.idActorX.id == i.id and j.idActorY.id == i.id:
+                if len(inf) > 0 and j.idActorX.id == i.id and j.idActorY.id == i.id:
                     lista_registrados.append(i.id)
 
         # se agregan las autoinfluencias restantes
         for i in actor:
-                if i.id not in lista_registrados:
-                    a = Relacion_MID()
-                    a.idActorY = i
-                    a.idActorX = i
-                    a.valor = 0
-                    a.justificacion = "auto_influencia"
-                    a.idExperto = request.user
-                    a.idEstudio = estudio_mactor
-                    a.save()
-
-        response = JsonResponse({'resp': "Auto influencias agregadas"})
-        return HttpResponse(response.content)
+            if i.id not in lista_registrados:
+                a = Relacion_MID()
+                a.idActorY = i
+                a.idActorX = i
+                a.valor = 0
+                a.justificacion = "auto_influencia"
+                a.idExperto = request.user
+                a.idEstudio = estudio_mactor
+                a.save()
 
 
 # Establece la lista de valores mid enviandos por contexto mostrados en la matriz
@@ -590,7 +587,7 @@ def establecer_valores_mid(idEstudio, influencias):
             suma_fila_influencias = 0  # reinicio del valor de suma_fila_influencias
 
     # Se calculan las dependencias directas D.D (suma de columnas)
-    lista_valores_mid.append(Valor_posicion(posicion=0, valor="D.D", descripcion="Dependencia Directa"))
+    lista_valores_mid.append(Valor_posicion(posicion=0, valor="D.D", descripcion="DEPENDENCIA DIRECTA"))
     posicion = 1
     suma_dependencia_total = 0
 
@@ -616,10 +613,10 @@ def establecer_valores_mid(idEstudio, influencias):
 
 
 # Establece como se mostrara la matriz mid en caso de que no este completamente diligenciada
-def generar_mid_incompleta(idEstudio):
+def generar_mid_incompleta(request, idEstudio):
 
     lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    mid = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
+    mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
     lista_ejes_incompletos = []
     lista_ejes_ordenados = []
 
@@ -656,10 +653,10 @@ def generar_mid_incompleta(idEstudio):
 
 
 # Calcula los valores de la matriz de influencias directas e indirectas MIDIij = MID ij + Sum(Minimo [(MID ik, MID ik])
-def calcular_midi(idEstudio):
+def calcular_midi(request, idEstudio):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    influencias_mid = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
+    influencias_mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
     lista_comparacion_minimo = []   # contiene las sublistas de valores minimos por cada actores Y
     lista_total = []                # contiene lista_comparacion_minimo concatenado
     valores_midi = []               # contiene los valores correspondientes a MIDI
@@ -668,7 +665,7 @@ def calcular_midi(idEstudio):
     for i in range(len(influencias_mid)):
         if influencias_mid[i].idActorY == influencias_mid[i].idActorX:
             # cada valor de pos permite el calculo de una fila de la matriz
-            lista_comparacion_minimo.append(sumar_valores_minimos(actorY=i, idEstudio=idEstudio))
+            lista_comparacion_minimo.append(sumar_valores_minimos(request, actorY=i, idEstudio=idEstudio))
 
     # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
     for i in lista_comparacion_minimo:
@@ -704,7 +701,7 @@ def calcular_midi(idEstudio):
             li = 0
 
     # se calculan los valores di (ultima fila)
-    valores_midi.append(Valor_posicion(posicion=0, valor="D.DI", descripcion="Dependencia Directa e Indirecta"))
+    valores_midi.append(Valor_posicion(posicion=0, valor="D.DI", descripcion="DEPENDENCIA DIRECTA E INDIRECTA"))
     indice = 1
     di = 0
     suma_di = 0
@@ -732,10 +729,10 @@ def calcular_midi(idEstudio):
 
 
 # Realiza la parte derecha de la formula: Sum(Minimo [(MID ik, MID ik])
-def sumar_valores_minimos(actorY, idEstudio):
+def sumar_valores_minimos(request, actorY, idEstudio):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    mid = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
+    mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
     valores_izquierdos = []       # contiene los valores izquierdos a comparar
     valores_derechos = []         # contiene los valores derechos a comparar
     valores_minimos = []          # contiene los valores minimos establecidos al comparar valores_izquierdos vs derechos
@@ -797,7 +794,7 @@ def sumar_valores_minimos(actorY, idEstudio):
 
 
 # Agrega a la lista de valores mid y midi la descripcion del valor
-def agregar_descripcion_mid(idEstudio, tipo_matriz, lista, ):
+def agregar_descripcion_mid(idEstudio, tipo_matriz, lista):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     indice = 0
@@ -831,7 +828,7 @@ def agregar_descripcion_mid(idEstudio, tipo_matriz, lista, ):
 # <<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
-def crear_contexto_mao(idEstudio, numero_matriz):
+def crear_contexto_mao(request, idEstudio, numero_matriz):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
@@ -840,12 +837,14 @@ def crear_contexto_mao(idEstudio, numero_matriz):
     lista_mao = []
 
     if numero_matriz == 1 or numero_matriz == 2:
-        lista_mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=numero_matriz).order_by('idActorY', 'idObjetivoX')
+        lista_mao = Relacion_MAO.objects.filter(idEstudio=idEstudio,
+                                                tipo=numero_matriz,
+                                                idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
     else:
         estado_mao3 = verificar_mid_mao2(idEstudio)
         if estado_mao3:
             lista_mao = calcular_valores_3mao(idEstudio)
-
+    # Si la matriz esta completa
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
         lista_contexto = establecer_valores_mao(idEstudio, lista_mao, MATRIZ_COMPLETA)
         valores_mao = agregar_descripcion_mao(idEstudio, numero_matriz, lista_contexto[0])
@@ -862,7 +861,7 @@ def crear_contexto_mao(idEstudio, numero_matriz):
                     'valores_daa': valores_daa,
                     'estado_matriz': MATRIZ_COMPLETA,
                     'estudio': estudio_mactor}
-
+    # Si la matriz es 1mao o 2mao y esta incompleta
     elif len(lista_mao) != tamano_matriz_completa and numero_matriz != 3 or len(lista_mao) == 0 and numero_matriz != 3:
 
         valores_mao = generar_mao_incompleta(idEstudio, lista_mao)
@@ -1365,8 +1364,9 @@ def Consultar_actores_faltantes(request):
 
     if request.is_ajax():
         id = request.GET['id']
+        idEstudio = int(request.GET['estudio'])
         tipo = request.GET['tipo']
-        actores = Actor.objects.all().order_by('id')
+        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
         lista_registrados = []
         lista_id = []
         lista_valores = []
@@ -1376,10 +1376,10 @@ def Consultar_actores_faltantes(request):
             # para desactivar la opcion correspondiente a autoinfluencia se agrega el id como registrado
 
             # se obtiene la lista de relaciones mid registradas
-            mid = Relacion_MID.objects.all().order_by('idActorY', 'idActorX')
+            mid = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
             # se obtienen los id de los actores ya registrados en la matriz mid
             for i in mid:
-                if i.idActorY.id == int(id):
+                if i.idActorY.id == int(id) and i.idExperto == request.user:
                     lista_registrados.append(i.idActorX.id)
                     lista_valores.append(i.valor)
 
@@ -1391,7 +1391,7 @@ def Consultar_actores_faltantes(request):
 
         # si se esta registrando una ficha de estrategias
         if tipo == "form_ficha":
-            fichas = Ficha_actor.objects.all().order_by('idActorY', 'idActorX')
+            fichas = Ficha_actor.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
             for i in fichas:
                 if i.idActorY.id == int(id):
                     lista_registrados.append(i.idActorX.id)
@@ -1410,6 +1410,7 @@ def Consultar_objetivos_faltantes(request):
 
     if request.is_ajax():
         id = request.GET['id']
+        idEstudio = int(request.GET['estudio'])
         tipo = request.GET['tipo']
         objetivos = Objetivo.objects.all().order_by('id')
         lista_registrados = []
@@ -1419,10 +1420,10 @@ def Consultar_objetivos_faltantes(request):
         # si se esta registrando una influencia 1mao
         if tipo == "form_1mao":
             # se obtiene la lista de relaciones  1mao registradas
-            mao = Relacion_MAO.objects.all().exclude(tipo=2).order_by('idActorY', 'idObjetivoX')
+            mao = Relacion_MAO.objects.filter(tipo=1, idEstudio=idEstudio).order_by('idActorY', 'idObjetivoX')
             # se obtienen los id de los objetivos ya registrados en la matriz mao con ese actor Y
             for i in mao:
-                if i.idActorY.id == int(id):
+                if i.idActorY.id == int(id) and i.idExperto == request.user:
                     lista_registrados.append(i.idObjetivoX.id)
                     lista_valores.append(i.valor)
 

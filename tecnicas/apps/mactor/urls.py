@@ -4,7 +4,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_actor, Listar_actores, Editar_actor, Consultar_actor, Eliminar_actor, \
     Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
-    Crear_relacion_mid, Generar_matriz_mid, Crear_auto_influencia, \
+    Crear_relacion_mid, Generar_matriz_mid, \
     Crear_1mao, Crear_2mao, Generar_matriz_mao, \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes
 
@@ -42,7 +42,6 @@ urlpatterns = [
     # Urls modelo Relacion_MID y matrices
     url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', Crear_relacion_mid, name='influencia'),
     url(r'^matriz_mid/(?P<idEstudio>\d+)/$', Generar_matriz_mid, name='matriz_mid'),
-    url(r'auto_influencia/$', Crear_auto_influencia),
 
     # Urls modelo Relacion_MAO y matrices
     url(r'^1mao/(?P<idEstudio>\d+)/$', Crear_1mao, name='1mao'),

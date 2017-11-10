@@ -5,12 +5,14 @@ $('#id_idActorY').on('change', DescripcionY);
         function  DescripcionY()
         {   // se obtiene el id del actor
             var id = $(this).val();
+            var idEstudio = $('input[name="idEstudio"]').val();
             // se obtiene el id del formulario
             var tipo = $(this).closest("form").attr('id');
-            console.log(tipo);
 
             $.ajax({
-                data : {'id' : id, 'tipo': tipo},
+                data : {'id' : id,
+                        'estudio': idEstudio,
+                        'tipo': tipo},
                 url : 'mao-ajax',
                 type : 'get',
                 success : function (data)
