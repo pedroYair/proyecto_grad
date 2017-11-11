@@ -2,12 +2,14 @@
 {% load staticfiles %}
 
 {% block head_title %}
-<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+	{% if usuario != '' %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+	{% endif %}
 {% endblock %}
 
 {% block content %}
-
-<div class="matter">
+	{% if usuario != '' %}
+		<div class="matter">
 					<div class="container">
 						<div class="row">
 							<div class="col-md-12">
@@ -162,6 +164,9 @@
 						</div>
 					</div>
 </div>
+	{% else %}
+        <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+    {% endif %}
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
@@ -170,7 +175,7 @@
 <script src="{% static 'js_mactor_consultas/desactivar_opciones_select_mao.js'%}"></script>
 {% endblock %}
 
-<! Desactiva el segundo select hasta que se seleccione una opcion en el primero-->
+<!--Desactiva el segundo select hasta que se seleccione una opcion en el primero-->
 <script type="text/javascript">
 	document.getElementById("id_idObjetivoX").disabled = true;
 </script>

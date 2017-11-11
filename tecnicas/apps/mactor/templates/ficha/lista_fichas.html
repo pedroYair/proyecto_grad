@@ -2,12 +2,15 @@
 {% load staticfiles %}
 
 {% block head_title %}
-<input hidden class="col-sm-1" type="number" name="codigo" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+    {% if usuario != '' %}
+        <input hidden class="col-sm-1" type="number" name="codigo" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
 
-<div class="container">
+    {% if usuario != '' %}
+        <div class="container">
         <div class="row">
             <div class="col-md-12">
                 <div class="widget wgreen">
@@ -97,6 +100,9 @@
             {% include 'ficha/modals_ficha.html'%}
         </div>
 </div>
+    {% else %}
+        <h2>Upps...no cuenta con permisos en este proyecto.</h2>
+    {% endif %}
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>

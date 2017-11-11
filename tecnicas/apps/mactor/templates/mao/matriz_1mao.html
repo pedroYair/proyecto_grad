@@ -2,242 +2,247 @@
 {% load staticfiles %}
 
 {% block head_title %}
-<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+    {% if usuario != '' %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-
-<!--Matriz 1MAO-------------------------------------------------------------------------------------------------->
-<div class="container">
-        <div class="row">
-            <div class="col-md-10">
-                <div class="widget wgreen">
-                    <div class="widget-head">
-                         <div class="pull-left">1MAO - Matriz de Posiciones Simples</div>
-                        <div class="widget-icons pull-right"></div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="widget-content">
-                            <table class="table table-bordered" id="tabla1mao">
-                                <thead>
-                                    <tr>
-                                        {%if objetivos %}
-                                            <input style='text-align: center;' readonly type="text" size="3" value="">
-                                                {% for objetivo in objetivos %}
-                                                    <input  id="obj{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white'
-                                                            readonly type="text" title="{{objetivo.nombreLargo|upper}}"
-                                                            size="3" value="{{objetivo.nombreCorto}}"
-                                                            data-toggle="modal" href="#modal_Consultar_objetivo">
-                                                {% endfor %}
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="IMPLICACIÓN POSITIVA (ACUERDOS)" value="+">
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="IMPLICACION NEGATIVA (DESACUERDOS)" value="-">
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white;' readonly type="text" size="3"
-                                                     title="IMPLICACIÓN" value="Imp.">
-                                            <br>
-                                        {% endif %}
-                                     </tr>
-                                </thead>
-                                <tbody>
-                                    {% if valores_mao %}
-                                    <tr>
-                                        {% for i in valores_mao %}
-                                            <!--Inserta la ultima celda (Implicacion total)-->
-                                            {% if i.posicion == posicion_salto %}
-                                                <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
-                                                <br>
-                                            <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
-                                            {% elif i.posicion == posicion_salto_movilizacion %}
-                                                <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
-                                                <br>
-                                            <!--Inserta el nombre corto del actor en el eje Y-->
-                                            {% elif i.posicion == 0 %}
-                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
-                                            <!--Inserta los valores de la matriz posteriores al nombre en Y y previos a la ultima celda-->
+    {% if usuario != '' %}
+        <!--Matriz 1MAO-------------------------------------------------------------------------------------------------->
+        <div class="container">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="widget wgreen">
+                            <div class="widget-head">
+                                 <div class="pull-left">1MAO - Matriz de Posiciones Simples</div>
+                                <div class="widget-icons pull-right"></div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget-content">
+                                    <table class="table table-bordered" id="tabla1mao">
+                                        <thead>
+                                            <tr>
+                                                {%if objetivos %}
+                                                    <input style='text-align: center;' readonly type="text" size="3" value="">
+                                                        {% for objetivo in objetivos %}
+                                                            <input  id="obj{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white'
+                                                                    readonly type="text" title="{{objetivo.nombreLargo|upper}}"
+                                                                    size="3" value="{{objetivo.nombreCorto}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_objetivo">
+                                                        {% endfor %}
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="IMPLICACIÓN POSITIVA (ACUERDOS)" value="+">
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="IMPLICACION NEGATIVA (DESACUERDOS)" value="-">
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white;' readonly type="text" size="3"
+                                                             title="IMPLICACIÓN" value="Imp.">
+                                                    <br>
+                                                {% endif %}
+                                             </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% if valores_mao %}
+                                            <tr>
+                                                {% for i in valores_mao %}
+                                                    <!--Inserta la ultima celda (Implicacion total)-->
+                                                    {% if i.posicion == posicion_salto %}
+                                                        <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        <br>
+                                                    <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
+                                                    {% elif i.posicion == posicion_salto_movilizacion %}
+                                                        <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        <br>
+                                                    <!--Inserta el nombre corto del actor en el eje Y-->
+                                                    {% elif i.posicion == 0 %}
+                                                        <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                    <!--Inserta los valores de la matriz posteriores al nombre en Y y previos a la ultima celda-->
+                                                    {% else %}
+                                                        {% if i.valor == 100 %}
+                                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="INFLUENCIA SIN REGISTRAR" value="X">
+                                                        {% else %}
+                                                            <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        {% endif %}
+                                                    {% endif %}
+                                                    {% endfor %}
                                             {% else %}
-                                                {% if i.valor == 100 %}
-                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="INFLUENCIA SIN REGISTRAR" value="X">
+                                                <h3>Registre los actores y objetivos del estudio.</h3>
+                                            {% endif %}
+                                                <br>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+        </div>
+
+        <br>
+        <br>
+
+        <!--MATRIZ 1CAA------------------------------------------------------------------------------------------------->
+
+         <div class="container">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="widget wgreen">
+                            <div class="widget-head">
+                                 <div class="pull-left">1CAA - Matriz de Convergencias</div>
+                                <div class="widget-icons pull-right"></div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget-content">
+                                <table class="table table-bordered" id="tabla1">
+                                    <thead>
+                                            <tr>
+                                                {%if actores and estado_matriz != 0 %}
+                                                    <input style='text-align: center;'  type="text" size="3" readonly value="">
+                                                    {% for actor in actores %}
+                                                        <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                                                               title="{{actor.nombreLargo|upper}}" size="3" value="{{actor.nombreCorto}}"
+                                                               data-toggle="modal" href="#modal_Consultar_actor">
+                                                    {% endfor %}
+                                                {% endif %}
+                                                <br>
+                                             </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if valores_caa %}
+                                        <tr>
+                                            {% for i in valores_caa %}
+                                                <!-- Inserta el ultimo valor de la fila antes del salto de linea-->
+                                                {% if i.posicion == posicion_salto_caa_daa %}
+                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                    <br>
+                                                <!--Inserta los nombres cortos en el eje Y-->
+                                                {% elif i.posicion == 0 %}
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}"  value="{{i.valor}}">
+                                                {% else %}
+                                                <!--Inserta los valores caa posteriores al nombre y previos al valor de la ultima celda-->
+                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}"  value="{{i.valor}}">
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
+                                        {% endif %}
+                                            <br>
+                                        </tr>
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <br>
+        <br>
+
+        <!--MATRIZ 1DAA------------------------------------------------------------------------------------------------->
+
+        <div class="container">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="widget wgreen">
+                            <div class="widget-head">
+                                 <div class="pull-left">1DAA - Matriz de Divergencias</div>
+                                <div class="widget-icons pull-right"></div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget-content">
+                                <table class="table table-bordered" id="tabla3">
+                                    <thead>
+                                            <tr>
+                                                {%if actores and estado_matriz != 0 %}
+                                                 <input style='text-align: center;'  type="text" size="3" readonly value="">
+                                                    {% for actor in actores %}
+                                                    <input id="ver{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                                                               title="{{actor.nombreLargo|upper}}" size="3" value="{{actor.nombreCorto}}"
+                                                               data-toggle="modal"
+                                                               href="#modal_Consultar_actor">
+                                                    {% endfor %}
+                                                {% endif %}
+                                                <br>
+                                             </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% if valores_daa %}
+                                        <tr>
+                                            {% for i in valores_daa %}
+                                                <!--Inserta el ultimo valor de la fila antes del salto de linea-->
+                                                {% if i.posicion ==  posicion_salto_caa_daa %}
+                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                    <br>
+                                                <!--Inserta los nombres cortos-->
+                                                {% elif i.posicion == 0 %}
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                <!--Inserta los valores daa posteriores al nombre y previos al valor de la ultima fila-->
                                                 {% else %}
                                                     <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
                                                 {% endif %}
-                                            {% endif %}
                                             {% endfor %}
-                                    {% else %}
-                                        <h3>Registre los actores y objetivos del estudio.</h3>
-                                    {% endif %}
-                                        <br>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                        {% else %}
+                                            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
+                                        {% endif %}
+                                            <br>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
-                </div>
-            </div>
-        </div>
-</div>
-
-<br>
-<br>
-
-<!--MATRIZ 1CAA------------------------------------------------------------------------------------------------->
-
- <div class="container">
-        <div class="row">
-            <div class="col-md-10">
-                <div class="widget wgreen">
-                    <div class="widget-head">
-                         <div class="pull-left">1CAA - Matriz de Convergencias</div>
-                        <div class="widget-icons pull-right"></div>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="widget-content">
-                        <table class="table table-bordered" id="tabla1">
-                            <thead>
-                                    <tr>
-                                        {%if actores and estado_matriz != 0 %}
-                                            <input style='text-align: center;'  type="text" size="3" readonly value="">
-                                            {% for actor in actores %}
-                                                <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
-                                                       title="{{actor.nombreLargo|upper}}" size="3" value="{{actor.nombreCorto}}"
-                                                       data-toggle="modal" href="#modal_Consultar_actor">
-                                            {% endfor %}
-                                        {% endif %}
-                                        <br>
-                                     </tr>
-                            </thead>
-                            <tbody>
-                                {% if valores_caa %}
-                                <tr>
-                                    {% for i in valores_caa %}
-                                        <!-- Inserta el ultimo valor de la fila antes del salto de linea-->
-                                        {% if i.posicion == posicion_salto_caa_daa %}
-                                            <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
-                                            <br>
-                                        <!--Inserta los nombres cortos en el eje Y-->
-                                        {% elif i.posicion == 0 %}
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}"  value="{{i.valor}}">
-                                        {% else %}
-                                        <!--Inserta los valores caa posteriores al nombre y previos al valor de la ultima celda-->
-                                            <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}"  value="{{i.valor}}">
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
-                                {% endif %}
-                                    <br>
-                                </tr>
-                                </tbody>
-                        </table>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
 
-<br>
-<br>
 
-<!--MATRIZ 1DAA------------------------------------------------------------------------------------------------->
-
-<div class="container">
-        <div class="row">
-            <div class="col-md-10">
-                <div class="widget wgreen">
-                    <div class="widget-head">
-                         <div class="pull-left">1DAA - Matriz de Divergencias</div>
-                        <div class="widget-icons pull-right"></div>
-                        <div class="clearfix"></div>
+        <!--BOTONES----------------------------------------------------------------------------------------------------->
+                    <div class="form-group">
+                        <div class="col-md-offset-2 col-md-8">
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:1mao' estudio.id%}"><i class="fa fa-arrow-left"></i> Inf. 1MAO</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                            <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao' estudio.id%}">Inf. 2MAO<i class="fa fa-arrow-right"></i></a>
+                        </div>
                     </div>
-                    <div class="widget-content">
-                        <table class="table table-bordered" id="tabla3">
-                            <thead>
-                                    <tr>
-                                        {%if actores and estado_matriz != 0 %}
-                                         <input style='text-align: center;'  type="text" size="3" readonly value="">
-                                            {% for actor in actores %}
-                                            <input id="ver{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
-                                                       title="{{actor.nombreLargo|upper}}" size="3" value="{{actor.nombreCorto}}"
-                                                       data-toggle="modal"
-                                                       href="#modal_Consultar_actor">
-                                            {% endfor %}
-                                        {% endif %}
-                                        <br>
-                                     </tr>
-                            </thead>
-                            <tbody>
-                                {% if valores_daa %}
-                                <tr>
-                                    {% for i in valores_daa %}
-                                        <!--Inserta el ultimo valor de la fila antes del salto de linea-->
-                                        {% if i.posicion ==  posicion_salto_caa_daa %}
-                                            <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
-                                            <br>
-                                        <!--Inserta los nombres cortos-->
-                                        {% elif i.posicion == 0 %}
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
-                                        <!--Inserta los valores daa posteriores al nombre y previos al valor de la ultima fila-->
-                                        {% else %}
-                                            <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
-                                        {% endif %}
-                                    {% endfor %}
-                                {% else %}
-                                    <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
-                                {% endif %}
-                                    <br>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+
+        <!--INICIO MODAL CONSULTAR ACTOR Y OBJETIVO--------------------------------------------------------------------->
+
+                    {% include 'actor/modal_detalle_actor.html' %}
+
+                    {% include 'objetivo/modal_detalle_objetivo.html' %}
 
 
-<!--BOTONES----------------------------------------------------------------------------------------------------->
-            <div class="form-group">
-                <div class="col-md-offset-2 col-md-8">
-                    <a class="btn btn-sm btn-success" href="{%url 'mactor:1mao' estudio.id%}"><i class="fa fa-arrow-left"></i> Inf. 1MAO</a>
-                    <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                    <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
-                    <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao' estudio.id%}">Inf. 2MAO<i class="fa fa-arrow-right"></i></a>
-                </div>
-            </div>
+        <!--MODAL AYUDA------------------------------------------------------------------------------------------>
 
-<!--INICIO MODAL CONSULTAR ACTOR Y OBJETIVO----------------->
-
-            {% include 'actor/modal_detalle_actor.html' %}
-
-            {% include 'objetivo/modal_detalle_objetivo.html' %}
-
-
-<!--MODAL AYUDA------------------------------------------------------------------------------------------>
-
-            <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     <div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-									<h4 class="modal-title">Ayuda</h4>
-								     </div>
-								     <div class="modal-body" style="text-align: justify">
-									<p>La matriz 1MAO describe la actitud actual de cada actor
-                                        en relación a cada objetivo, indicando su posición a favor (+1), en contra (-1) o
-                                        neutra (0) hacia el alcance de cada objetivo. </p><br>
-                                         <p>Mediante la información contenida en ella, se obtiene la primera matriz de
-                                         convergencias (1CAA) y divergencias (1DAA). La primera se obtiene por el
-                                         producto de la matriz que contiene sólo productos escalares positivos, lo que
-                                         representa el número de objetivos respecto a los cuales un par de actores tiene
-                                         una actitud convergente, ya sea favorable o desfavorable. Por otro lado, 1DAA
-                                         se obtiene por el producto de la matriz que contiene sólo productos escalares
-                                         negativos, lo que representa el número de objetivos respecto de los cuales el
-                                         par de actores tiene una actitud divergente.
-  </p>
-								     </div>
-								  <div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-								  </div>
-								    </div>
-								</div>
-                    </div>
+                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                             <div class="modal-content">
+                                             <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                            <h4 class="modal-title">Ayuda</h4>
+                                             </div>
+                                             <div class="modal-body" style="text-align: justify">
+                                            <p>La matriz 1MAO describe la actitud actual de cada actor
+                                                en relación a cada objetivo, indicando su posición a favor (+1), en contra (-1) o
+                                                neutra (0) hacia el alcance de cada objetivo. </p><br>
+                                                 <p>Mediante la información contenida en ella, se obtiene la primera matriz de
+                                                 convergencias (1CAA) y divergencias (1DAA). La primera se obtiene por el
+                                                 producto de la matriz que contiene sólo productos escalares positivos, lo que
+                                                 representa el número de objetivos respecto a los cuales un par de actores tiene
+                                                 una actitud convergente, ya sea favorable o desfavorable. Por otro lado, 1DAA
+                                                 se obtiene por el producto de la matriz que contiene sólo productos escalares
+                                                 negativos, lo que representa el número de objetivos respecto de los cuales el
+                                                 par de actores tiene una actitud divergente.
+          </p>
+                                             </div>
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                          </div>
+                                            </div>
+                                        </div>
+                            </div>
+    {% else %}
+        <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+    {% endif %}
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>

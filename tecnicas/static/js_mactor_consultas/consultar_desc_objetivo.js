@@ -7,7 +7,7 @@ $('#id_idObjetivoX').on('change', Descripcion);
             var id = $(this).val();
             $.ajax({
                 data : {'id' : id},
-                url : 'objetivo-ajax',
+                url : 'consultar_objetivo',
                 type : 'get',
                 success : function (data)
                 {

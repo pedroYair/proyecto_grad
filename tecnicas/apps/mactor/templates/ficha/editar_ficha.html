@@ -2,12 +2,15 @@
 {% load staticfiles %}
 
 {% block head_title %}
-<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+	{% if usuario == 'COORDINADOR' %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+	{% endif %}
 {% endblock %}
 
 {% block content %}
 
-<div class="matter">
+	{% if usuario == 'COORDINADOR' %}
+		<div class="matter">
 					<div class="container">
 						<div class="row">
 							<div class="col-md-12">
@@ -118,6 +121,9 @@
 						</div>
 					</div>
 </div>
+	{% else %}
+    <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+ 	{% endif %}
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>

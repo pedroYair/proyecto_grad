@@ -3,12 +3,17 @@
 {% load crispy_forms_tags %}
 
 {% block head_title %}
-<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+
+    {% if usuario == 'COORDINADOR' %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+    {% endif %}
+
 {% endblock %}
 
 {% block content %}
 
-<div class="matter">
+ {% if usuario == 'COORDINADOR' %}
+	<div class="matter">
 					<div class="container">
 						<div class="row">
 							<div class="col-md-12">
@@ -22,7 +27,6 @@
 
 										<hr />
 										<!-- Form starts.  -->
-                                        {% if usuario == 'COORDINADOR' %}
 											<form class="form-horizontal" role="form" method="post" id="form_ficha">
                                             {% csrf_token %}
 
@@ -106,10 +110,6 @@
 												  </div>
 												</div>
 											</form>
-										{% else %}
-										  <h2>NO TIENE PERMISOS PARA AGREGAR FICHAS DE ESTRATEGIAS</h2>
-										{% endif %}
-
 
 <!--INICIO MODAL AYUDA--------------------------->
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -142,6 +142,9 @@
 						</div>
 					</div>
 </div>
+ {% else %}
+    <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+ {% endif %}
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>

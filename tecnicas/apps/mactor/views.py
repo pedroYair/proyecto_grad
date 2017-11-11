@@ -412,9 +412,13 @@ def Crear_relacion_mid(request, idEstudio):
             Crear_auto_influencia(request, idEstudio)
         return redirect('mactor:influencia', estudio_mactor.id)
     else:
+        tipo_usuario = obtener_tipo_usuario(request, idEstudio)
         actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
         form = Form_MID()
-    return render(request, 'influencia/crear_influencia.html', {'form': form, 'estudio': estudio_mactor, 'actores': actores})
+    return render(request, 'influencia/crear_influencia.html', {'form': form,
+                                                                'estudio': estudio_mactor,
+                                                                'usuario': tipo_usuario,
+                                                                'actores': actores})
 
 
 # View generadora de la matriz MID
@@ -423,9 +427,11 @@ def Generar_matriz_mid(request, idEstudio):
     idEstudio = int(idEstudio)
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio,
+                                                    idExperto=request.user.id).order_by('idActorY', 'idActorX')
     tamano_matriz_completa = len(lista_actores)*len(lista_actores)
     posicion_salto_linea = lista_actores.count() + 1
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
 
     if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
 
@@ -436,16 +442,17 @@ def Generar_matriz_mid(request, idEstudio):
                     'posicion_salto': posicion_salto_linea,
                     'valores': valores_mid,
                     'valores_midi': valores_midi,
-                    'estudio': estudio_mactor}
+                    'estudio': estudio_mactor,
+                    'usuario': tipo_usuario}
 
     elif len(lista_influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
         valores_mid = generar_mid_incompleta(request, idEstudio)
 
         contexto = {'actores': lista_actores, 'posicion_salto': posicion_salto_linea,
-                    'valores': valores_mid, 'estudio': estudio_mactor}
+                    'valores': valores_mid, 'estudio': estudio_mactor, 'usuario': tipo_usuario}
     # si no se han registrado actores
     else:
-        contexto = {'estudio': estudio_mactor}
+        contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario}
 
     return render(request, 'influencia/matriz_mid.html', contexto)
 
@@ -455,6 +462,7 @@ def Generar_matriz_mid(request, idEstudio):
 def Crear_1mao(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
     if request.method == 'POST':
         form = Form_1mao(request.POST)
         if form.is_valid():
@@ -466,6 +474,7 @@ def Crear_1mao(request, idEstudio):
         form = Form_1mao()
     return render(request, 'mao/crear_1mao.html', {'form': form,
                                                    'estudio': estudio_mactor,
+                                                   'usuario': tipo_usuario,
                                                    'actores': actores,
                                                    'objetivos': objetivos})
 
@@ -473,6 +482,7 @@ def Crear_1mao(request, idEstudio):
 def Crear_2mao(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
     if request.method == 'POST':
         form = Form_2mao(request.POST)
         if form.is_valid():
@@ -484,6 +494,7 @@ def Crear_2mao(request, idEstudio):
         form = Form_2mao()
     return render(request, 'mao/crear_2mao.html', {'form': form,
                                                    'estudio': estudio_mactor,
+                                                   'usuario': tipo_usuario,
                                                    'actores': actores,
                                                    'objetivos': objetivos})
 
@@ -830,6 +841,7 @@ def agregar_descripcion_mid(idEstudio, tipo_matriz, lista):
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
 def crear_contexto_mao(request, idEstudio, numero_matriz):
 
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
     lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
@@ -841,9 +853,9 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
                                                 tipo=numero_matriz,
                                                 idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
     else:
-        estado_mao3 = verificar_mid_mao2(idEstudio)
+        estado_mao3 = verificar_mid_mao2(idEstudio, request.user.id)
         if estado_mao3:
-            lista_mao = calcular_valores_3mao(idEstudio)
+            lista_mao = calcular_valores_3mao(request, idEstudio, request.user.id)
     # Si la matriz esta completa
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
         lista_contexto = establecer_valores_mao(idEstudio, lista_mao, MATRIZ_COMPLETA)
@@ -860,7 +872,8 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
                     'posicion_salto_caa_daa': lista_actores.count(),
                     'valores_daa': valores_daa,
                     'estado_matriz': MATRIZ_COMPLETA,
-                    'estudio': estudio_mactor}
+                    'estudio': estudio_mactor,
+                    'usuario': tipo_usuario}
     # Si la matriz es 1mao o 2mao y esta incompleta
     elif len(lista_mao) != tamano_matriz_completa and numero_matriz != 3 or len(lista_mao) == 0 and numero_matriz != 3:
 
@@ -872,9 +885,10 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
                     'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
                     'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
                     'estado_matriz': MATRIZ_INCOMPLETA,
-                    'estudio': estudio_mactor}
+                    'estudio': estudio_mactor,
+                    'usuario': tipo_usuario}
     else:
-        contexto = {'estudio': estudio_mactor}
+        contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario}
 
     return contexto
 
@@ -1149,12 +1163,12 @@ def establecer_valores_movilizacion(objetivos, valores):
 
 
 # Verifica si las matrices MID y 2MAO estan totalmente diligenciadas para proceder al calculo de la matriz 3mao
-def verificar_mid_mao2(idEstudio):
+def verificar_mid_mao2(idEstudio, idUsuario):
 
     objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    mid = Relacion_MID.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
-    mao2 = Relacion_MAO.objects.filter(tipo=2, idEstudio=idEstudio).order_by('idActorY', 'idObjetivoX')
+    mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=idUsuario).order_by('idActorY', 'idActorX')
+    mao2 = Relacion_MAO.objects.filter(tipo=2, idEstudio=idEstudio, idExperto=idUsuario).order_by('idActorY', 'idObjetivoX')
     tamano_mid = len(actores) * len(actores)
     tamano_2mao = len(actores) * len(objetivos)
     estado_3mao = False
@@ -1166,12 +1180,12 @@ def verificar_mid_mao2(idEstudio):
 
 
 # Calculo de los valores 3mao = 2mao * ri
-def calcular_valores_3mao(idEstudio):
+def calcular_valores_3mao(request, idEstudio, idUsuario):
 
     cant_objetivos = len(Objetivo.objects.filter(idEstudio=idEstudio).order_by('id'))
     cant_actores = len(Actor.objects.filter(idEstudio=idEstudio).order_by('id'))
-    mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2).order_by('idActorY', 'idObjetivoX')
-    valores_midi = calcular_midi(idEstudio)  # relaciones midi calculadas
+    mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2, idExperto=idUsuario).order_by('idActorY', 'idObjetivoX')
+    valores_midi = calcular_midi(request, idEstudio)               # relaciones midi calculadas
     valores_ri = calcular_ri(valores_midi, cant_actores)  # valores ri a partir de los midi
     valores_3mao = []  # lista que contiene a los 3mao
 
@@ -1420,7 +1434,9 @@ def Consultar_objetivos_faltantes(request):
         # si se esta registrando una influencia 1mao
         if tipo == "form_1mao":
             # se obtiene la lista de relaciones  1mao registradas
-            mao = Relacion_MAO.objects.filter(tipo=1, idEstudio=idEstudio).order_by('idActorY', 'idObjetivoX')
+            mao = Relacion_MAO.objects.filter(tipo=1,
+                                              idEstudio=idEstudio,
+                                              idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
             # se obtienen los id de los objetivos ya registrados en la matriz mao con ese actor Y
             for i in mao:
                 if i.idActorY.id == int(id) and i.idExperto == request.user:
@@ -1428,8 +1444,10 @@ def Consultar_objetivos_faltantes(request):
                     lista_valores.append(i.valor)
 
         # si se esta registrando una influencia 2mao
-        if tipo == "form_2mao":
-            mao = Relacion_MAO.objects.all().exclude(tipo=1).order_by('idActorY', 'idObjetivoX')
+        elif tipo == "form_2mao":
+            mao = Relacion_MAO.objects.all().filter(tipo=2,
+                                                    idEstudio=idEstudio,
+                                                    idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
             for i in mao:
                 if i.idActorY.id == int(id):
                     lista_registrados.append(i.idObjetivoX.id)
@@ -1451,13 +1469,20 @@ def obtener_tipo_usuario(request, idEstudio):
 
     estudio = Estudio_Mactor.objects.get(id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
-    tipo = "EXPERTO"
+    tipo = ""
 
+
+    # Si el usuario es coordinador y experto
     if request.user in lista_expertos and estudio.idCoordinador == request.user:
         tipo = "COORDINADOR"
+    # Si el usuario solo es coordinador
     elif estudio.idCoordinador == request.user:
         tipo = "COORDINADOR"
+    # Si el usuario es solo experto
+    elif request.user in lista_expertos:
+        tipo = "EXPERTO"
 
+    print(tipo, "-------")
     return tipo
 
 
