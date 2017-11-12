@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+
 from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_estudio,\
     Crear_actor, Listar_actores, Editar_actor, Consultar_actor, Eliminar_actor, \
     Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
@@ -8,6 +9,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_1mao, Crear_2mao, Generar_matriz_mao, \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls
+
 
 # nombre de la url, view que respondera y el parametro name
 urlpatterns = [
@@ -58,4 +60,5 @@ urlpatterns = [
     url(r'exportar_actores/xls/(?P<idEstudio>\d+)/$', exportar_actores_xls, name='actores_xls'),
     url(r'exportar_fichas/xls/(?P<idEstudio>\d+)/$', exportar_fichas_xls, name='fichas_xls'),
     url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', exportar_objetivos_xls, name='objetivos_xls'),
+
 ]

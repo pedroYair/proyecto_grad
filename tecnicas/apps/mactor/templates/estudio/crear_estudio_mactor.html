@@ -1,13 +1,16 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 {% load crispy_forms_tags %}
 
 {% block head_title %}
-Agregar estudio
+    {% if request.user.is_superuser %}
+        Bienvenido: {{user.username}}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
-
-<div class="matter">
+    {% if request.user.is_superuser %}
+        <div class="matter">
 					<div class="container">
 						<div class="row">
 							<div class="col-md-12">
@@ -117,7 +120,10 @@ Agregar estudio
 						</div>
 					</div>
 </div>
-
+    {% else %}
+        <img src="{% static 'img/acceso_denegado.png' %}">
+        <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
+    {% endif %}
 {% endblock %}
 
 
