@@ -93,6 +93,7 @@
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</a>
                         {% endif %}
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
+                        <a class="btn btn-primary" href="{% url 'mactor:actores_xls' estudio.id%}" ><i class="fa fa-download"></i> Exportar</a>
                         <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas' estudio.id%}">Estrategias <i class="fa fa-arrow-right"></i></a>
                     </div>
                 </div>
@@ -113,6 +114,7 @@
 <script src="{% static 'js_mactor_modals/eliminar/eliminar_actor.js'%}"></script>
 <script src="{% static 'js_mactor_modals/editar/editar_actor.js'%}"></script>
 <script src="{% static 'js_mactor_modals/consultar/consultar_actor.js'%}"></script>
+<script src="{% static 'js_mactor_consultas/exportar_actores_excel.js'%}"></script>
 {% endblock %}
 
 {% endblock %}

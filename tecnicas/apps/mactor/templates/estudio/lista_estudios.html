@@ -48,6 +48,9 @@ Bienvenido: {{user.username}}
                                                    href="{%url 'mactor:editar_estudio' estudio.id%}">
                                                     <i class="fa fa-pencil"></i>
                                                 </a>
+                                                <a class="btn btn-primary" title="Exportar" href="{% url 'mactor:estudios_xls' estudio.id %}" >
+                                                    <i class="fa fa-download"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     {% endfor %}

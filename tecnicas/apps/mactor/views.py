@@ -1,3 +1,4 @@
+import xlwt
 from django.contrib.auth.models import User
 from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
 from django.shortcuts import render, redirect, get_object_or_404
@@ -1465,6 +1466,7 @@ def Consultar_objetivos_faltantes(request):
 # --------------------------------------------------------------------------------------------------
 
 
+# Determina si el usuario en sesion hace parte del proyecto y que rol ocupa
 def obtener_tipo_usuario(request, idEstudio):
 
     estudio = Estudio_Mactor.objects.get(id=idEstudio)
@@ -1484,6 +1486,170 @@ def obtener_tipo_usuario(request, idEstudio):
 
     print(tipo, "-------")
     return tipo
+
+# ---------------------------------------EXPORTACION A EXCEL------------------------------------------------------->
+
+
+def exportar_estudios_xls(request, idEstudio):
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="estudios_mactor.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    hoja_actores = wb.add_sheet('Actores')
+    hoja_fichas = wb.add_sheet('Estrategias')
+    hoja_objetivos = wb.add_sheet('Objetivos')
+
+    # Sheet header, first row
+    row_num = 0
+    row_num2 = 0
+    row_num3 = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns1 = ['Nombre Largo', 'Nombre Corto', 'Descripción']
+    columns2 = ['Estrategias del actor', 'Sobre el actor', 'Estrategias']
+
+    for col_num in range(len(columns1)):
+        hoja_actores.write(row_num, col_num, columns1[col_num], font_style)
+
+    for col_num in range(len(columns2)):
+        hoja_fichas.write(row_num2, col_num, columns2[col_num], font_style)
+
+    for col_num in range(len(columns1)):
+        hoja_objetivos.write(row_num3, col_num, columns1[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    filas_actores = Actor.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
+    filas_fichas = Ficha_actor.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
+                                                                       'idActorX__nombreLargo',
+                                                                       'estrategia')
+    filas_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
+
+    for row in filas_actores:
+        row_num += 1
+        for col_num in range(len(row)):
+            hoja_actores.write(row_num, col_num, row[col_num], font_style)
+
+    for row in filas_fichas:
+        row_num2 += 1
+        for col_num in range(len(row)):
+            hoja_fichas.write(row_num2, col_num, row[col_num], font_style)
+
+    for row in filas_objetivos:
+        row_num3 += 1
+        for col_num in range(len(row)):
+            hoja_objetivos.write(row_num3, col_num, row[col_num], font_style)
+
+
+    wb.save(response)
+    return response
+
+
+def exportar_actores_xls(request, idEstudio):
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="tabla_actores.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Actores')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Nombre Largo', 'Nombre Corto', 'Descripción']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    rows = Actor.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
+
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+
+def exportar_fichas_xls(request, idEstudio):
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="fichas_estrategias.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Estrategias')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Estrategias del actor', 'Sobre el actor', 'Estrategias']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    rows = Ficha_actor.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
+                                                                       'idActorX__nombreLargo',
+                                                                       'estrategia')
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+
+def exportar_objetivos_xls(request, idEstudio):
+
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="tabla_objetivos.xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Objetivos')
+
+    # Sheet header, first row
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Nombre Largo', 'Nombre Corto', 'Descripción']
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    # Sheet body, remaining rows
+    font_style = xlwt.XFStyle()
+
+    rows = Objetivo.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
+
+    for row in rows:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+    return response
+
+
+
 
 
 

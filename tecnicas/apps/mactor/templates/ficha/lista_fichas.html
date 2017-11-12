@@ -82,7 +82,7 @@
                 </div>
             </div>
 
-<!-BOTONES--------------------------------------->
+<!--BOTONES--------------------------------------->
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
@@ -91,11 +91,12 @@
                     <a class="btn btn-primary" id="agregarFicha" href="{%url 'mactor:ficha' estudio.id%}"><i class="fa fa-plus"></i> Agregar</a>
                    {% endif %}
                    <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
+                   <a class="btn btn-primary" href="{% url 'mactor:fichas_xls' estudio.id%}" ><i class="fa fa-download"></i> Exportar</a>
                    <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_objetivos' estudio.id%}">Objetivos <i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
 
-<!-MODALES ELIMINAR Y AYUDA--------------------->
+<!--MODALES ELIMINAR Y AYUDA--------------------->
 
             {% include 'ficha/modals_ficha.html'%}
         </div>

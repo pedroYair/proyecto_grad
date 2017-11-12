@@ -6,7 +6,8 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
     Crear_relacion_mid, Generar_matriz_mid, \
     Crear_1mao, Crear_2mao, Generar_matriz_mao, \
-    Consultar_actores_faltantes, Consultar_objetivos_faltantes
+    Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
+    exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls
 
 # nombre de la url, view que respondera y el parametro name
 urlpatterns = [
@@ -40,15 +41,21 @@ urlpatterns = [
     url(r'consultar_objetivo', login_required(Consultar_objetivo)),
 
     # Urls modelo Relacion_MID y matrices
-    url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', Crear_relacion_mid, name='influencia'),
-    url(r'^matriz_mid/(?P<idEstudio>\d+)/$', Generar_matriz_mid, name='matriz_mid'),
+    url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', login_required(Crear_relacion_mid), name='influencia'),
+    url(r'^matriz_mid/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_mid), name='matriz_mid'),
 
     # Urls modelo Relacion_MAO y matrices
-    url(r'^1mao/(?P<idEstudio>\d+)/$', Crear_1mao, name='1mao'),
-    url(r'^2mao/(?P<idEstudio>\d+)/$', Crear_2mao, name='2mao'),
-    url(r'^matriz_mao/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', Generar_matriz_mao, name='matriz_mao'),
+    url(r'^1mao/(?P<idEstudio>\d+)/$', login_required(Crear_1mao), name='1mao'),
+    url(r'^2mao/(?P<idEstudio>\d+)/$', login_required(Crear_2mao), name='2mao'),
+    url(r'^matriz_mao/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(Generar_matriz_mao), name='matriz_mao'),
 
     # Urls consultas ajax
     url(r'mid-ajax/$', Consultar_actores_faltantes),  # obtiene lista actores X registrados en la mid
-    url(r'mao-ajax/$', Consultar_objetivos_faltantes) # obtiene lista objetivos X registrados en la mao
+    url(r'mao-ajax/$', Consultar_objetivos_faltantes), # obtiene lista objetivos X registrados en la mao
+
+    # Urls exportar a excel
+    url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', exportar_estudios_xls, name='estudios_xls'),
+    url(r'exportar_actores/xls/(?P<idEstudio>\d+)/$', exportar_actores_xls, name='actores_xls'),
+    url(r'exportar_fichas/xls/(?P<idEstudio>\d+)/$', exportar_fichas_xls, name='fichas_xls'),
+    url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', exportar_objetivos_xls, name='objetivos_xls'),
 ]

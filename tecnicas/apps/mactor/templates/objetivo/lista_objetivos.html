@@ -95,6 +95,7 @@
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</a>
                     {% endif %}
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal5"><i class="fa fa-book"></i> Ayuda</a>
+                    <a class="btn btn-primary" href="{% url 'mactor:objetivos_xls' estudio.id%}" ><i class="fa fa-download"></i> Exportar</a>
                     <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id%}">Influencias MID<i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
