@@ -32,9 +32,9 @@ class Form_Estudio(forms.ModelForm):
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idExpertos': forms.SelectMultiple(attrs={'class': 'form-control'}),
-            'fecha_inicio': forms.DateInput(attrs={'class': 'datepicker'}),
-            'fecha_final': forms.DateInput(attrs={'class': 'datepicker'}),
-            'estado': forms.CheckboxInput(),
+            'fecha_inicio': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'fecha_final': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'estado': forms.TextInput(attrs={'class': 'form-control'}, ),
             'id_Proyecto': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
