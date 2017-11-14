@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Django + Charts.js</title>
+
+    {% include 'mao/base_diagrama/css.html' %}
+    {% include 'mao/base_diagrama/bootstrap_defaults.html' %}
+  </head>
+  <body>
+    <div class='container'>
+    {% block content %}
+    {% endblock content %}
+    </div>
+    {% include 'mao/base_diagrama/js.html' %}
+
+        <canvas id="myChart" width="1000" height="250"></canvas>
+        <script>
+
+            var valor = 10
+            var lista = []
+
+                    $.ajax(
+                        {
+                            url: 'prueba',
+                            type: 'get',
+                            success: function (data) {
+                                var object = JSON.parse(data);
+                                valor = object.default
+                                labels = object.labels
+                                defaultData = object.default
+
+                                for(var i=0; i<object.labels.length; i++)
+                                {
+                                    lista.push(object.labels[i])
+                                    console.log(lista[i])
+                                }
+
+                                setChart()
+
+                            }
+                        });
+
+  function setChart()
+  {
+      var ctx = document.getElementById("myChart").getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: lista,
+                datasets: [{
+                    label: [ '# of Votes', '# of Votes'],
+                    data: [valor, 1, 1, 1, 1, 1, valor, 1, 1, 1, 1, 1, 2, 4, 5],
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.2)',
+                        'rgba(54, 162, 235, 0.2)',
+                        'rgba(255, 206, 86, 0.2)',
+                        'rgba(75, 192, 192, 0.2)',
+                        'rgba(153, 102, 255, 0.2)',
+                        'rgba(255, 159, 64, 0.2)'
+                    ],
+                    borderColor: [
+                        'rgba(255,99,132,1)',
+                        'rgba(54, 162, 235, 1)',
+                        'rgba(255, 206, 86, 1)',
+                        'rgba(75, 192, 192, 1)',
+                        'rgba(153, 102, 255, 1)',
+                        'rgba(255, 159, 64, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero:true
+                        }
+                    }]
+                }
+            }
+        });
+
+  }
+
+            </script>
+  </body>
+</html>

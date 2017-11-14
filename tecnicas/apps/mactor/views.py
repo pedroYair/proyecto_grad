@@ -1,4 +1,5 @@
 import xlwt
+import json
 from django.contrib.auth.models import User
 from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,6 +8,7 @@ from django.http import JsonResponse, HttpResponse, request, Http404
 from django.views.generic import CreateView, UpdateView
 from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO
 from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao
+
 
 
 # ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
@@ -1647,6 +1649,39 @@ def exportar_objetivos_xls(request, idEstudio):
 
     wb.save(response)
     return response
+
+
+# ---------------------------------------------------------------------------------------------------------->
+
+def generar_diagrama_barras(request):
+
+    contexto= {'a': 1, 'b': 2, 'c': 3}
+    my_view(request)
+
+    return render(request, 'mao/diagrama.html', contexto)
+
+
+def my_view(request):
+
+    actores = Actor.objects.all().count()
+    labels = Actor.objects.all()
+    lista = []
+
+    for i in labels:
+        lista.append(i.nombreCorto)
+
+    for i in lista:
+        print(i)
+
+    data = {'labels': lista,
+                             'default': actores}
+
+    json_data = json.dumps(data)
+    return HttpResponse(json_data)
+
+
+
+
 
 
 
