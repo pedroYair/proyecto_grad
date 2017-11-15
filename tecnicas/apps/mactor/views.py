@@ -1653,31 +1653,69 @@ def exportar_objetivos_xls(request, idEstudio):
 
 # ---------------------------------------------------------------------------------------------------------->
 
-def generar_diagrama_barras(request):
+def generar_diagrama_barras(request, idEstudio, numero_matriz):
 
-    contexto= {'a': 1, 'b': 2, 'c': 3}
-    my_view(request)
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto= {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/diagrama_barras.html', contexto)
 
-    return render(request, 'mao/diagrama.html', contexto)
+
+def generar_histograma_movilizacion(request, idEstudio, numero_matriz):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto= {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/histograma_movilizacion.html', contexto)
 
 
-def my_view(request):
+def obtener_datos_diagrama_barras(request):
 
-    actores = Actor.objects.all().count()
-    labels = Actor.objects.all()
-    lista = []
+    if request.is_ajax():
+        idEstudio = int(request.GET['estudio'])
+        numero_matriz = int(request.GET['numero_matriz'])
+        tipo = request.GET['tipo']
+        cant_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).count()
+        labels = []
+        lista_nombres = []
 
-    for i in labels:
-        lista.append(i.nombreCorto)
+        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_mao = valores_mao['valores_mao']
+        valores_positivos = []
+        valores_negativos = []
 
-    for i in lista:
-        print(i)
+        if tipo == "IMPLICACION":
+            labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+            for i in valores_mao:
+                if i.posicion == cant_objetivos+1:
+                    valores_positivos.append(i.valor)
+                elif i.posicion == cant_objetivos+2:
+                    valores_negativos.append(i.valor)
+        # si se trata de los valores de movilizacion
+        else:
+            labels = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
+            indice = 0
+            for i in range(len(valores_mao)):
+                if type(valores_mao[i].posicion) == int and valores_mao[i].posicion > cant_objetivos+4 and len(valores_positivos) < cant_objetivos:
+                    valores_positivos.append(valores_mao[i].valor)
+                if len(valores_positivos) == cant_objetivos and indice == 0:
+                    indice += i+1
 
-    data = {'labels': lista,
-                             'default': actores}
+            contador = 0
+            while contador < cant_objetivos:
+                contador += 1
+                valores_negativos.append(valores_mao[indice+contador].valor)
 
-    json_data = json.dumps(data)
-    return HttpResponse(json_data)
+        for i in labels:
+            lista_nombres.append(i.nombreCorto)
+
+        data = {'labels': lista_nombres,
+                'valores_positivos': valores_positivos,
+                'valores_negativos': valores_negativos}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
+
 
 
 

@@ -9,7 +9,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_1mao, Crear_2mao, Generar_matriz_mao, \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
-    generar_diagrama_barras, my_view
+    generar_diagrama_barras, obtener_datos_diagrama_barras, generar_histograma_movilizacion
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -62,7 +62,8 @@ urlpatterns = [
     url(r'exportar_fichas/xls/(?P<idEstudio>\d+)/$', exportar_fichas_xls, name='fichas_xls'),
     url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', exportar_objetivos_xls, name='objetivos_xls'),
 
-    url(r'^diagrama/$', generar_diagrama_barras, name='diagrama'),
-    url(r'prueba', my_view, name='prueba'),
+    url(r'^diagrama_barras/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_diagrama_barras, name='diagrama'),
+    url(r'^histograma_movilizacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_movilizacion, name='movilizacion'),
+    url(r'datos_barras', obtener_datos_diagrama_barras, name='prueba'),
 
 ]

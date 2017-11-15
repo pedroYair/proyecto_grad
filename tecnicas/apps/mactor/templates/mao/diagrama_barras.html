@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block head_title %}
+	{% if usuario != '' %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        <input hidden class="col-sm-1" type="number" name="numero_matriz" value="{{numero_matriz}}">
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+        {% include 'mao/js_diagrama_html/js_diagrama_barras.html' %}
+
+		<div style="width: 75%">
+        	<canvas id="canvas"></canvas>
+    	</div>
+
+        <script>
+            var idEstudio = $('input[name="idEstudio"]').val();
+            var numero_matriz = $('input[name="numero_matriz"]').val();
+            var tipo_grafico = "IMPLICACION"
+             console.log(idEstudio)
+            var positivos = []
+			var negativos = []
+            var lista_labels = []
+			// se obtienen los datos a graficar
+			$.ajax(
+                        {
+                            data : {'numero_matriz' : numero_matriz,
+                                    'estudio': idEstudio,
+                                    'tipo': tipo_grafico},
+                            url: 'datos_barras',
+                            type: 'get',
+                            success: function (data)
+                            {
+                                var object = JSON.parse(data);
+
+                                for(var i=0; i<object.labels.length; i++)
+                                {
+                                    lista_labels.push(object.labels[i])
+                                }
+                                for(var j=0; j<object.valores_positivos.length; j++)
+                                {
+                                    positivos.push(object.valores_positivos[j])
+									negativos.push(object.valores_negativos[j])
+                                }
+                                generar()
+                            },
+                             error: function()
+                             {
+                                 console.log("Error no se puede graficar")
+                             }
+                        });
+
+            // se asignan los valores a graficar
+			var barChartData = {
+				labels: lista_labels,
+				datasets: [{
+					label: 'Implicación Positiva',
+					backgroundColor: 'rgba(54, 162, 235, 0.2)',
+					data: positivos
+				}, {
+					label: 'Implicación Negativa',
+					backgroundColor: 'rgba(255,99,132,1)',
+					data: negativos
+				}]
+			};
+
+			// Funcion que genera la grafica
+			function generar () {
+				var ctx = document.getElementById("canvas").getContext("2d");
+				window.myBar = new Chart(ctx, {
+					type: 'bar',
+					data: barChartData,
+					options: {
+						title:{
+							display:true,
+							text:"Implicación de los actores"
+						},
+						tooltips: {
+							mode: 'index',
+							intersect: false
+						},
+						responsive: true,
+						scales: {
+							xAxes: [{
+								stacked: true,
+							}],
+							yAxes: [{
+								stacked: true
+							}]
+						}
+					}
+				});
+			};
+
+            </script>
+
+<br>
+<br>
+        <div class="form-group">
+                        <div class="col-md-offset-2 col-md-8">
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                            <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
+                        </div>
+                    </div>
+
+{% endblock %}
