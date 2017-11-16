@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block head_title %}
+	{% if usuario != '' %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+        {% include 'js_diagramas.html' %}
+
+		<div style="width: 60%">
+        	<canvas id="canvas"></canvas>
+    	</div>
+
+    <script>
+
+            var idEstudio = $('input[name="idEstudio"]').val();
+            var lista_parejas = []
+            var lista_colores = [   'rgb(255, 0, 0)',
+                                    'rgb(255, 255, 0)',
+                                    'rgb(244, 164, 96)',
+                                    'rgb(128, 0, 128)',
+                                    'rgb(106, 90, 205)',
+                                    'rgb(173, 255, 47)',
+                                    'rgb(0, 100, 0)',
+                                    'rgb(128, 128, 0)',
+                                    'rgb(0, 255, 255)',
+                                    'rgb(139, 0, 0)',
+                                    'rgb(255, 215, 0)',
+                                    'rgb(230, 230, 250)',
+                                    'rgb(75, 0, 130)',
+                                    'rgb(128, 128, 128)',
+                                    'rgb(0, 0, 0)',
+
+                                ]
+
+			// se obtienen los datos a graficar
+			$.ajax(
+			    {
+                    data : {
+                                    'estudio': idEstudio
+                                   },
+                    url: 'datos_plano_midi',
+                    type: 'get',
+                    success: function (data)
+                    {
+                        var object = JSON.parse(data);
+
+                        for(var j=0; j<object.valores_ejeX.length; j++)
+                        {
+                            var pareja = {
+                                label: object.labels[j],
+                                borderColor: lista_colores[j],
+                                backgroundColor: lista_colores[j],
+                                data: [{
+                                    x: object.valores_ejeX[j],
+                                    y: object.valores_ejeY[j],
+                                       }]
+                                        };
+
+                            lista_parejas.push(pareja);
+                        }
+                        generar()
+                    },
+                    error: function()
+                    {
+                        console.log("Error no se puede graficar")
+                    }
+                });
+
+			// Asignación de los valores a graficar
+			var scatterChartData =
+                {
+            datasets: lista_parejas
+                };
+
+			// Funcion que genera la grafica
+			function generar ()
+            {
+				var ctx = document.getElementById("canvas").getContext("2d");
+				window.myScatter = Chart.Scatter(ctx,
+                    {
+                    data: scatterChartData,
+                    options: {
+                        title: {
+                            display: true,
+                            text: 'Mapa de Influencias y Dependencias entre Actores'
+                               }
+                            }
+                    });
+			};
+     </script>
+
+<br>
+<br>
+        <div class="form-group">
+                        <div class="col-md-offset-2 col-md-8">
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mid' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                            <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
+                        </div>
+                    </div>
+
+{% endblock %}

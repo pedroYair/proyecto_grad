@@ -1651,13 +1651,13 @@ def exportar_objetivos_xls(request, idEstudio):
     return response
 
 
-# ---------------------------------------------------------------------------------------------------------->
+# ----------------------------------------HISTOGRAMAS--------------------------------------------------------->
 
-def generar_diagrama_barras(request, idEstudio, numero_matriz):
+def generar_histograma_implicacion(request, idEstudio, numero_matriz):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     contexto= {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
-    return render(request, 'mao/diagrama_barras.html', contexto)
+    return render(request, 'mao/histograma_implicacion.html', contexto)
 
 
 def generar_histograma_movilizacion(request, idEstudio, numero_matriz):
@@ -1667,7 +1667,7 @@ def generar_histograma_movilizacion(request, idEstudio, numero_matriz):
     return render(request, 'mao/histograma_movilizacion.html', contexto)
 
 
-def obtener_datos_diagrama_barras(request):
+def obtener_datos_histograma(request):
 
     if request.is_ajax():
         idEstudio = int(request.GET['estudio'])
@@ -1696,8 +1696,8 @@ def obtener_datos_diagrama_barras(request):
             for i in range(len(valores_mao)):
                 if type(valores_mao[i].posicion) == int and valores_mao[i].posicion > cant_objetivos+4 and len(valores_positivos) < cant_objetivos:
                     valores_positivos.append(valores_mao[i].valor)
-                if len(valores_positivos) == cant_objetivos and indice == 0:
-                    indice += i+1
+                if valores_mao[i].valor == "-":
+                    indice += i
 
             contador = 0
             while contador < cant_objetivos:
@@ -1713,6 +1713,56 @@ def obtener_datos_diagrama_barras(request):
 
         json_data = json.dumps(data)
         return HttpResponse(json_data)
+
+# ----------------------------------------PLANOS CARTESIANOS----------------------------------------------------->
+
+
+def generar_plano_midi(request, idEstudio):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto= {'estudio': estudio_mactor}
+    return render(request, 'influencia/mapa_actores.html', contexto)
+
+
+def obtener_datos_plano(request):
+
+    if request.is_ajax():
+        idEstudio = int(request.GET['estudio'])
+        valores_midi = calcular_midi(request, int(idEstudio))
+        lista_nombres = []
+        valores_ejeX = []
+        valores_ejeY = []
+
+        labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+
+        for i in labels:
+            lista_nombres.append(i.nombreCorto)
+
+        for i in valores_midi:
+            if i.posicion == labels.count()+1:
+                valores_ejeY.append(i.valor)
+            if i.posicion == "" and len(valores_ejeX) < labels.count():
+                valores_ejeX.append(i.valor)
+
+
+        for i in range(len(valores_ejeX)):
+            x = valores_ejeX[i]
+            y = valores_ejeY[i]
+            diferencia = x - y
+            if abs(diferencia) > 2:
+                if x > y:
+                    valores_ejeY[i] = y * -1
+                else:
+                    valores_ejeX[i] = x * -1
+
+        data = {'labels': lista_nombres,
+                'valores_ejeX': valores_ejeX,
+                'valores_ejeY': valores_ejeY}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
 
 
 

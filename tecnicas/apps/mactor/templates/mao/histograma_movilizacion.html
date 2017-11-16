@@ -10,8 +10,9 @@
 
 {% block content %}
 
-        {% include 'mao/js_diagrama_html/js_diagrama_barras.html' %}
+        {% include 'js_diagramas.html' %}
 
+<br>
 		<div style="width: 75%">
         	<canvas id="canvas"></canvas>
     	</div>
@@ -20,7 +21,6 @@
             var idEstudio = $('input[name="idEstudio"]').val();
             var numero_matriz = $('input[name="numero_matriz"]').val();
             var tipo_grafico = "MOVILIZACION"
-             console.log(idEstudio)
             var positivos = []
 			var negativos = []
             var lista_labels = []
@@ -30,7 +30,7 @@
                             data : {'numero_matriz' : numero_matriz,
                                     'estudio': idEstudio,
                                     'tipo': tipo_grafico},
-                            url: 'datos_barras',
+                            url: 'datos_histograma',
                             type: 'get',
                             success: function (data)
                             {
@@ -38,12 +38,9 @@
 
                                 for(var i=0; i<object.labels.length; i++)
                                 {
-                                    lista_labels.push(object.labels[i])
-                                }
-                                for(var j=0; j<object.valores_positivos.length; j++)
-                                {
-                                    positivos.push(object.valores_positivos[j])
-									negativos.push(object.valores_negativos[j])
+                                    lista_labels.push(object.labels[i]);
+                                    positivos.push(object.valores_positivos[i]);
+									negativos.push(object.valores_negativos[i]);
                                 }
                                 generar()
                             },
@@ -57,11 +54,11 @@
 			var barChartData = {
 				labels: lista_labels,
 				datasets: [{
-					label: 'Implicación Positiva',
+					label: 'Movilización Positiva',
 					backgroundColor: 'rgba(54, 162, 235, 0.2)',
 					data: positivos
 				}, {
-					label: 'Implicación Negativa',
+					label: 'Movilización Negativa',
 					backgroundColor: 'rgba(255,99,132,1)',
 					data: negativos
 				}]
@@ -101,7 +98,7 @@
 <br>
         <div class="form-group">
                         <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                             <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
                             <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
                         </div>
