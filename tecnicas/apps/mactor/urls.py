@@ -6,11 +6,11 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
     Crear_relacion_mid, Generar_matriz_mid, \
-    Crear_1mao, Crear_2mao, Generar_matriz_mao, \
+    Crear_1mao, Crear_2mao, Generar_matriz_mao, Generar_matrices_caa_daa, \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
     generar_histograma_implicacion, obtener_datos_histograma, generar_histograma_movilizacion, \
-    generar_plano_midi, obtener_datos_plano
+    generar_plano_midi, obtener_datos_plano, generar_mapa_caa_daa, obtener_datos_mapa_caa_daa
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -52,10 +52,11 @@ urlpatterns = [
     url(r'^1mao/(?P<idEstudio>\d+)/$', login_required(Crear_1mao), name='1mao'),
     url(r'^2mao/(?P<idEstudio>\d+)/$', login_required(Crear_2mao), name='2mao'),
     url(r'^matriz_mao/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(Generar_matriz_mao), name='matriz_mao'),
+    url(r'^matriz_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(Generar_matrices_caa_daa), name='caa_daa'),
 
     # Urls consultas ajax
     url(r'mid-ajax/$', Consultar_actores_faltantes),  # obtiene lista actores X registrados en la mid
-    url(r'mao-ajax/$', Consultar_objetivos_faltantes), # obtiene lista objetivos X registrados en la mao
+    url(r'mao-ajax/$', Consultar_objetivos_faltantes),  # obtiene lista objetivos X registrados en la mao
 
     # Urls exportar a excel
     url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', exportar_estudios_xls, name='estudios_xls'),
@@ -63,11 +64,17 @@ urlpatterns = [
     url(r'exportar_fichas/xls/(?P<idEstudio>\d+)/$', exportar_fichas_xls, name='fichas_xls'),
     url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', exportar_objetivos_xls, name='objetivos_xls'),
 
+    # Urls histogramas mao
     url(r'^histograma_implicacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_implicacion, name='implicacion'),
     url(r'^histograma_movilizacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_movilizacion, name='movilizacion'),
     url(r'datos_histograma', obtener_datos_histograma),
 
-    url(r'^plano_cartesiano/(?P<idEstudio>\d+)/$', generar_plano_midi, name='plano'),
+    # Urls mapa actores
+    url(r'^mapa_actores/(?P<idEstudio>\d+)/$', generar_plano_midi, name='mapa_actores'),
     url(r'datos_plano_midi', obtener_datos_plano),
+
+    # Urls graficos caa y daa
+    url(r'^mapa_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_mapa_caa_daa, name='mapa_caa_daa'),
+    url(r'datos_mapa_caa_daa', obtener_datos_mapa_caa_daa),
 
 ]

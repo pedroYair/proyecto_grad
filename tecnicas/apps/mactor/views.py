@@ -515,6 +515,29 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
     else:
         raise Http404("Error: Esta vista no existe")
 
+
+def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
+
+    if int(numero_matriz) >= 1 and int(numero_matriz) <= 3:
+        estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
+        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        contexto_mao = crear_contexto_mao(request, int(idEstudio), int(numero_matriz))
+        tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+        print(len(contexto_mao['valores_caa']))
+        contexto = {
+            'actores': actores,
+            'valores_caa': contexto_mao['valores_caa'],
+            'posicion_salto_caa_daa': actores.count(),
+            'valores_daa': contexto_mao['valores_daa'],
+            'estudio': estudio_mactor,
+            'numero_matriz': numero_matriz,
+            'usuario': tipo_usuario}
+
+        return render(request, 'mao/matrices_caa_daa.html', contexto)
+    else:
+        raise Http404("Error: Esta vista no existe")
+
+
 # ---------------------------------------------CLASES AUXILIARES-------------------------------------->
 
 
@@ -895,7 +918,6 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
 
     return contexto
 
-
 # Establece los valores de la matriz que se muestran en la matriz mao
 def establecer_valores_mao(idEstudio, mao, estado_matriz):
 
@@ -962,6 +984,8 @@ def establecer_valores_mao(idEstudio, mao, estado_matriz):
     else:
         return valores_mao
 
+
+# <<<<FUNCIONES RELACIONES CAA Y DAA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Generacion de matriz de convergencias Y divergencias
 def generar_caa_daa(idEstudio, lista_mao, tipo):
@@ -1186,10 +1210,8 @@ def verificar_mid_mao2(idEstudio, idUsuario):
 def calcular_valores_3mao(request, idEstudio, idUsuario):
 
     cant_objetivos = len(Objetivo.objects.filter(idEstudio=idEstudio).order_by('id'))
-    cant_actores = len(Actor.objects.filter(idEstudio=idEstudio).order_by('id'))
     mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2, idExperto=idUsuario).order_by('idActorY', 'idObjetivoX')
-    valores_midi = calcular_midi(request, idEstudio)               # relaciones midi calculadas
-    valores_ri = calcular_ri(valores_midi, cant_actores)  # valores ri a partir de los midi
+    valores_ri = calcular_ri(request, idEstudio)  # valores ri a partir de los midi
     valores_3mao = []  # lista que contiene a los 3mao
 
     # Multiplicacion de los valores 2mao por los valores ri para hallar los valores 3mao
@@ -1214,8 +1236,10 @@ def calcular_valores_3mao(request, idEstudio, idUsuario):
 
 
 # Calculo del valor ri para la matriz 3mao
-def calcular_ri(valores_midi, cant_actor):
+def calcular_ri(request, idEstudio):
 
+    cant_actor = len(Actor.objects.filter(idEstudio=idEstudio).order_by('id'))
+    valores_midi = calcular_midi(request, idEstudio)
     valores_diagonal = []  # valores de la diagonal de la matriz midi
     valores_Ii = []        # valores Ii de midi
     valores_Di = []        # valores Di de midi
@@ -1740,9 +1764,10 @@ def obtener_datos_plano(request):
 
         for i in valores_midi:
             if i.posicion == labels.count()+1:
-                valores_ejeY.append(i.valor)
-            if i.posicion == "" and len(valores_ejeX) < labels.count():
                 valores_ejeX.append(i.valor)
+            if i.posicion == "" and len(valores_ejeY) < labels.count():
+                valores_ejeY.append(i.valor)
+
 
 
         for i in range(len(valores_ejeX)):
@@ -1754,6 +1779,47 @@ def obtener_datos_plano(request):
                     valores_ejeY[i] = y * -1
                 else:
                     valores_ejeX[i] = x * -1
+
+        data = {'labels': lista_nombres,
+                'valores_ejeX': valores_ejeX,
+                'valores_ejeY': valores_ejeY}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
+def generar_mapa_caa_daa(request, idEstudio, numero_matriz):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/mapa_caa_daa.html', contexto)
+
+
+def obtener_datos_mapa_caa_daa(request):
+
+    if request.is_ajax():
+        idEstudio = int(request.GET['estudio'])
+        numero_matriz = int(request.GET['numero_matriz'])
+        labels = []
+        lista_nombres = []
+
+        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_caa = valores_mao['valores_caa']
+        valores_daa = valores_mao['valores_daa']
+        valores_ejeX = []
+        valores_ejeY = []
+
+        labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        for i in valores_caa:
+            if i.posicion == "":
+                valores_ejeY.append(i.valor)
+
+        for i in valores_daa:
+            if i.posicion == "":
+                valores_ejeX.append(i.valor)
+
+        for i in labels:
+            lista_nombres.append(i.nombreCorto)
 
         data = {'labels': lista_nombres,
                 'valores_ejeX': valores_ejeX,
