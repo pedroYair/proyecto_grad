@@ -20,7 +20,7 @@
         <script>
             var idEstudio = $('input[name="idEstudio"]').val();
             var numero_matriz = $('input[name="numero_matriz"]').val();
-            var tipo_grafico = "MOVILIZACION"
+            var tipo = "CAA-DAA"
             var positivos = []
 			var negativos = []
             var lista_labels = []
@@ -29,8 +29,8 @@
                         {
                             data : {'numero_matriz' : numero_matriz,
                                     'estudio': idEstudio,
-                                    'tipo': tipo_grafico},
-                            url: 'datos_histograma',
+                                    'tipo': tipo},
+                            url: 'datos_caa_daa',
                             type: 'get',
                             success: function (data)
                             {
@@ -39,8 +39,8 @@
                                 for(var i=0; i<object.labels.length; i++)
                                 {
                                     lista_labels.push(object.labels[i]);
-                                    positivos.push(object.valores_positivos[i]);
-									negativos.push(object.valores_negativos[i]);
+                                    positivos.push(object.caa[i]);
+									negativos.push(object.daa[i]);
                                 }
                                 generar()
                             },
@@ -54,11 +54,11 @@
 			var barChartData = {
 				labels: lista_labels,
 				datasets: [{
-					label: 'Movilización Positiva',
+					label: 'Convergencias',
 					backgroundColor: 'rgba(54, 162, 235, 0.2)',
 					data: positivos
 				}, {
-					label: 'Movilización Negativa',
+					label: 'Divergencias',
 					backgroundColor: 'rgba(255,99,132,1)',
 					data: negativos
 				}]
@@ -73,7 +73,7 @@
 					options: {
 						title:{
 							display:true,
-							text:"Movilización de los actores"
+							text: "Convergencias y Divergencias entre Actores"
 						},
 						tooltips: {
 							mode: 'index',
@@ -99,7 +99,7 @@ Matriz {{numero_matriz}}MAO.
 <br>
         <div class="form-group">
                         <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:caa_daa' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                             <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
                             <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
                         </div>

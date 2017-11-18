@@ -17,7 +17,13 @@
                         <div class="widget wgreen">
                             <div class="widget-head">
                                  <div class="pull-left">{{numero_matriz}}CAA - Matriz de Convergencias</div>
-                                <div class="widget-icons pull-right"></div>
+                                <div class="widget-icons pull-right">
+                                    <select name="caa" class="form-control" onchange="location = this.value;">
+                                        <option value="">Diagramas</option>
+                                        <option value="{% url 'mactor:caa' estudio.id numero_matriz %}">Diagrama de Convergencias </option>
+                                        <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
+                                    </select>
+                                </div>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">
@@ -75,7 +81,13 @@
                         <div class="widget wgreen">
                             <div class="widget-head">
                                  <div class="pull-left">{{numero_matriz}}DAA - Matriz de Divergencias</div>
-                                <div class="widget-icons pull-right"></div>
+                                <div class="widget-icons pull-right">
+                                    <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
+                                        <option value="">Diagramas</option>
+                                        <option value="{% url 'mactor:daa' estudio.id numero_matriz%}">Diagrama de Divergencias </option>
+                                        <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
+                                    </select>
+                                </div>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">

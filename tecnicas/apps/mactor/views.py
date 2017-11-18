@@ -884,7 +884,7 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
             lista_mao = calcular_valores_3mao(request, idEstudio, request.user.id)
     # Si la matriz esta completa
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
-        lista_contexto = establecer_valores_mao(idEstudio, lista_mao, MATRIZ_COMPLETA)
+        lista_contexto = calcular_valores_mao(idEstudio, lista_mao, MATRIZ_COMPLETA)
         valores_mao = agregar_descripcion_mao(idEstudio, numero_matriz, lista_contexto[0])
         valores_caa = agregar_descripcion_caa_daa(idEstudio, lista_contexto[1])
         valores_daa = agregar_descripcion_caa_daa(idEstudio, lista_contexto[2])
@@ -918,8 +918,9 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
 
     return contexto
 
+
 # Establece los valores de la matriz que se muestran en la matriz mao
-def establecer_valores_mao(idEstudio, mao, estado_matriz):
+def calcular_valores_mao(idEstudio, mao, estado_matriz):
 
     objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
@@ -967,8 +968,8 @@ def establecer_valores_mao(idEstudio, mao, estado_matriz):
 
     # si la matriz esta totalmente diligenciada
     if estado_matriz == MATRIZ_COMPLETA:
-        list_valores_caa = generar_caa_daa(idEstudio, lista_valores_mao, 1)
-        lista_valores_daa = generar_caa_daa(idEstudio, lista_valores_mao, 2)
+        list_valores_caa = calcular_caa_daa(idEstudio, lista_valores_mao, 1)
+        lista_valores_daa = calcular_caa_daa(idEstudio, lista_valores_mao, 2)
 
     # se agrega a lista los valores de movilizacion
     valores_mao = []
@@ -988,7 +989,7 @@ def establecer_valores_mao(idEstudio, mao, estado_matriz):
 # <<<<FUNCIONES RELACIONES CAA Y DAA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 # Generacion de matriz de convergencias Y divergencias
-def generar_caa_daa(idEstudio, lista_mao, tipo):
+def calcular_caa_daa(idEstudio, lista_mao, tipo):
 
     cant_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id').count()
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
@@ -1322,7 +1323,7 @@ def generar_mao_incompleta(idEstudio, mao):
         lista_mao_incompleta.pop()
         registros_relleno -= 1
 
-    lista_contexto = establecer_valores_mao(idEstudio, lista_mao_incompleta, MATRIZ_INCOMPLETA)
+    lista_contexto = calcular_valores_mao(idEstudio, lista_mao_incompleta, MATRIZ_INCOMPLETA)
 
     return lista_contexto
 
@@ -1738,8 +1739,67 @@ def obtener_datos_histograma(request):
         json_data = json.dumps(data)
         return HttpResponse(json_data)
 
-# ----------------------------------------PLANOS CARTESIANOS----------------------------------------------------->
 
+def histograma_caa_daa(request, idEstudio, numero_matriz):
+
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/histograma_caa_daa.html', contexto)
+
+
+def diagrama_barras_convergencias(request, idEstudio, numero_matriz):
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/diagrama_barras_convergencias.html', contexto)
+
+
+def diagrama_barras_divergencias(request, idEstudio, numero_matriz):
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/diagrama_barras_divergencias.html', contexto)
+
+
+def obtener_datos_histograma_caa_daa(request):
+
+    if request.is_ajax():
+        idEstudio = int(request.GET['estudio'])
+        numero_matriz = int(request.GET['numero_matriz'])
+        tipo = request.GET['tipo']
+        labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        lista_nombres = []
+        data = {}
+
+        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_caa = valores_mao['valores_caa']
+        valores_daa = valores_mao['valores_daa']
+        datos_caa = []
+        datos_daa = []
+
+        for i in range(len(valores_caa)):
+            if valores_caa[i].posicion == "":
+                datos_caa.append(valores_caa[i].valor)
+                datos_daa.append(valores_daa[i].valor)
+
+        for i in labels:
+            lista_nombres.append(i.nombreCorto)
+
+        if tipo == "CAA":
+            data = {'labels': lista_nombres,
+                    'caa': datos_caa}
+        elif tipo == "DAA":
+            data = {'labels': lista_nombres,
+                    'daa': datos_daa}
+        else:
+            data = {'labels': lista_nombres,
+                    'caa': datos_caa,
+                    'daa': datos_daa}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
+
+# ----------------------------------------PLANOS CARTESIANOS----------------------------------------------------->
 
 def generar_plano_midi(request, idEstudio):
 

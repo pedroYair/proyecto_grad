@@ -10,6 +10,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
     generar_histograma_implicacion, obtener_datos_histograma, generar_histograma_movilizacion, \
+    obtener_datos_histograma_caa_daa, histograma_caa_daa, diagrama_barras_convergencias, diagrama_barras_divergencias, \
     generar_plano_midi, obtener_datos_plano, generar_mapa_caa_daa, obtener_datos_mapa_caa_daa
 
 
@@ -65,8 +66,10 @@ urlpatterns = [
     url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', exportar_objetivos_xls, name='objetivos_xls'),
 
     # Urls histogramas mao
-    url(r'^histograma_implicacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_implicacion, name='implicacion'),
-    url(r'^histograma_movilizacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_movilizacion, name='movilizacion'),
+    url(r'^histograma_implicacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_implicacion,
+        name='implicacion'),
+    url(r'^histograma_movilizacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_movilizacion,
+        name='movilizacion'),
     url(r'datos_histograma', obtener_datos_histograma),
 
     # Urls mapa actores
@@ -76,5 +79,9 @@ urlpatterns = [
     # Urls graficos caa y daa
     url(r'^mapa_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_mapa_caa_daa, name='mapa_caa_daa'),
     url(r'datos_mapa_caa_daa', obtener_datos_mapa_caa_daa),
+    url(r'^histograma_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', histograma_caa_daa, name='hist_caa_daa'),
+    url(r'^barras_caa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', diagrama_barras_convergencias, name='caa'),
+    url(r'^barras_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', diagrama_barras_divergencias, name='daa'),
+    url(r'datos_caa_daa', obtener_datos_histograma_caa_daa),
 
 ]
