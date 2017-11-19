@@ -1874,6 +1874,14 @@ def obtener_datos_mapa_caa_daa(request):
         return HttpResponse(json_data)
 
 
+def generar_grafo(request):
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=1)
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': 1}
+    return render(request, 'grafo_ejemplo.html', contexto)
+
+#
+
+
 
 
 

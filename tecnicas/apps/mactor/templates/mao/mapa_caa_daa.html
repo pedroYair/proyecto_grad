@@ -94,14 +94,28 @@
                         title: {
                             display: true,
                             text: 'Mapa de Convergencias y Divergencias entre Actores'
-                               }
+                               },
+                        scales:{
+	            	        xAxes: [{
+	            		    scaleLabel: {
+	            			labelString: 'Divergencia',
+	            			display: true,
+	            		                }
+	            	                }],
+	            	        yAxes: [{
+	            		    scaleLabel: {
+	            			labelString: 'Convergencia',
+	            			display: true
+	            		                }
+	            	                }]
+	                            }
                             }
                     });
 			};
      </script>
 
 <br>
-Divergencias (X) y Convergencias (Y) {{numero_matriz}}MAO.
+Mapa de Convergencias y Divergencias {{numero_matriz}}MAO.
 <br>
 <br>
         <div class="form-group">

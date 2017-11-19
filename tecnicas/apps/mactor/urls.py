@@ -11,7 +11,8 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
     generar_histograma_implicacion, obtener_datos_histograma, generar_histograma_movilizacion, \
     obtener_datos_histograma_caa_daa, histograma_caa_daa, diagrama_barras_convergencias, diagrama_barras_divergencias, \
-    generar_plano_midi, obtener_datos_plano, generar_mapa_caa_daa, obtener_datos_mapa_caa_daa
+    generar_plano_midi, obtener_datos_plano, generar_mapa_caa_daa, obtener_datos_mapa_caa_daa, \
+    generar_grafo
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -83,5 +84,8 @@ urlpatterns = [
     url(r'^barras_caa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', diagrama_barras_convergencias, name='caa'),
     url(r'^barras_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', diagrama_barras_divergencias, name='daa'),
     url(r'datos_caa_daa', obtener_datos_histograma_caa_daa),
+
+    # Urls grafos
+    url(r'^grafo/$', generar_grafo, name='grafo'),
 
 ]

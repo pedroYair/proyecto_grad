@@ -88,13 +88,26 @@
                         title: {
                             display: true,
                             text: 'Mapa de Influencias y Dependencias entre Actores'
-                               }
+                               },
+                        scales:{
+	            	        xAxes: [{
+	            		    scaleLabel: {
+	            			labelString: 'Influencia',
+	            			display: true,
+	            		                }
+	            	                }],
+	            	        yAxes: [{
+	            		    scaleLabel: {
+	            			labelString: 'Dependencia',
+	            			display: true
+	            		                }
+	            	                }]
+	                            }
                             }
                     });
 			};
      </script>
-<br>
-Influencia (X) y Dependencia (Y).
+
 <br>
 <br>
         <div class="form-group">
