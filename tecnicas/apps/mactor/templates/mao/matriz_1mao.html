@@ -51,21 +51,32 @@
                                                 {% for i in valores_mao %}
                                                     <!--Inserta la ultima celda (Implicacion total)-->
                                                     {% if i.posicion == posicion_salto %}
-                                                        <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        <input style='text-align: center;' readonly type="text" size="3"
+                                                               title="{{i.descripcion}}" value="{{i.valor}}">
                                                         <br>
                                                     <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
                                                     {% elif i.posicion == posicion_salto_movilizacion %}
-                                                        <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        <input style='text-align: center;' readonly type="text" size="3"
+                                                               title="{{i.descripcion}}" value="{{i.valor}}">
                                                         <br>
                                                     <!--Inserta el nombre corto del actor en el eje Y-->
                                                     {% elif i.posicion == 0 %}
-                                                        <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
+                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        {% endif %}
                                                     <!--Inserta los valores de la matriz posteriores al nombre en Y y previos a la ultima celda-->
                                                     {% else %}
                                                         {% if i.valor == 100 %}
-                                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="INFLUENCIA SIN REGISTRAR" value="X">
+                                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"
+                                                                   title="INFLUENCIA SIN REGISTRAR" value="X">
                                                         {% else %}
-                                                            <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                            <input style='text-align: center;' readonly type="text" size="3"
+                                                                   title="{{i.descripcion}}" value="{{i.valor}}">
                                                         {% endif %}
                                                     {% endif %}
                                                     {% endfor %}

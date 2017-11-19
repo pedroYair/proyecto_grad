@@ -50,7 +50,14 @@
                                                     <br>
                                                 <!--Inserta los nombres en el eje Y-->
                                                 {% elif i.posicion == 0 %}
-                                                     <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}" title="{{i.descripcion|upper}}">
+                                                        {% if i.valor != 'D.D' %}
+                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% endif %}
                                                 <!--Inserta los valores mid posteriores al nombre en Y y previos al valor de la ultima celda-->
                                                 {% else %}
                                                     <!-->
@@ -121,7 +128,14 @@
                                                 <br>
                                             <!--Inserta los nombres cortos en el eje Y-->
                                             {% elif i.posicion == 0 %}
-                                                 <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" value="{{i.valor}}" title="{{i.descripcion|upper}}">
+                                                        {% if i.valor != 'D.DI' %}
+                                                               <input id="daa{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% endif %}
                                             <!--Inserta los valores midi posteriores al nombre corto en Y y previos a la ultima celda-->
                                             {% else %}
                                                 <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}" title="{{i.descripcion}}">

@@ -142,13 +142,21 @@ def Consultar_actor(request):
 
     if request.is_ajax():
         id = request.GET.get('id')
+        idEstudio = request.GET['idEstudio']
 
-        if id.count("ver"):
-            id = id.lstrip("ver")
+        if id.count("str"):
+            id = id.lstrip("str")
+        elif id.count("daa"):
+            id = id.lstrip("daa")
+        elif id.count("ver"):
+            id = int(id.lstrip("ver"))
         elif id.count("act"):
-            id = id.lstrip("act")
+            id = int(id.lstrip("act"))
 
-        actor = get_object_or_404(Actor, id=int(id))
+        if type(id) == int:
+            actor = get_object_or_404(Actor, id=id)
+        else:
+            actor = get_object_or_404(Actor, nombreCorto=id, idEstudio=int(idEstudio))
 
         response = JsonResponse(
             {'nombreCorto': actor.nombreCorto,
@@ -523,7 +531,6 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
         contexto_mao = crear_contexto_mao(request, int(idEstudio), int(numero_matriz))
         tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-        print(len(contexto_mao['valores_caa']))
         contexto = {
             'actores': actores,
             'valores_caa': contexto_mao['valores_caa'],
@@ -1338,9 +1345,6 @@ def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
 
     if tipo_matriz == 1:
         for i in lista:
-            if i.posicion == 0 and indice < actores.count():
-                i.descripcion = actores[indice].nombreLargo
-                indice += 1
             if i.posicion in range(objetivos.count() + 1):
                 if i.valor == 0:
                     i.descripcion = "Neutro"
@@ -1351,35 +1355,16 @@ def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
 
     elif tipo_matriz == 2:
         for i in lista:
-            if i.posicion == 0 and indice < actores.count():
-                i.descripcion = actores[indice].nombreLargo
-                indice += 1
-            if i.posicion in range(objetivos.count() + 1):
-                if i.valor == -4:
-                    i.descripcion = "Desacuerdo"
-                elif i.valor == -3:
-                    i.descripcion = "Desacuerdo"
-                elif i.valor == -2:
-                    i.descripcion = "Desacuerdo"
-                elif i.valor == -1:
-                    i.descripcion = "Desacuerdo"
-                elif i.valor == 0:
-                    i.descripcion = "Neutro"
-                elif i.valor == 1:
+            if type(i.posicion) == int and i.posicion > 0 and i.posicion <= objetivos.count():
+                print(i.valor)
+                if i.valor == abs(i.valor):
                     i.descripcion = "Acuerdo"
-                elif i.valor == 2:
-                    i.descripcion = "Acuerdo"
-                elif i.valor == 3:
-                    i.descripcion = "Acuerdo"
-                elif i.valor == 4:
-                    i.descripcion = "Acuerdo"
+                else:
+                    i.descripcion = "Desacuerdo"
 
     elif tipo_matriz == 3:
         for i in lista:
-            if i.posicion == 0 and indice < actores.count():
-                i.descripcion = actores[indice].nombreLargo
-                indice += 1
-            if i.posicion in range(objetivos.count() + 1):
+            if i.posicion in range(objetivos.count() + 1) and i.descripcion == " ":
                 i.descripcion = i.valor
     return lista
 

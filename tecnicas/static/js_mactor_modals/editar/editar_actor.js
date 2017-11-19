@@ -11,7 +11,7 @@
                 // se envia el id del actor mediante ajax para obtener los datos
                 $.ajax(
                     {
-                        data: {'id': id},
+                        data: {'id': id, 'idEstudio': 0},
                         url: 'consultar_actor',
                         type: 'get',
                         // los datos retornados son asignados en el formulario

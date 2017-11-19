@@ -60,7 +60,14 @@
                                                     <br>
                                                 <!--Inserta el nombre corto del actor-->
                                                 {% elif i.posicion == 0 %}
-                                                    <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}"  value="{{i.valor}}">
+                                                        {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
+                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% endif %}
                                                 <!--Inserta los valores de la matriz posteriores al nombre y corto y las sumatorias de implicacion - y +-->
                                                 {% else %}
                                                     {% if i.valor == 100 %}

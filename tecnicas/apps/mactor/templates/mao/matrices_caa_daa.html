@@ -47,14 +47,23 @@
                                             {% for i in valores_caa %}
                                                 <!-- Inserta el ultimo valor de la fila antes del salto de linea-->
                                                 {% if i.posicion == posicion_salto_caa_daa %}
-                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                    <input style='text-align: center;' readonly type="text" size="3"
+                                                           title="{{i.descripcion}}" value="{{i.valor}}">
                                                     <br>
                                                 <!--Inserta los nombres cortos en el eje Y-->
                                                 {% elif i.posicion == 0 %}
-                                                    <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}"  value="{{i.valor}}">
+                                                        {% if i.valor != 'Ci' %}
+                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% endif %}
                                                 {% else %}
                                                 <!--Inserta los valores caa posteriores al nombre y previos al valor de la ultima celda-->
-                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}"  value="{{i.valor}}">
+                                                    <input style='text-align: center;' readonly type="text" size="3"
+                                                           title="{{i.descripcion}}"  value="{{i.valor}}">
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}
@@ -112,14 +121,23 @@
                                             {% for i in valores_daa %}
                                                 <!--Inserta el ultimo valor de la fila antes del salto de linea-->
                                                 {% if i.posicion ==  posicion_salto_caa_daa %}
-                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                    <input style='text-align: center;' readonly type="text" size="3"
+                                                           title="{{i.descripcion}}" value="{{i.valor}}">
                                                     <br>
                                                 <!--Inserta los nombres cortos-->
                                                 {% elif i.posicion == 0 %}
-                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% if i.valor != 'Di' %}
+                                                               <input id="daa{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% endif %}
                                                 <!--Inserta los valores daa posteriores al nombre y previos al valor de la ultima fila-->
                                                 {% else %}
-                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                    <input style='text-align: center;' readonly type="text" size="3"
+                                                           title="{{i.descripcion}}" value="{{i.valor}}">
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}

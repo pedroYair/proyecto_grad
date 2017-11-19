@@ -13,7 +13,7 @@
                 if (id.indexOf("ver") != -1) {
                     $.ajax(
                         {
-                            data: {'id': id},
+                            data: {'id': id, 'idEstudio': 0},
                             url: 'consultar_actor',
                             type: 'get',
                             success: function (data) {

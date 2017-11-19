@@ -59,7 +59,14 @@
                                                 <br>
                                                 <!--Inserta el nombre corto del actor (columna 1 nueva fila)-->
                                                 {%elif i.posicion == 0%}
-                                                 <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
+                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        {% endif %}
                                                 <!--Inserta los valores posterioes a la primera columna y previos a la ultima-->
                                                 {%else%}
                                                  <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
