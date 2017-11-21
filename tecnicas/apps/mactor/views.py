@@ -921,7 +921,7 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
                     'estudio': estudio_mactor,
                     'usuario': tipo_usuario}
     else:
-        contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario}
+        contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'estado_matriz': MATRIZ_INCOMPLETA}
 
     return contexto
 
@@ -1356,7 +1356,6 @@ def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
     elif tipo_matriz == 2:
         for i in lista:
             if type(i.posicion) == int and i.posicion > 0 and i.posicion <= objetivos.count():
-                print(i.valor)
                 if i.valor == abs(i.valor):
                     i.descripcion = "Acuerdo"
                 else:
@@ -1732,27 +1731,13 @@ def histograma_caa_daa(request, idEstudio, numero_matriz):
     return render(request, 'mao/histograma_caa_daa.html', contexto)
 
 
-def diagrama_barras_convergencias(request, idEstudio, numero_matriz):
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
-    return render(request, 'mao/diagrama_barras_convergencias.html', contexto)
-
-
-def diagrama_barras_divergencias(request, idEstudio, numero_matriz):
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
-    return render(request, 'mao/diagrama_barras_divergencias.html', contexto)
-
-
-def obtener_datos_histograma_caa_daa(request):
+def datos_histograma_caa_daa(request):
 
     if request.is_ajax():
         idEstudio = int(request.GET['estudio'])
         numero_matriz = int(request.GET['numero_matriz'])
-        tipo = request.GET['tipo']
         labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
         lista_nombres = []
-        data = {}
 
         valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
         valores_caa = valores_mao['valores_caa']
@@ -1768,32 +1753,24 @@ def obtener_datos_histograma_caa_daa(request):
         for i in labels:
             lista_nombres.append(i.nombreCorto)
 
-        if tipo == "CAA":
-            data = {'labels': lista_nombres,
-                    'caa': datos_caa}
-        elif tipo == "DAA":
-            data = {'labels': lista_nombres,
-                    'daa': datos_daa}
-        else:
-            data = {'labels': lista_nombres,
-                    'caa': datos_caa,
-                    'daa': datos_daa}
+        data = {'labels': lista_nombres,
+                'caa': datos_caa,
+                'daa': datos_daa}
 
         json_data = json.dumps(data)
         return HttpResponse(json_data)
 
 
-
 # ----------------------------------------PLANOS CARTESIANOS----------------------------------------------------->
 
-def generar_plano_midi(request, idEstudio):
+def generar_mapa_midi(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     contexto= {'estudio': estudio_mactor}
     return render(request, 'influencia/mapa_actores.html', contexto)
 
 
-def obtener_datos_plano(request):
+def datos_mapa_midi(request):
 
     if request.is_ajax():
         idEstudio = int(request.GET['estudio'])
@@ -1812,8 +1789,6 @@ def obtener_datos_plano(request):
                 valores_ejeX.append(i.valor)
             if i.posicion == "" and len(valores_ejeY) < labels.count():
                 valores_ejeY.append(i.valor)
-
-
 
         for i in range(len(valores_ejeX)):
             x = valores_ejeX[i]
@@ -1840,7 +1815,7 @@ def generar_mapa_caa_daa(request, idEstudio, numero_matriz):
     return render(request, 'mao/mapa_caa_daa.html', contexto)
 
 
-def obtener_datos_mapa_caa_daa(request):
+def datos_mapa_caa_daa(request):
 
     if request.is_ajax():
         idEstudio = int(request.GET['estudio'])
@@ -1874,12 +1849,146 @@ def obtener_datos_mapa_caa_daa(request):
         return HttpResponse(json_data)
 
 
-def generar_grafo(request):
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=1)
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': 1}
-    return render(request, 'grafo_ejemplo.html', contexto)
+# -------------------------------------------GRAFOS---------------------------------------------
 
-#
+
+def generar_grafo_caa(request, idEstudio, numero_matriz):
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/grafo_caa.html', contexto)
+
+
+def datos_grafo_caa(request):
+
+    if request.is_ajax():
+        idEstudio = int(request.GET['estudio'])
+        numero_matriz = int(request.GET['numero_matriz'])
+
+        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_caa = valores_mao['valores_caa']
+        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        coordenadas = []
+        nodos_id = []
+        nodos_labels = []
+        destinos_edge = []
+        origenes_edge = []
+        labels_edge = []
+
+        # se eliminan de la matriz los nombres de fila y la fila se sumtoria de convergencias
+        valores_caa = limpiar_matriz(valores_caa, actores)
+
+        # se asigna a cada valor el eje x y y que le corresponde (actor x, actor y)
+        contador = 0
+        for i in actores:
+            nodos_id.append(i.id)
+            nodos_labels.append(i.nombreCorto)
+            for j in actores:
+                coordenadas.append(Valor_posicion(posicion=i,
+                                                  valor=valores_caa[contador],
+                                                  descripcion=j))
+                contador += 1
+
+        # eliminacion de los valores o en la diagonal
+        contador = 0
+        for i in range(len(coordenadas)):
+            if i != contador:
+                origenes_edge.append(coordenadas[i].posicion.id)
+                destinos_edge.append(coordenadas[i].descripcion.id)
+                labels_edge.append(str(coordenadas[i].valor))
+            else:
+                 contador += actores.count() + 1
+
+        data = {'nodos_id': nodos_id,
+                'nodos_labels': nodos_labels,
+                'edge_origenes': origenes_edge,
+                'edge_destinos': destinos_edge,
+                'edge_labels': labels_edge}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
+def generar_grafo_daa(request, idEstudio, numero_matriz):
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    return render(request, 'mao/grafo_daa.html', contexto)
+
+
+def datos_grafo_daa(request):
+
+    if request.is_ajax():
+        idEstudio = int(request.GET['estudio'])
+        numero_matriz = int(request.GET['numero_matriz'])
+
+        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_caa = valores_mao['valores_daa']
+        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        coordenadas = []
+        nodos_id = []
+        nodos_labels = []
+        destinos_edge = []
+        origenes_edge = []
+        labels_edge = []
+
+        # se eliminan de la matriz los nombres de fila y la fila se sumtoria de convergencias
+        valores_caa = limpiar_matriz(valores_caa, actores)
+
+        # se asigna a cada valor el eje x y y que le corresponde (actor x, actor y)
+        contador = 0
+        for i in actores:
+            nodos_id.append(i.id)
+            nodos_labels.append(i.nombreCorto)
+            for j in actores:
+                coordenadas.append(Valor_posicion(posicion=i,
+                                                  valor=valores_caa[contador],
+                                                  descripcion=j))
+                contador += 1
+
+        # eliminacion de los valores o en la diagonal
+        contador = 0
+        for i in range(len(coordenadas)):
+            if i != contador:
+                origenes_edge.append(coordenadas[i].posicion.id)
+                destinos_edge.append(coordenadas[i].descripcion.id)
+                labels_edge.append(str(coordenadas[i].valor))
+            else:
+                contador += actores.count() + 1
+
+        data = {'nodos_id': nodos_id,
+                'nodos_labels': nodos_labels,
+                'edge_origenes': origenes_edge,
+                'edge_destinos': destinos_edge,
+                'edge_labels': labels_edge}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
+def limpiar_matriz(lista_valores, actores):
+
+    lista_limpia = []
+    contador = 0
+    # eliminacion de los valores de la ultima fila
+    while contador <= actores.count():
+        lista_valores.pop()
+        contador += 1
+
+    # eliminacion  de las cabeceras de las filas (nombres en el eje y)
+    for i in lista_valores:
+        if type(i.valor) != str:
+            lista_limpia.append(i.valor)
+
+    return lista_limpia
+
+
+
+
+
+
+
+
+
+
 
 
 

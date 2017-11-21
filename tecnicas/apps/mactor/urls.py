@@ -10,9 +10,9 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
     generar_histograma_implicacion, obtener_datos_histograma, generar_histograma_movilizacion, \
-    obtener_datos_histograma_caa_daa, histograma_caa_daa, diagrama_barras_convergencias, diagrama_barras_divergencias, \
-    generar_plano_midi, obtener_datos_plano, generar_mapa_caa_daa, obtener_datos_mapa_caa_daa, \
-    generar_grafo
+    datos_histograma_caa_daa, histograma_caa_daa, \
+    generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
+    generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -74,18 +74,19 @@ urlpatterns = [
     url(r'datos_histograma', obtener_datos_histograma),
 
     # Urls mapa actores
-    url(r'^mapa_actores/(?P<idEstudio>\d+)/$', generar_plano_midi, name='mapa_actores'),
-    url(r'datos_plano_midi', obtener_datos_plano),
+    url(r'^mapa_actores/(?P<idEstudio>\d+)/$', generar_mapa_midi, name='mapa_actores'),
+    url(r'datos_plano_midi', datos_mapa_midi),
 
     # Urls graficos caa y daa
     url(r'^mapa_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_mapa_caa_daa, name='mapa_caa_daa'),
-    url(r'datos_mapa_caa_daa', obtener_datos_mapa_caa_daa),
+    url(r'datos_mapa_caa_daa', datos_mapa_caa_daa),
     url(r'^histograma_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', histograma_caa_daa, name='hist_caa_daa'),
-    url(r'^barras_caa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', diagrama_barras_convergencias, name='caa'),
-    url(r'^barras_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', diagrama_barras_divergencias, name='daa'),
-    url(r'datos_caa_daa', obtener_datos_histograma_caa_daa),
+    url(r'datos_caa_daa', datos_histograma_caa_daa),
 
     # Urls grafos
-    url(r'^grafo/$', generar_grafo, name='grafo'),
+    url(r'^grafo_caa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', generar_grafo_caa, name='grafo_caa'),
+    url(r'datos_grafo_caa', datos_grafo_caa),
+    url(r'^grafo_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', generar_grafo_daa, name='grafo_daa'),
+    url(r'datos_grafo_daa', datos_grafo_daa),
 
 ]

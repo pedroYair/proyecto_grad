@@ -9,7 +9,7 @@
 
 {% block content %}
 
-        {% include 'js_diagramas.html' %}
+        {% include 'js_histogramas_planos.html' %}
 
 		<div style="width: 60%">
         	<canvas id="canvas"></canvas>
@@ -40,9 +40,7 @@
 			// se obtienen los datos a graficar
 			$.ajax(
 			    {
-                    data : {
-                                    'estudio': idEstudio
-                                   },
+                    data : { 'estudio': idEstudio },
                     url: 'datos_plano_midi',
                     type: 'get',
                     success: function (data)
@@ -60,10 +58,9 @@
                                     y: object.valores_ejeY[j],
                                        }]
                                         };
-
                             lista_parejas.push(pareja);
                         }
-                        generar()
+                        generar();
                     },
                     error: function()
                     {

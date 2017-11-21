@@ -10,7 +10,7 @@
 
 {% block content %}
 
-        {% include 'js_diagramas.html' %}
+        {% include 'js_histogramas_planos.html' %}
 
 <br>
 		<div style="width: 75%">
@@ -20,7 +20,6 @@
         <script>
             var idEstudio = $('input[name="idEstudio"]').val();
             var numero_matriz = $('input[name="numero_matriz"]').val();
-            var tipo = "CAA-DAA"
             var positivos = []
 			var negativos = []
             var lista_labels = []
@@ -29,7 +28,7 @@
                         {
                             data : {'numero_matriz' : numero_matriz,
                                     'estudio': idEstudio,
-                                    'tipo': tipo},
+                                    },
                             url: 'datos_caa_daa',
                             type: 'get',
                             success: function (data)
@@ -94,7 +93,7 @@
 
             </script>
 <br>
-Matriz {{numero_matriz}}MAO.
+<h6>Histograma de Convergencias y Divergencias {{numero_matriz}}CAA - {{numero_matriz}}DAA.</h6>
 <br>
 <br>
         <div class="form-group">
