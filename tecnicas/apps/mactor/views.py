@@ -13,6 +13,7 @@ from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao
 
 # ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
 
+
 class Crear_estudio(CreateView):
     model = Estudio_Mactor
     form_class = Form_Estudio
@@ -63,19 +64,22 @@ class Editar_estudio(UpdateView):
 
 def Crear_actor(request):
 
-   nombreLargo = request.GET['nombreLargo']
-   nombreCorto = request.GET['nombreCorto']
-   descripcion = request.GET['descripcion']
-   estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
-   mensaje = "El actor " + nombreLargo + " se ha registrado con exito"
-   lista_actor = Actor.objects.all()
-   flag = False
+    nombreLargo = request.GET['nombreLargo']
+    nombreCorto = request.GET['nombreCorto']
+    descripcion = request.GET['descripcion']
+    estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
+    mensaje = "El actor " + nombreLargo + " se ha registrado con exito"
+    actores = Actor.objects.filter(idEstudio=estudio.id)
+    flag = False
 
-   for i in lista_actor:
+    if len(actores) < 15:
+        print("si cabe")
+
+    for i in actores:
        if i.nombreCorto == nombreCorto:
            flag = True
 
-   if flag is False:
+    if flag is False:
         try:
             actor = Actor(nombreLargo=nombreLargo,
                           nombreCorto=nombreCorto,
@@ -88,7 +92,7 @@ def Crear_actor(request):
             mensaje = "ERROR"
             response = JsonResponse({'info': mensaje})
             return HttpResponse(response.content)
-   else:
+    else:
        mensaje = "Ya existe un actor con el nombre corto " + nombreCorto
        response = JsonResponse({'info': mensaje})
        return HttpResponse(response.content)
@@ -172,7 +176,10 @@ def Listar_actores(request, idEstudio):
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_actores': actores}
+    contexto = {'estudio': estudio_mactor,
+                'usuario': tipo_usuario,
+                'lista_actores': actores,
+                'cantidad_registrados': len(actores)}
     return render(request, 'actor/lista_actores.html', contexto)
 
 
@@ -299,7 +306,7 @@ def Crear_objetivo(request):
     descripcion = request.GET['descripcion']
     estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
     mensaje = "El objetivo " + nombreLargo + " se ha registrado con exito"
-    lista_objetivo = Objetivo.objects.all()
+    lista_objetivo = Objetivo.objects.filter(idEstudio=estudio.id)
     flag = False
 
     for i in lista_objetivo:
@@ -330,7 +337,11 @@ def Listar_objetivos(request, idEstudio):
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_objetivos': objetivos}
+    contexto = {'estudio': estudio_mactor,
+                'usuario': tipo_usuario,
+                'lista_objetivos': objetivos,
+                'cantidad_registrados': len(objetivos)}
+
     return render(request, 'objetivo/lista_objetivos.html', contexto)
 
 
@@ -531,14 +542,30 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
         contexto_mao = crear_contexto_mao(request, int(idEstudio), int(numero_matriz))
         tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-        contexto = {
-            'actores': actores,
-            'valores_caa': contexto_mao['valores_caa'],
-            'posicion_salto_caa_daa': actores.count(),
-            'valores_daa': contexto_mao['valores_daa'],
-            'estudio': estudio_mactor,
-            'numero_matriz': numero_matriz,
-            'usuario': tipo_usuario}
+        estado_matriz = MATRIZ_INCOMPLETA
+        mensaje = ""
+        contexto = {}
+
+        if int(numero_matriz) == 1 or int(numero_matriz) == 2:
+            mensaje = "Finalice el registro de las posiciones " + numero_matriz + "MAO para visualizar esta matriz."
+        else:
+            mensaje = "Finalice el registro de las posiciones MID y 2MAO para visualizar esta matriz."
+
+        if contexto_mao['estado_matriz'] == MATRIZ_COMPLETA:
+            contexto = {
+                'actores': actores,
+                'valores_caa': contexto_mao['valores_caa'],
+                'posicion_salto_caa_daa': actores.count(),
+                'valores_daa': contexto_mao['valores_daa'],
+                'estudio': estudio_mactor,
+                'numero_matriz': numero_matriz,
+                'usuario': tipo_usuario}
+        else:
+            contexto = {
+                'estudio': estudio_mactor,
+                'numero_matriz': numero_matriz,
+                'mensaje': mensaje,
+                'usuario': tipo_usuario}
 
         return render(request, 'mao/matrices_caa_daa.html', contexto)
     else:
@@ -564,6 +591,7 @@ class Valor_xy:
         self.valor = valor
 
 # -------------------------------------FUNCIONES AUXILIARES------------------------------------------------------------>
+
 
 # <<<<FUNCIONES RELACIONES MID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
@@ -915,6 +943,8 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
         contexto = {'objetivos': lista_objetivos,
                     'actores': lista_actores,
                     'valores_mao': valores_mao,
+                    'valores_caa': [],
+                    'valores_daa': [],
                     'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
                     'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
                     'estado_matriz': MATRIZ_INCOMPLETA,
@@ -1824,8 +1854,13 @@ def datos_mapa_caa_daa(request):
         lista_nombres = []
 
         valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
-        valores_caa = valores_mao['valores_caa']
-        valores_daa = valores_mao['valores_daa']
+        if valores_mao['estado_matriz'] == MATRIZ_COMPLETA:
+            valores_caa = valores_mao['valores_caa']
+            valores_daa = valores_mao['valores_daa']
+        else:
+            valores_caa = []
+            valores_daa = []
+
         valores_ejeX = []
         valores_ejeY = []
 

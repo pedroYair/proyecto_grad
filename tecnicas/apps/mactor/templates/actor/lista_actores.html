@@ -90,13 +90,16 @@
                     <div class="col-md-offset-2 col-md-8">
                         <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Estudios</a>
                         {% if usuario == 'COORDINADOR' %}
-                        <a class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</a>
+                            {% if cantidad_registrados < 15 %}
+                            <button class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</button>
+                            {% endif %}
                         {% endif %}
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
                         <a class="btn btn-primary" id="exportar" href="{% url 'mactor:actores_xls' estudio.id%}" ><i class="fa fa-download"></i> Exportar</a>
                         <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas' estudio.id%}">Estrategias <i class="fa fa-arrow-right"></i></a>
                     </div>
                 </div>
+
 
      <! INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
 
@@ -116,5 +119,11 @@
 <script src="{% static 'js_mactor_modals/editar/editar_actor.js'%}"></script>
 <script src="{% static 'js_mactor_modals/consultar/consultar_actor.js'%}"></script>
 {% endblock %}
+
+{% if cantidad_registrados == 15 %}
+    <script type="text/javascript">
+        document.getElementById("boton_agregar").disabled = true;
+    </script>
+{% endif %}
 
 {% endblock %}

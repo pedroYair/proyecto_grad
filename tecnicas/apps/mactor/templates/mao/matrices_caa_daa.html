@@ -17,6 +17,7 @@
                         <div class="widget wgreen">
                             <div class="widget-head">
                                  <div class="pull-left">{{numero_matriz}}CAA - Matriz de Convergencias</div>
+                                {% if actores %}
                                 <div class="widget-icons pull-right">
                                     <select name="caa" class="form-control" onchange="location = this.value;">
                                         <option value="">Diagramas</option>
@@ -24,13 +25,14 @@
                                         <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
                                     </select>
                                 </div>
+                                {% endif %}
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">
                                 <table class="table table-bordered" id="tabla1">
                                     <thead>
                                             <tr>
-                                                {%if actores and estado_matriz != 0 %}
+                                                {%if actores %}
                                                     <input style='text-align: center;'  type="text" size="3" readonly value="">
                                                     {% for actor in actores %}
                                                         <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
@@ -67,7 +69,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}
-                                            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
+                                             <h3>{{mensaje}}</h3>
                                         {% endif %}
                                             <br>
                                         </tr>
@@ -90,6 +92,7 @@
                         <div class="widget wgreen">
                             <div class="widget-head">
                                  <div class="pull-left">{{numero_matriz}}DAA - Matriz de Divergencias</div>
+                                {% if actores %}
                                 <div class="widget-icons pull-right">
                                     <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
                                         <option value="">Diagramas</option>
@@ -97,13 +100,14 @@
                                         <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
                                     </select>
                                 </div>
+                                {% endif %}
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">
                                 <table class="table table-bordered" id="tabla3">
                                     <thead>
                                             <tr>
-                                                {%if actores and estado_matriz != 0 %}
+                                                {%if actores %}
                                                  <input style='text-align: center;'  type="text" size="3" readonly value="">
                                                     {% for actor in actores %}
                                                     <input id="ver{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
@@ -141,7 +145,7 @@
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}
-                                            <h3>Finalice el registro de las posiciones 1MAO para visualizar esta matriz</h3>
+                                            <h3>{{mensaje}}</h3>
                                         {% endif %}
                                             <br>
                                         </tr>

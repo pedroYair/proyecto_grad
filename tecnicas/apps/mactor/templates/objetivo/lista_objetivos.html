@@ -92,7 +92,7 @@
                 <div class="col-md-offset-2 col-md-8">
                     <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}"><i class="fa fa-arrow-left"></i> Estrategias</a>
                     {% if usuario == 'COORDINADOR' %}
-                        <a class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</a>
+                    <button id="boton_agregar" class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</button>
                     {% endif %}
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal5"><i class="fa fa-book"></i> Ayuda</a>
                     <a class="btn btn-primary" href="{% url 'mactor:objetivos_xls' estudio.id%}" ><i class="fa fa-download"></i> Exportar</a>
@@ -119,5 +119,11 @@
 <script src="{% static 'js_mactor_modals/editar/editar_objetivo.js'%}"></script>
 <script src="{% static 'js_mactor_modals/consultar/consultar_objetivo.js'%}"></script>
 {% endblock %}
+
+{% if cantidad_registrados == 15 %}
+    <script type="text/javascript">
+        document.getElementById("boton_agregar").disabled = true;
+    </script>
+{% endif %}
 
 {% endblock %}
