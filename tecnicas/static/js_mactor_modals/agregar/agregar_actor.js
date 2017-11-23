@@ -11,9 +11,9 @@
         var codigo_Estudio = $('input[name="idEstudio"]').val();
 
          if(nombreCorto=="" || nombreLargo=="" || codigo_Estudio=="")
-        {
-        alert("Ingrese todos los datos");
-        }
+         {
+            alert("Ingrese todos los datos");
+         }
         else
          {
              // envio de los valores mediante ajax
@@ -26,12 +26,12 @@
                  },
                  url: 'agregar_actor',
                  type: 'get',
-                 // obtencion e impresion de la respuesta
+                 // recoleccion e impresion de la respuesta
                  success: function (data) {
                      var object = JSON.parse(data);
                      var html = "<p>" + object.info + "</p>";
                      $('#mod_body2').html(html);
-                     // desactiva el boton de guardar
+                     // desactiva el boton de guardar del modal
                      document.getElementById('boton_guardar').disabled = true;
                  }
              });

@@ -29,7 +29,7 @@
                      var object = JSON.parse(data);
                      var html = "<p>" + object.info + "</p>";
                      $('#mod_body2').html(html);
-                     document.getElementById('boton_guardar').disabled = true
+                     document.getElementById('boton_guardar').disabled = true;
                  }
              });
          }

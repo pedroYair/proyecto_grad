@@ -7,8 +7,10 @@
             // se asigna como id del boton actualizar el id del actor para cuando se pulse el boton actualizar
             $('#modal_actualizar').val(id);
             // se valida que el id contenga la subcadena act, asignada como parte del id para editar
-            if(id !=undefined && id.indexOf("act")!= -1){
+            if(id !=undefined && id.indexOf("act")!= -1)
+            {
                 // se envia el id del actor mediante ajax para obtener los datos
+                //idEstudio = 0 para que cumpla la expresion de la url
                 $.ajax(
                     {
                         data: {'id': id, 'idEstudio': 0},

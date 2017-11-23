@@ -14,8 +14,7 @@ var nombre_boton_eliminar = ".delete";
  //Elimina el objetivo
 function Eliminar(){
       $(document).ready(function(){
-          var id = $(modal_idButton).val()
-            console.log(id);
+          var id = $(modal_idButton).val();
             $.ajax({
                 data : {'id' : id},
                 url : 'eliminar_ficha',
@@ -23,10 +22,9 @@ function Eliminar(){
                 success : function (data)
                 {
                     var object = JSON.parse(data);
-                    var html = "<p>" + object.
-                            info + "</p>";
+                    var html = "<p>" + object.info + "</p>";
                     $('#mod_body').html(html);
-                    document.getElementById('modal_idButton').disabled = true
+                    document.getElementById('modal_idButton').disabled = true;
                 }
             });
         }) ;

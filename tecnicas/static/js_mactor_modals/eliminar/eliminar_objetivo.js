@@ -23,10 +23,9 @@ function Eliminar(){
                 success : function (data)
                 {
                     var object = JSON.parse(data);
-                    var html = "<p>" + object.
-                            info + "</p>";
+                    var html = "<p>" + object.info + "</p>";
                     $('#mod_body').html(html);
-                    document.getElementById('modal_idButton').disabled = true
+                    document.getElementById('modal_idButton').disabled = true;
                 }
             });
         }) ;

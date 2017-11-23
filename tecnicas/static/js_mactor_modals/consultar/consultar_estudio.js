@@ -3,11 +3,12 @@
 
     $(document).ready(function () {
         $("a").click(function () {
-            var id = $(this).attr("id")
-            console.log(id);
+            var id = $(this).attr("id");
             //Si se pulsa el tr de un estudio
-                if(id.indexOf("est")!= -1){
-                    console.log(id)
+            if(id!=undefined)
+            {
+              if(id.indexOf("est")!= -1)
+              {
                     $.ajax(
                         {
                             data: {'id': id},
@@ -21,6 +22,8 @@
                             }
                         });
                 }
+            }
+
         });
     });
 

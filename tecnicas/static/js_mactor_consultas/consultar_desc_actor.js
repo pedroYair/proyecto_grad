@@ -6,14 +6,13 @@ $('#id_idActorY').on('change', DescripcionY);
         {
             var id = $(this).val();
             $.ajax({
-                data : {'id' : id},
+                data : {'id' : id, 'idEstudio': 0},
                 url : 'consultar_actor',
                 type : 'get',
                 success : function (data)
                 {
                     var object = JSON.parse(data);
-                    var html = "<p>" + 'Descripción:' + "</p><p>" + object.
-                            descripcion + "</p>";
+                    var html = "<p>" + 'Descripción:' + "</p><p>" + object.descripcion + "</p>";
                     $('#info').html(html);
                 }
             });
@@ -24,9 +23,9 @@ $('#id_idActorY').on('change', DescripcionY);
 $('#id_idActorX').on('change', DescripcionX);
         function  DescripcionX()
         {
-            var id = $(this).val()
+            var id = $(this).val();
             $.ajax({
-                data : {'id' : id},
+                data : {'id' : id, 'idEstudio': 0},
                 url : 'consultar_actor',
                 type : 'get',
                 success : function (data)

@@ -6,11 +6,12 @@
 
     $(document).ready(function () {
         $("a").click(function () {
-            var id = $(this).attr("id")
+            var id = $(this).attr("id");
             //Si se pulsa el tr de un estudio
             if(id!=undefined)
             {
-                if (id.indexOf("ver") != -1) {
+                if (id.indexOf("ver") != -1)
+                {
                     $.ajax(
                         {
                             data: {'id': id, 'idEstudio': 0},

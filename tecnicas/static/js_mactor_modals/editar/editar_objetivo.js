@@ -17,9 +17,9 @@
                         // los datos retornados son asignados en el formulario
                         success: function (data) {
                             var object = JSON.parse(data);
-                            document.getElementById("nombreLargo2").value = object.nombreLargo
-                            document.getElementById("nombreCorto2").value = object.nombreCorto
-                            document.getElementById("descripcion2").value = object.descripcion
+                            document.getElementById("nombreLargo2").value = object.nombreLargo;
+                            document.getElementById("nombreCorto2").value = object.nombreCorto;
+                            document.getElementById("descripcion2").value = object.descripcion;
                         }
                     });
             }
@@ -55,7 +55,7 @@ function actualizar() {
                     // se coloca en el modal la respuesta obtenida
                     var html = "<p>" + object.info + "</p>";
                     $('#mod_body3').html(html);
-                    document.getElementById('modal_actualizar').disabled = true
+                    document.getElementById('modal_actualizar').disabled = true;
                 }
             });
         }

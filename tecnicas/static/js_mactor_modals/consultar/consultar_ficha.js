@@ -6,8 +6,11 @@
 
     $(document).ready(function () {
         $("a").click(function () {
-            var id = $(this).attr("id")
-                if(id.indexOf("ver")!= -1){
+            var id = $(this).attr("id");
+            if(id!=undefined)
+            {
+                if(id.indexOf("ver")!= -1)
+                {
                     $.ajax(
                         {
                             data: {'id': id},
@@ -22,5 +25,6 @@
                             }
                         });
                 }
+            }
         });
     });

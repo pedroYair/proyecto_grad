@@ -43,8 +43,8 @@ def Consultar_estudio(request):
         id = request.GET['id']
         if id.count("est"):
             id = id.lstrip("est")
-        elif id.count("id"):
-            id = id.lstrip("id")
+        """elif id.count("id"):
+            id = id.lstrip("id")"""
         estudio = get_object_or_404(Estudio_Mactor, id=id)
         response = JsonResponse(
             {'titulo': estudio.titulo, 'descripcion': estudio.descripcion})
@@ -71,9 +71,7 @@ def Crear_actor(request):
     mensaje = "El actor " + nombreLargo + " se ha registrado con exito"
     actores = Actor.objects.filter(idEstudio=estudio.id)
     flag = False
-
-    if len(actores) < 15:
-        print("si cabe")
+    actores2 = Actor.objects.filter(idEstudio=estudio.id).values('nombreCorto')
 
     for i in actores:
        if i.nombreCorto == nombreCorto:
@@ -156,6 +154,8 @@ def Consultar_actor(request):
             id = int(id.lstrip("ver"))
         elif id.count("act"):
             id = int(id.lstrip("act"))
+        else:
+            id = int(id)
 
         if type(id) == int:
             actor = get_object_or_404(Actor, id=id)
