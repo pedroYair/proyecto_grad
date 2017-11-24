@@ -33,15 +33,19 @@
                     <span class="pull-right"><i class="fa fa-angle-right"></i></span>
                 </a>
                 <ul>
-                    <li><a href="">Actores</a></li>
-                    <li><a href="">Estrategias</a></li>
-                    <li><a href="">Objetivos</a></li>
-                    <li><a href="">Estrategias</a></li>
-
+                    <li><a href="{%url 'mactor:lista_actores' estudio.id%}">Actores</a></li>
+                    <li><a href="{% url 'mactor:lista_fichas' estudio.id%}">Estrategias</a></li>
+                    <li><a href="{% url 'mactor:lista_objetivos' estudio.id%}">Objetivos</a></li>
+                    <li><a href="{% url 'mactor:matriz_mid' estudio.id%}">Matriz de Influencias Directas</a></li>
+                    <li><a href="{% url 'mactor:matriz_mao' estudio.id 1%}">Matriz 1MAO</a></li>
+                    <li><a href="{% url 'mactor:matriz_mao' estudio.id 2%}">Matriz 2MAO</a></li>
+                    <li><a href="{% url 'mactor:matriz_mao' estudio.id 3%}">Matriz 3MAO</a></li>
+                    <li><a href="">Informe Final</a></li>
                 </ul>
             </li>
             {% endif %}
         </ul>
+
     </div>
     {% endif %}
 </div>

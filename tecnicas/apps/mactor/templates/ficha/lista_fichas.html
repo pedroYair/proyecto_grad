@@ -58,25 +58,29 @@
                                 {% endif %}
                             </tbody>
                         </table>
-                    </div>
 
-<! PAGINACION ----------------------------------->
-                    <div class="widget-foot">
-										<ul class="pagination pull-right">
-										  <li>
-                                              {% if page_obj.has_previous %}
-                                              <a href="?page={{page_obj.previous_page_number}}">Anterior</a>
-                                              {% endif %}
-                                          </li>
-
-										  <li>
-                                              {% if page_obj.has_next %}
-                                              <a href="?page={{page_obj.next_page_number}}">Siguiente</a>
-                                              {% endif %}
-                                          </li>
-										</ul>
-
-										<div class="clearfix"></div>
+    <! PAGINACION ----------------------------------->
+                        {% if lista_fichas.has_other_pages %}
+                          <ul class="pagination">
+                            {% if lista_fichas.has_previous %}
+                              <li><a href="?page={{ lista_fichas.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                              <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in lista_fichas.paginator.page_range %}
+                              {% if lista_fichas.number == i %}
+                                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                              {% else %}
+                                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                              {% endif %}
+                            {% endfor %}
+                            {% if lista_fichas.has_next %}
+                              <li><a href="?page={{ lista_fichas.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                              <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                          </ul>
+                        {% endif %}
                     </div>
                 </div>
             </div>

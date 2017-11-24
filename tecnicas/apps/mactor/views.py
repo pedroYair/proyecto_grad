@@ -1,6 +1,8 @@
 import xlwt
 import json
 from django.contrib.auth.models import User
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+from django.contrib.auth.models import User
 from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -221,9 +223,19 @@ def Crear_ficha(request, idEstudio):
 def Lista_fichas(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    fichas = Ficha_actor.objects.filter(idEstudio=estudio_mactor.id).order_by('idActorY', 'idActorX')
+    fichas_estudio = Ficha_actor.objects.filter(idEstudio=estudio_mactor.id).order_by('idActorY', 'idActorX')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_fichas': fichas}
+
+    page = request.GET.get('page', 1)
+    paginator = Paginator(fichas_estudio, 15)
+    try:
+        fichas_contexto = paginator.page(page)
+    except PageNotAnInteger:
+        fichas_contexto = paginator.page(1)
+    except EmptyPage:
+        fichas_contexto = paginator.page(paginator.num_pages)
+
+    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_fichas': fichas_contexto}
     return render(request, 'ficha/lista_fichas.html', contexto)
 
 
@@ -732,6 +744,7 @@ def calcular_midi(request, idEstudio):
     lista_comparacion_minimo = []   # contiene las sublistas de valores minimos por cada actores Y
     lista_total = []                # contiene lista_comparacion_minimo concatenado
     valores_midi = []               # contiene los valores correspondientes a MIDI
+    lista_prueba = []
 
     # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
     for i in range(len(influencias_mid)):
