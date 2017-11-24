@@ -1705,17 +1705,19 @@ def exportar_objetivos_xls(request, idEstudio):
 
 # ----------------------------------------HISTOGRAMAS--------------------------------------------------------->
 
-def generar_histograma_implicacion(request, idEstudio, numero_matriz):
+def histograma_implicacion(request, idEstudio, numero_matriz):
 
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto= {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    contexto= {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
     return render(request, 'mao/histograma_implicacion.html', contexto)
 
 
-def generar_histograma_movilizacion(request, idEstudio, numero_matriz):
+def histograma_movilizacion(request, idEstudio, numero_matriz):
 
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto= {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    contexto= {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
     return render(request, 'mao/histograma_movilizacion.html', contexto)
 
 
@@ -1769,8 +1771,9 @@ def obtener_datos_histograma(request):
 
 def histograma_caa_daa(request, idEstudio, numero_matriz):
 
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
     return render(request, 'mao/histograma_caa_daa.html', contexto)
 
 
@@ -1808,8 +1811,9 @@ def datos_histograma_caa_daa(request):
 
 def generar_mapa_midi(request, idEstudio):
 
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto= {'estudio': estudio_mactor}
+    contexto= {'estudio': estudio_mactor, 'usuario': usuario}
     return render(request, 'influencia/mapa_actores.html', contexto)
 
 
@@ -1853,8 +1857,9 @@ def datos_mapa_midi(request):
 
 def generar_mapa_caa_daa(request, idEstudio, numero_matriz):
 
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario':usuario}
     return render(request, 'mao/mapa_caa_daa.html', contexto)
 
 
@@ -1901,8 +1906,10 @@ def datos_mapa_caa_daa(request):
 
 
 def generar_grafo_caa(request, idEstudio, numero_matriz):
+
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario':usuario}
     return render(request, 'mao/grafo_caa.html', contexto)
 
 
@@ -1957,8 +1964,10 @@ def datos_grafo_caa(request):
 
 
 def generar_grafo_daa(request, idEstudio, numero_matriz):
+
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz)}
+    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario':usuario}
     return render(request, 'mao/grafo_daa.html', contexto)
 
 

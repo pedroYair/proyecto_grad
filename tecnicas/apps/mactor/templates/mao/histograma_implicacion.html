@@ -12,6 +12,7 @@
 
         {% include 'js_histogramas_planos.html' %}
 
+ {% if usuario != '' %}
         <br>
 		<div style="width: 75%">
         	<canvas id="canvas"></canvas>
@@ -107,6 +108,10 @@
                             <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
                             <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
                         </div>
-                    </div>
+        </div>
+{% else %}
+        <img src="{% static 'img/acceso_denegado.png' %}">
+        <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
+{% endif %}
 
 {% endblock %}

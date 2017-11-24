@@ -9,7 +9,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_1mao, Crear_2mao, Generar_matriz_mao, Generar_matrices_caa_daa, \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
-    generar_histograma_implicacion, obtener_datos_histograma, generar_histograma_movilizacion, \
+    histograma_implicacion, obtener_datos_histograma, histograma_movilizacion, \
     datos_histograma_caa_daa, histograma_caa_daa, \
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa
@@ -57,36 +57,36 @@ urlpatterns = [
     url(r'^matriz_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(Generar_matrices_caa_daa), name='caa_daa'),
 
     # Urls consultas ajax
-    url(r'mid-ajax/$', Consultar_actores_faltantes),  # obtiene lista actores X registrados en la mid
-    url(r'mao-ajax/$', Consultar_objetivos_faltantes),  # obtiene lista objetivos X registrados en la mao
+    url(r'mid-ajax/$', login_required(Consultar_actores_faltantes)),  # obtiene lista actores X registrados en la mid
+    url(r'mao-ajax/$', login_required(Consultar_objetivos_faltantes)),  # obtiene lista objetivos X registrados en la mao
 
     # Urls exportar a excel
-    url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', exportar_estudios_xls, name='estudios_xls'),
-    url(r'exportar_actores/xls/(?P<idEstudio>\d+)/$', exportar_actores_xls, name='actores_xls'),
-    url(r'exportar_fichas/xls/(?P<idEstudio>\d+)/$', exportar_fichas_xls, name='fichas_xls'),
-    url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', exportar_objetivos_xls, name='objetivos_xls'),
+    url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudios_xls), name='estudios_xls'),
+    url(r'exportar_actores/xls/(?P<idEstudio>\d+)/$', login_required(exportar_actores_xls), name='actores_xls'),
+    url(r'exportar_fichas/xls/(?P<idEstudio>\d+)/$', login_required(exportar_fichas_xls), name='fichas_xls'),
+    url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', login_required(exportar_objetivos_xls), name='objetivos_xls'),
 
     # Urls histogramas mao
-    url(r'^histograma_implicacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_implicacion,
+    url(r'^histograma_implicacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', login_required(histograma_implicacion),
         name='implicacion'),
-    url(r'^histograma_movilizacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_histograma_movilizacion,
+    url(r'^histograma_movilizacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', login_required(histograma_movilizacion),
         name='movilizacion'),
-    url(r'datos_histograma', obtener_datos_histograma),
+    url(r'datos_histograma', login_required(obtener_datos_histograma)),
 
     # Urls mapa actores
-    url(r'^mapa_actores/(?P<idEstudio>\d+)/$', generar_mapa_midi, name='mapa_actores'),
-    url(r'datos_plano_midi', datos_mapa_midi),
+    url(r'^mapa_actores/(?P<idEstudio>\d+)/$', login_required(generar_mapa_midi), name='mapa_actores'),
+    url(r'datos_plano_midi', login_required(datos_mapa_midi)),
 
     # Urls graficos caa y daa
-    url(r'^mapa_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', generar_mapa_caa_daa, name='mapa_caa_daa'),
-    url(r'datos_mapa_caa_daa', datos_mapa_caa_daa),
+    url(r'^mapa_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', login_required(generar_mapa_caa_daa), name='mapa_caa_daa'),
+    url(r'datos_mapa_caa_daa', login_required(datos_mapa_caa_daa)),
     url(r'^histograma_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', histograma_caa_daa, name='hist_caa_daa'),
-    url(r'datos_caa_daa', datos_histograma_caa_daa),
+    url(r'datos_caa_daa', login_required(datos_histograma_caa_daa)),
 
     # Urls grafos
-    url(r'^grafo_caa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', generar_grafo_caa, name='grafo_caa'),
-    url(r'datos_grafo_caa', datos_grafo_caa),
-    url(r'^grafo_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', generar_grafo_daa, name='grafo_daa'),
-    url(r'datos_grafo_daa', datos_grafo_daa),
+    url(r'^grafo_caa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', login_required(generar_grafo_caa), name='grafo_caa'),
+    url(r'datos_grafo_caa', login_required(datos_grafo_caa)),
+    url(r'^grafo_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', login_required(generar_grafo_daa), name='grafo_daa'),
+    url(r'datos_grafo_daa', login_required(datos_grafo_daa)),
 
 ]
