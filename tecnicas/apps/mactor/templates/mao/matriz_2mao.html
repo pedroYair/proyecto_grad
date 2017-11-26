@@ -19,71 +19,14 @@
                                 <div class="widget-icons pull-right">
                                      <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
                                         <option value="">Histogramas</option>
-
                                         <option value="{% url 'mactor:implicacion' estudio.id 2 %}">Histograma de Implicaciones</option>
-
                                         <option value="{% url 'mactor:movilizacion' estudio.id 2 %}">Histograma de Movilizaciones</option>
-
                                     </select>
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">
-                                <table class="table table-bordered" id="tabla1mao">
-                                    <thead>
-                                        <tr>
-                                            {% if objetivos %}
-                                            <input style='text-align: center;' readonly type="text" size="3" value="">
-                                                {% for objetivo in objetivos %}
-                                                    <input id="obj{{objetivo.id}}"  style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="{{objetivo.nombreLargo|upper}}"
-                                                           size="3" data-toggle="modal" href="#modal_Consultar_objetivo" value="{{objetivo.nombreCorto}}">
-                                                {% endfor %}
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="IMPLICACIÓN POSITIVA (ACUERDOS)" value="+">
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="IMPLICACIÓN NEGATIVA (DESACUERDOS)" value="-">
-                                            <input style='text-align: center; background-color: #5e5e5e; color: white;' readonly type="text" size="3"
-                                                     title="IMPLICACIÓN" value="Imp.">
-                                            <br>
-                                            {% endif %}
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                         {% if valores_mao %}
-                                         <tr>
-                                             {% for i in valores_mao %}
-                                                <!--Inserta la ultima celda antes del salto de fila (sumatoria de implicacion total)-->
-                                                {% if i.posicion == posicion_salto %}
-                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
-                                                    <br>
-                                                <!--Inserta las sumatorias de movilizacion (ultima fila) -->
-                                                {% elif i.posicion == posicion_salto_movilizacion %}
-                                                    <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}" value="{{i.valor}}">
-                                                    <br>
-                                                <!--Inserta el nombre corto del actor-->
-                                                {% elif i.posicion == 0 %}
-                                                        {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
-                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
-                                                                    data-toggle="modal" href="#modal_Consultar_actor">
-                                                        {% else %}
-                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
-                                                        {% endif %}
-                                                <!--Inserta los valores de la matriz posteriores al nombre y corto y las sumatorias de implicacion - y +-->
-                                                {% else %}
-                                                    {% if i.valor == 100 %}
-                                                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="INFLUENCIA SIN REGISTRAR"  value="X">
-                                                    {% else %}
-                                                        <input style='text-align: center;' readonly type="text" size="3" title="{{i.descripcion}}"  value="{{i.valor}}">
-                                                    {% endif %}
-                                                {% endif %}
-                                            {% endfor %}
-                                        {% else %}
-                                             <h3>Registre los actores y objetivos del estudio.</h3>
-                                        {% endif %}
-                                            <br>
-                                         </tr>
-                                    </tbody>
-                                </table>
+                               {% include 'mao/table_matriz_mao.html' %}
                             </div>
                         </div>
                     </div>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+        <table class="table table-bordered" id="tabla_mao">
+            <thead>
+                <tr>
+                    {%if objetivos %}
+                        <input style='text-align: center;' readonly type="text" size="3" value="">
+                        {% for objetivo in objetivos %}
+                            <input  id="obj{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="{{objetivo.nombreLargo|upper}}"
+                                    size="3" value="{{objetivo.nombreCorto}}" data-toggle="modal" href="#modal_Consultar_objetivo">
+                        {% endfor %}
+                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="IMPLICACIÓN POSITIVA (ACUERDOS)" value="+">
+                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"  title="IMPLICACION NEGATIVA (DESACUERDOS)" value="-">
+                        <input style='text-align: center; background-color: #5e5e5e; color: white;' readonly type="text" size="3" title="IMPLICACIÓN" value="Imp.">
+                        <br>
+                    {% endif %}
+                </tr>
+            </thead>
+            <tbody>
+                {% if valores_mao %}
+                <tr>
+                    {% for i in valores_mao %}
+                                                    <!--Inserta la ultima celda de la fila y hace el salto de fila-->
+                                                    {% if i.posicion == posicion_salto %}
+                                                        <input style='text-align: center;' readonly type="text" size="3"
+                                                               title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        <br>
+                                                    <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
+                                                    {% elif i.posicion == posicion_salto_movilizacion %}
+                                                        <input style='text-align: center;' readonly type="text" size="3"
+                                                               title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        <br>
+                                                    <!--Inserta las etiquetas del eje Y-->
+                                                    {% elif i.posicion == 0 %}
+                                                        <!--Si la etiqueta corresponde a un actor-->
+                                                        {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
+                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="3" title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        {% endif %}
+                                                    <!--Inserta los valores de la matriz posteriores al nombre en Y y previos a la ultima celda-->
+                                                    {% else %}
+                                                        <!--Si la celda no ha sido diligenciada-->
+                                                        {% if i.valor == 100 %}
+                                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3"
+                                                                   title="INFLUENCIA SIN REGISTRAR" value="X">
+                                                        {% else %}
+                                                            <input style='text-align: center;' readonly type="text" size="3"
+                                                                   title="{{i.descripcion}}" value="{{i.valor}}">
+                                                        {% endif %}
+                                                    {% endif %}
+                    {% endfor %}
+                {% else %}
+                    <h3>Registre los actores y objetivos del estudio.</h3>
+                {% endif %}
+                <br>
+                                                       
+
+
+
+                </tr>
+            </tbody>
+        </table>
+</body>
+</html>

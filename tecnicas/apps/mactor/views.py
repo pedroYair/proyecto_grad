@@ -1,8 +1,7 @@
 import xlwt
 import json
-from django.contrib.auth.models import User
+#from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.contrib.auth.models import User
 from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
@@ -10,7 +9,6 @@ from django.http import JsonResponse, HttpResponse, request, Http404
 from django.views.generic import CreateView, UpdateView
 from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO
 from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao
-
 
 
 # ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
@@ -73,7 +71,6 @@ def Crear_actor(request):
     mensaje = "El actor " + nombreLargo + " se ha registrado con exito"
     actores = Actor.objects.filter(idEstudio=estudio.id)
     flag = False
-    actores2 = Actor.objects.filter(idEstudio=estudio.id).values('nombreCorto')
 
     for i in actores:
        if i.nombreCorto == nombreCorto:
@@ -1526,7 +1523,6 @@ def obtener_tipo_usuario(request, idEstudio):
     estudio = Estudio_Mactor.objects.get(id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
     tipo = ""
-
 
     # Si el usuario es coordinador y experto
     if request.user in lista_expertos and estudio.idCoordinador == request.user:
