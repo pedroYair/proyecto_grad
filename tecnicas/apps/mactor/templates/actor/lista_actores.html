@@ -9,12 +9,6 @@
 
 {% endblock %}
 
-<!--
-{% block extracss %}
-<link rel="stylesheet" href="{% static 'css/all.min.css'%}">
-{% endblock %}
--->
-
 
 {% block content %}
 
@@ -29,16 +23,13 @@
                                 <div class="btn-group">
                                     <button class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Exportar Tabla</button>
                                     <ul class="dropdown-menu " role="menu">
-                                        <li><a href="{% url 'mactor:actores_xls' estudio.id%}" style="color: #0e0e0e">
+                                        <li><a href="{% url 'mactor:actores_xls' estudio.id%}" style="color: black">
                                             <img src="{% static 'img/icons_exportar/xls.png'%}" width='24px'> Excel</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="#" onClick ="$('#tabla_actores').tableExport({type:'doc', escape:'false'});" style="color: #0e0e0e">
+                                        <li><a href="#" onClick ="$('#tabla_actores').tableExport({type:'doc', escape:'false'});" style="color: black">
                                             <img src="{% static 'img/icons_exportar/word.png'%}" width='24px'> Word</a></li>
                                         <li class="divider"></li>
-                                        <li><a id="pdf" onClick ="$('#tabla_actores').tableExport({type:'pdf',escape:'false'});" style="color: red">
-                                            <img src="{% static 'img/icons_exportar/pdf.png'%}" width='24px'> PDF</a></li>
-                                        <li class="divider"></li>
-                                        <li><a href="#" onClick ="$('#tabla_actores').tableExport({type:'png',escape:'false'});" style="color: red">
+                                        <li><a href="#" id="png" style="color: black">
                                             <img src="{% static 'img/icons_exportar/png.png'%}" width='24px'> PNG</a></li>
                                     </ul>
                                 </div>
@@ -46,8 +37,8 @@
                             </div>
                             <div class="clearfix"></div>
                         </div>
-                        <div class="widget-content">
-                            <table id="tabla_actores" class="table table-striped">
+                        <div id="div_actores" class="widget-content">
+                            <table id="tabla_actores" class="table table-bordered">
                                 <thead>
                                     {% if lista_actores %}
                                     <tr>
@@ -55,7 +46,7 @@
                                         <th style="text-align: center">Nombre Largo</th>
                                         <th style="text-align: center">Nombre Corto</th>
                                         <th style="text-align: center">Descripción</th>
-                                        <th style="text-align: center">Acciones</th>
+                                        <th id="acciones" style="text-align: center">Acciones</th>
                                     </tr>
                                     {% endif %}
                                 </thead>
@@ -123,10 +114,7 @@
 <script src="{% static 'js/tableExport.js'%}"></script>
 <script src="{% static 'js/jquery.base64.js'%}"></script>
 <script src="{% static 'js/html2canvas.js'%}"></script>
-
-<script src="{% static 'js/base64.js'%}"></script>
-<script src="{% static 'js/jspdf.js'%}"></script>
-<script src="{% static 'js/sprintf.js'%}"></script>
+<script src="{% static 'js/exportar_actores_png.js'%}"></script>
 {% endblock %}
 
 {% if cantidad_registrados == 15 %}
