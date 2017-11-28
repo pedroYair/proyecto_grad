@@ -29,7 +29,7 @@
                                         <li><a href="#" onClick ="$('#tabla_actores').tableExport({type:'doc', escape:'false'});" style="color: black">
                                             <img src="{% static 'img/icons_exportar/word.png'%}" width='24px'> Word</a></li>
                                         <li class="divider"></li>
-                                        <li><a href="#" id="png" style="color: black">
+                                        <li><a href="#" id="png" name="actores" style="color: black">
                                             <img src="{% static 'img/icons_exportar/png.png'%}" width='24px'> PNG</a></li>
                                     </ul>
                                 </div>
@@ -37,7 +37,7 @@
                             </div>
                             <div class="clearfix"></div>
                         </div>
-                        <div id="div_actores" class="widget-content">
+                        <div id="div_tabla" class="widget-content">
                             <table id="tabla_actores" class="table table-bordered">
                                 <thead>
                                     {% if lista_actores %}
@@ -114,7 +114,7 @@
 <script src="{% static 'js/tableExport.js'%}"></script>
 <script src="{% static 'js/jquery.base64.js'%}"></script>
 <script src="{% static 'js/html2canvas.js'%}"></script>
-<script src="{% static 'js/exportar_actores_png.js'%}"></script>
+<script src="{% static 'js/exportar_tabla_png.js'%}"></script>
 {% endblock %}
 
 {% if cantidad_registrados == 15 %}

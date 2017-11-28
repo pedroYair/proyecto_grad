@@ -17,12 +17,25 @@
                     <div class="widget-head">
                         <div class="pull-left">Lista de objetivos</div>
                         <div class="widget-icons pull-right">
+                            <div class="btn-group">
+                                <button class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Exportar Tabla</button>
+                                <ul class="dropdown-menu " role="menu">
+                                        <li><a href="{% url 'mactor:objetivos_xls' estudio.id%}" style="color: black">
+                                            <img src="{% static 'img/icons_exportar/xls.png'%}" width='24px'> Excel</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#" onClick ="$('#tabla_objetivos').tableExport({type:'doc', escape:'false'});" style="color: black">
+                                            <img src="{% static 'img/icons_exportar/word.png'%}" width='24px'> Word</a></li>
+                                        <li class="divider"></li>
+                                        <li><a href="#" id="png" name="objetivos" style="color: black">
+                                            <img src="{% static 'img/icons_exportar/png.png'%}" width='24px'> PNG</a></li>
+                                </ul>
+                            </div>
                             <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
                         </div>
                         <div class="clearfix"></div>
                     </div>
-                    <div class="widget-content">
-                        <table class="table table-bordered ">
+                    <div id="div_tabla" class="widget-content">
+                        <table id="tabla_objetivos" class="table table-bordered ">
                             <thead>
                                 {% if lista_objetivos %}
                                 <tr>
@@ -64,25 +77,6 @@
                             </tbody>
                         </table>
                     </div>
-
-<!--SECCION DE PAGINACION ----------------------------------->
-                    <div class="widget-foot">
-										<ul class="pagination pull-right">
-										  <li>
-                                              {% if page_obj.has_previous %}
-                                              <a href="?page={{page_obj.previous_page_number}}">Anterior</a>
-                                              {% endif %}
-                                          </li>
-
-										  <li>
-                                              {% if page_obj.has_next %}
-                                              <a href="?page={{page_obj.next_page_number}}">Siguiente</a>
-                                              {% endif %}
-                                          </li>
-										</ul>
-										<div class="clearfix"></div>
-                    </div>
-
                 </div>
             </div>
 
@@ -94,7 +88,6 @@
                     <button id="boton_agregar" class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</button>
                     {% endif %}
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal5"><i class="fa fa-book"></i> Ayuda</a>
-                    <a class="btn btn-primary" href="{% url 'mactor:objetivos_xls' estudio.id%}" ><i class="fa fa-download"></i> Exportar</a>
                     <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id%}">Influencias MID<i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
@@ -117,6 +110,11 @@
 <script src="{% static 'js_mactor_modals/eliminar/eliminar_objetivo.js'%}"></script>
 <script src="{% static 'js_mactor_modals/editar/editar_objetivo.js'%}"></script>
 <script src="{% static 'js_mactor_modals/consultar/consultar_objetivo.js'%}"></script>
+<!--Js exportar tabla-->
+<script src="{% static 'js/tableExport.js'%}"></script>
+<script src="{% static 'js/jquery.base64.js'%}"></script>
+<script src="{% static 'js/html2canvas.js'%}"></script>
+<script src="{% static 'js/exportar_tabla_png.js'%}"></script>
 {% endblock %}
 
 {% if cantidad_registrados == 15 %}

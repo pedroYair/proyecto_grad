@@ -1549,17 +1549,25 @@ def exportar_estudios_xls(request, idEstudio):
     hoja_actores = wb.add_sheet('Actores')
     hoja_fichas = wb.add_sheet('Estrategias')
     hoja_objetivos = wb.add_sheet('Objetivos')
+    hoja_mid = wb.add_sheet('MID')
+    hoja_1mao = wb.add_sheet('1MAO')
+    hoja_2mao = wb.add_sheet('2MAO')
 
     # Sheet header, first row
     row_num = 0
     row_num2 = 0
     row_num3 = 0
+    row_num4 = 0
+    row_num5 = 0
+    row_num6 = 0
 
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
     columns1 = ['Nombre Largo', 'Nombre Corto', 'Descripción']
     columns2 = ['Estrategias del actor', 'Sobre el actor', 'Estrategias']
+    columns3 = ['Influencia del actor', 'Sobre el actor', 'Valor', 'Justificación']
+    columns4 = ['Posicion del actor', 'Ante el objetivo', 'Valor', 'Justificación']
 
     for col_num in range(len(columns1)):
         hoja_actores.write(row_num, col_num, columns1[col_num], font_style)
@@ -1570,33 +1578,102 @@ def exportar_estudios_xls(request, idEstudio):
     for col_num in range(len(columns1)):
         hoja_objetivos.write(row_num3, col_num, columns1[col_num], font_style)
 
+    for col_num in range(len(columns3)):
+        hoja_mid.write(row_num4, col_num, columns3[col_num], font_style)
+
+    for col_num in range(len(columns4)):
+        hoja_1mao.write(row_num5, col_num, columns3[col_num], font_style)
+
+    for col_num in range(len(columns4)):
+        hoja_2mao.write(row_num6, col_num, columns3[col_num], font_style)
+
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
 
-    filas_actores = Actor.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
-    filas_fichas = Ficha_actor.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
-                                                                       'idActorX__nombreLargo',
-                                                                       'estrategia')
-    filas_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
+    filas = obtener_datos_estudio(request, int(idEstudio))
 
-    for row in filas_actores:
+    for row in filas['actores']:
         row_num += 1
         for col_num in range(len(row)):
             hoja_actores.write(row_num, col_num, row[col_num], font_style)
 
-    for row in filas_fichas:
+    for row in filas['fichas']:
         row_num2 += 1
         for col_num in range(len(row)):
             hoja_fichas.write(row_num2, col_num, row[col_num], font_style)
 
-    for row in filas_objetivos:
+    for row in filas['objetivos']:
         row_num3 += 1
         for col_num in range(len(row)):
             hoja_objetivos.write(row_num3, col_num, row[col_num], font_style)
 
+    for row in filas['mid']:
+        row_num4 += 1
+        for col_num in range(len(row)):
+            hoja_mid.write(row_num4, col_num, row[col_num], font_style)
+
+    for row in filas['1mao']:
+        row_num5 += 1
+        for col_num in range(len(row)):
+            hoja_1mao.write(row_num5, col_num, row[col_num], font_style)
+
+    for row in filas['2mao']:
+        row_num6 += 1
+        for col_num in range(len(row)):
+            hoja_2mao.write(row_num6, col_num, row[col_num], font_style)
 
     wb.save(response)
     return response
+
+
+def obtener_datos_estudio(request, idEstudio):
+
+    usuario = obtener_tipo_usuario(request, idEstudio)
+    filas_actores = Actor.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
+    filas_fichas = Ficha_actor.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
+                                                                               'idActorX__nombreLargo',
+                                                                               'estrategia')
+    filas_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto',
+                                                                               'descripcion')
+
+    if usuario == "COORDINADOR" or request.user.is_superuser:
+        filas_mid = Relacion_MID.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
+                                                                                 'idActorX__nombreLargo',
+                                                                                 'valor', 'justificacion').order_by(
+            'idActorY', 'idActorX')
+        filas_1mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=1).values_list('idActorY__nombreLargo',
+                                                                                          'idObjetivoX__nombreLargo',
+                                                                                          'valor',
+                                                                                          'justificacion').order_by(
+            'idActorY', 'idObjetivoX')
+        filas_2mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2).values_list('idActorY__nombreLargo',
+                                                                                          'idObjetivoX__nombreLargo',
+                                                                                          'valor',
+                                                                                          'justificacion').order_by(
+            'idActorY', 'idObjetivoX')
+    else:
+        filas_mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).values_list(
+            'idActorY__nombreLargo',
+            'idActorX__nombreLargo',
+            'valor', 'justificacion').order_by(
+            'idActorY', 'idActorX')
+        filas_1mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=1, idExperto=request.user.id).values_list(
+            'idActorY__nombreLargo',
+            'idObjetivoX__nombreLargo',
+            'valor',
+            'justificacion').order_by(
+            'idActorY', 'idObjetivoX')
+        filas_2mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2, idExperto=request.user.id).values_list(
+            'idActorY__nombreLargo',
+            'idObjetivoX__nombreLargo',
+            'valor',
+            'justificacion').order_by(
+            'idActorY', 'idObjetivoX')
+
+    filas = {'actores': filas_actores, 'fichas': filas_fichas, 'objetivos': filas_objetivos,
+             'mid': filas_mid, '1mao': filas_1mao, '2mao': filas_2mao}
+
+    return filas
 
 
 def exportar_actores_xls(request, idEstudio):
