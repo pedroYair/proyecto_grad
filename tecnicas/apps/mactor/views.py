@@ -539,6 +539,7 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
     elif int(numero_matriz) == 2:
         return render(request, 'mao/matriz_2mao.html', contexto)
     elif int(numero_matriz) == 3:
+        Generar_matriz_ri(request, 1)
         return render(request, 'mao/matriz_3mao.html', contexto)
     else:
         raise Http404("Error: Esta vista no existe")
@@ -579,6 +580,23 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         return render(request, 'mao/matrices_caa_daa.html', contexto)
     else:
         raise Http404("Error: Esta vista no existe")
+
+
+def Generar_matriz_ri(request, idEstudio):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    valores_ri = calcular_ri(request, 1)
+    actores = Actor.objects.filter(idEstudio=1).order_by('id')
+    lista_contexto = []
+
+    for i in range(len(actores)):
+        lista_contexto.append(Valor_posicion(posicion=0, valor=actores[i].nombreCorto, descripcion=actores[i].nombreLargo))
+        lista_contexto.append(Valor_posicion(posicion=1, valor=round(valores_ri[i], 2), descripcion=round(valores_ri[i], 2)))
+
+    print(len(lista_contexto))
+    contexto = {'lista_contexto': lista_contexto, 'estudio': estudio}
+
+    return render(request, 'mao/matriz_ri.html', contexto)
 
 
 # ---------------------------------------------CLASES AUXILIARES-------------------------------------->
@@ -1332,6 +1350,7 @@ def calcular_ri(request, idEstudio):
     for i in range(len(valores_ri)):
         res = valores_ri[i]/ri_prom
         valores_ri[i] = res
+        print(res)
 
     return valores_ri
 
