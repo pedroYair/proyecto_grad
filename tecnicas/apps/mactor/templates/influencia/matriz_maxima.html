@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block head_title %}
+    {% if usuario != '' %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+    {% if usuario != '' %}
+
+        <!--MATRIZ MIDI------------------------------------------------------------------------------------------------->
+
+        <div class="container">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="widget wgreen">
+                            <div class="widget-head">
+                                 <div class="pull-left">MA - Matriz de Influencias Directas e Indirectas Máxima</div>
+                                <div class="widget-icons pull-right">
+                                    {% if valores_maximos %}
+                                     <select name="graficos_midi" class="form-control" onchange="location = this.value;">
+                                        <option value="">Análisis MIDI</option>
+                                        <option value="{% url 'mactor:mapa_actores' estudio.id %}">Mapa de actores</option>
+                                        <option value="{% url 'mactor:matriz_ri' estudio.id %}">Coeficiente de fuerza Ri</option>
+                                        <option value="{% url 'mactor:mapa_actores' estudio.id %}">Coeficiente de estabilidad H</option>
+                                    </select>
+                                    {% endif %}
+                                </div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget-content">
+                                <table class="table table-bordered" id="tabla2">
+                                    <thead>
+                                        <tr>
+                                            {% if actores and valores_maximos %}
+                                                <input style='text-align: center;'  type="text" size="4" readonly value="">
+                                                    {% for actor in actores %}
+                                                        <input id="ver{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                                                               title="{{actor.nombreLargo|upper}}" size="4"
+                                                               value="{{actor.nombreCorto}}" data-toggle="modal"
+                                                               href="#modal_Consultar_actor">
+                                                    {% endfor %}
+                                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly  type="text" size="4" title="INFLUENCIA DIRECTA E INDIRECTA" value="I.DI">
+                                            {% endif %}
+                                            <br>
+                                         </tr>
+                                    </thead>
+                                    <tbody>
+                                    {%if valores_maximos %}
+                                    <tr>
+                                        {% for i in valores_maximos %}
+                                            <!--Inserta el ultimo valor antes del salto de linea-->
+                                            {% if i.posicion == posicion_salto %}
+                                                <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
+                                                <br>
+                                            <!--Inserta los nombres cortos en el eje Y-->
+                                            {% elif i.posicion == 0 %}
+                                                        {% if i.valor != 'D.DI' %}
+                                                               <input id="daa{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% endif %}
+                                            <!--Inserta los valores midi posteriores al nombre corto en Y y previos a la ultima celda-->
+                                            {% else %}
+                                                <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% else %}
+                                        <h3>Finalice el registro de las influencias directas para visualizar la matriz MAXIMA.</h3>
+                                    {% endif %}
+                                            <br>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-8">
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" href="{% url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-table"></i> MAX</a>
+            </div>
+        </div>
+
+        <!--INICIO MODAL CONSULTAR ACTOR------------------------------------------------------------------------------->
+
+                    {% include 'actor/modal_detalle_actor.html' %}
+
+        <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
+
+                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                             <div class="modal-content">
+                                             <div class="modal-header">
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                            <h4 class="modal-title">Ayuda</h4>
+                                             </div>
+                                             <div class="modal-body" style="text-align: justify">
+                                            <p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
+                                                que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
+                                                influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
+                                                procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
+                                                de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
+                                                de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
+                                                existencia o permanencia de otro (4).
+                                            </p>
+                                                 <br>
+                                            <p>La columna Influencia Directa (Inf. D), representa la influencia total que determinado
+                                                actor ejerce en el grupo de actores estudiado. Mientras que la columna Dependencia Directa
+                                                (Dep. D), la influencia total que el resto de actores ejerce sobre ese actor.
+                                            </p>
+                                             </div>
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                          </div>
+                                            </div>
+                                        </div>
+                            </div>
+    {% else %}
+        <img src="{% static 'img/acceso_denegado.png' %}">
+        <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+    {% endif %}
+{% block extrajs %}
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js_mactor_modals/consultar/consultar_actor_objetivo_matriz.js'%}"></script>
+{% endblock %}
+
+{% endblock %}

@@ -5,7 +5,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_actor, Listar_actores, Editar_actor, Consultar_actor, Eliminar_actor, \
     Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
-    Crear_relacion_mid, Generar_matriz_mid, Generar_matriz_ri, \
+    Crear_relacion_mid, Generar_matriz_mid, Generar_matriz_midi, Generar_matriz_maxima, Generar_matriz_ri, \
     Crear_1mao, Crear_2mao, Generar_matriz_mao, Generar_matrices_caa_daa,  \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
@@ -49,6 +49,8 @@ urlpatterns = [
     # Urls modelo Relacion_MID y matrices
     url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', login_required(Crear_relacion_mid), name='influencia'),
     url(r'^matriz_mid/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_mid), name='matriz_mid'),
+    url(r'^matriz_midi/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_midi), name='matriz_midi'),
+    url(r'^matriz_maxima/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_maxima), name='matriz_maxima'),
     url(r'^matriz_ri/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_ri), name='matriz_ri'),
 
     # Urls modelo Relacion_MAO y matrices

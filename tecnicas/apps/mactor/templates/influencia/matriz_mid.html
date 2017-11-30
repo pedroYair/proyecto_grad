@@ -28,15 +28,15 @@
                                     <thead>
                                             <tr>
                                                 {%if actores and valores %}
-                                                    <input style='text-align: center;' type="text" size="3" readonly value="">
+                                                    <input style='text-align: center;' type="text" size="4" readonly value="">
                                                         {% for actor in actores %}
                                                             <input id="act{{actor.id}}" name="col"
                                                                    title="{{actor.nombreLargo|upper}}" style='text-align: center; background-color: #5e5e5e; color:
                                                              white' readonly
-                                                                   type="text" size="3" value="{{actor.nombreCorto}}"
+                                                                   type="text" size="4" value="{{actor.nombreCorto}}"
                                                                    data-toggle="modal" href="#modal_Consultar_actor">
                                                         {% endfor %}
-                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="3" title="INFLUENCIA DIRECTA" value="I.D">
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="4" title="INFLUENCIA DIRECTA" value="I.D">
                                                 {% endif %}
                                                 <br>
                                              </tr>
@@ -47,27 +47,25 @@
                                             {% for i in valores %}
                                                 <!--Inserta el ultimo valor de la fila antes del salto de linea (Valores de influencia directa)-->
                                                 {% if i.posicion == posicion_salto %}
-                                                    <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}" title="{{i.descripcion}}">
+                                                    <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
                                                     <br>
                                                 <!--Inserta los nombres en el eje Y-->
                                                 {% elif i.posicion == 0 %}
                                                         {% if i.valor != 'D.D' %}
                                                                <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}"
                                                                     data-toggle="modal" href="#modal_Consultar_actor">
                                                         {% else %}
                                                                 <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
                                                         {% endif %}
                                                 <!--Inserta los valores mid posteriores al nombre en Y y previos al valor de la ultima celda-->
                                                 {% else %}
-                                                    <!-->
                                                     {% if i.valor == 100 %}
-                                                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="Influencia sin registrar" size="3" value="X">
+                                                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="Influencia sin registrar" size="4" value="X">
                                                     {% else %}
-                                                    <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}" title="{{i.descripcion}}">
+                                                    <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
                                                     {% endif %}
-                                                    <!-->
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}
@@ -86,93 +84,23 @@
         <br>
         <br>
 
-        <!--MATRIZ MIDI------------------------------------------------------------------------------------------------->
-
-        <div class="container">
-                <div class="row">
-                    <div class="col-md-10">
-                        <div class="widget wgreen">
-                            <div class="widget-head">
-                                 <div class="pull-left">MIDI - Matriz de Influencias Directas e Indirectas</div>
-                                <div class="widget-icons pull-right">
-                                    {% if valores_midi %}
-                                     <select name="graficos_midi" class="form-control" onchange="location = this.value;">
-                                        <option value="">Diagramas</option>
-                                        <option value="{% url 'mactor:mapa_actores' estudio.id %}">Mapa de actores</option>
-                                    </select>
-                                    {% endif %}
-                                </div>
-                                <div class="clearfix"></div>
-                            </div>
-                            <div class="widget-content">
-                                <table class="table table-bordered" id="tabla2">
-                                    <thead>
-                                        <tr>
-                                            {% if actores and valores_midi %}
-                                                <input style='text-align: center;'  type="text" size="3" readonly value="">
-                                                    {% for actor in actores %}
-                                                        <input id="ver{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
-                                                               title="{{actor.nombreLargo|upper}}" size="3"
-                                                               value="{{actor.nombreCorto}}" data-toggle="modal"
-                                                               href="#modal_Consultar_actor">
-                                                    {% endfor %}
-                                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly  type="text" size="3" title="INFLUENCIA DIRECTA E INDIRECTA" value="I.DI">
-                                            {% endif %}
-                                            <br>
-                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                    {%if valores_midi %}
-                                    <tr>
-                                        {% for i in valores_midi %}
-                                            <!--Inserta el ultimo valor antes del salto de linea-->
-                                            {% if i.posicion == posicion_salto %}
-                                                <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}" title="{{i.descripcion}}">
-                                                <br>
-                                            <!--Inserta los nombres cortos en el eje Y-->
-                                            {% elif i.posicion == 0 %}
-                                                        {% if i.valor != 'D.DI' %}
-                                                               <input id="daa{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}"
-                                                                    data-toggle="modal" href="#modal_Consultar_actor">
-                                                        {% else %}
-                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="3" title="{{i.descripcion|upper}}" value="{{i.valor}}">
-                                                        {% endif %}
-                                            <!--Inserta los valores midi posteriores al nombre corto en Y y previos a la ultima celda-->
-                                            {% else %}
-                                                <input style='text-align: center;' readonly type="text" size="3" value="{{i.valor}}" title="{{i.descripcion}}">
-                                            {% endif %}
-                                        {% endfor %}
-                                    {% else %}
-                                        <h3>Finalice el registro de las influencias directas para visualizar la matriz MIDI</h3>
-                                    {% endif %}
-                                            <br>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id %}"><i class="fa fa-arrow-left"></i> Inf. MID</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
-                            <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao' estudio.id %}">Inf. 1MAO<i class="fa fa-arrow-right"></i></a>
-                        </div>
-                    </div>
-                </div>
+        <!--BOTONES---------------------------------------------------------------------------------------------------->
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-8">
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id %}"><i class="fa fa-arrow-left"></i> Inf. MID</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" href="{% url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-table"></i> MIDI</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao' estudio.id %}">Inf. 1MAO<i class="fa fa-arrow-right"></i></a>
             </div>
+        </div>
 
         <!--INICIO MODAL CONSULTAR ACTOR------------------------------------------------------------------------------->
 
-                    {% include 'actor/modal_detalle_actor.html' %}
+            {% include 'actor/modal_detalle_actor.html' %}
 
         <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
 
-                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                              <div class="modal-content">
                                              <div class="modal-header">
@@ -207,11 +135,6 @@
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js_mactor_modals/consultar/consultar_actor_objetivo_matriz.js'%}"></script>
-<!--Js exportar tabla-->
-<script src="{% static 'js/tableExport.js'%}"></script>
-<script src="{% static 'js/jquery.base64.js'%}"></script>
-<script src="{% static 'js/html2canvas.js'%}"></script>
-<script src="{% static 'js/exportar_actores_png.js'%}"></script>
 {% endblock %}
 
 {% endblock %}
