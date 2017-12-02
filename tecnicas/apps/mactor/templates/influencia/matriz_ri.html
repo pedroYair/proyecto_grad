@@ -17,6 +17,12 @@
                             <div class="widget-head">
                                  <div class="pull-left">Ri - Coeficiente de Relación de Fuerza de los actores</div>
                                 <div class="widget-icons pull-right">
+                                    {% if lista_contexto %}
+                                     <select name="graficos_ri" class="form-control" onchange="location = this.value;">
+                                        <option value="">Análisis Ri</option>
+                                        <option value="{% url 'mactor:histograma_ri' estudio.id %}">Histograma Ri</option>
+                                    </select>
+                                    {% endif %}
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
@@ -25,7 +31,7 @@
                                     <thead>
                                             <tr>
                                                 <input style='text-align: center;' readonly type="text" size="4" value="">
-                                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="4" value="Ri">
+                                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="4" value="Ri" title="Coeficiente de Relaciones de Fuerza">
                                                 <br>
                                             </tr>
                                         </thead>

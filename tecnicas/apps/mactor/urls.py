@@ -9,7 +9,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_1mao, Crear_2mao, Generar_matriz_mao, Generar_matrices_caa_daa,  \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
-    histograma_implicacion, obtener_datos_histograma, histograma_movilizacion, \
+    histograma_implicacion, obtener_datos_histograma, histograma_movilizacion, histograma_ri, datos_histograma_ri, \
     datos_histograma_caa_daa, histograma_caa_daa, \
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa
@@ -62,6 +62,10 @@ urlpatterns = [
     # Urls consultas ajax
     url(r'mid-ajax/$', login_required(Consultar_actores_faltantes)),  # obtiene lista actores X registrados en la mid
     url(r'mao-ajax/$', login_required(Consultar_objetivos_faltantes)),  # obtiene lista objetivos X registrados en la mao
+
+    # Urls histograma ri
+    url(r'^histograma_ri/(?P<idEstudio>\d+)/$', login_required(histograma_ri), name='histograma_ri'),
+    url(r'datos_histograma_ri', login_required(datos_histograma_ri)),
 
     # Urls exportar a excel
     url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudios_xls), name='estudios_xls'),

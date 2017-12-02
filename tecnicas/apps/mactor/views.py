@@ -500,7 +500,7 @@ def Generar_matriz_midi(request, idEstudio):
 
     if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
 
-        valores_midi = calcular_midi(request, idEstudio, tipo="MIDI")
+        valores_midi = calcular_midi(request, idEstudio)
 
         contexto = {'actores': lista_actores,
                     'posicion_salto': posicion_salto_linea,
@@ -527,7 +527,7 @@ def Generar_matriz_maxima(request, idEstudio):
 
     if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
 
-        valores_maximos = calcular_midi(request, idEstudio, tipo="MAXIMA")
+        valores_maximos = calcular_maxima_influencia(request, idEstudio)
 
         contexto = {'actores': lista_actores,
                     'posicion_salto': posicion_salto_linea,
@@ -804,8 +804,28 @@ def generar_mid_incompleta(request, idEstudio):
     return lista_contexto
 
 
-# Calcula los valores de la matriz de influencias directas e indirectas MIDIij = MID ij + Sum(Minimo [(MID ik, MID ik])
-def calcular_midi(request, idEstudio, tipo):
+# Agrega a la lista de valores mid y midi la descripcion del valor
+def agregar_descripcion_mid(idEstudio, lista):
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+
+    for i in lista:
+        if i.posicion in range(actores.count() + 1):
+            if i.valor == 0:
+                i.descripcion = "Sin influencia"
+            elif i.valor == 1:
+                i.descripcion = "Procesos"
+            elif i.valor == 2:
+                i.descripcion = "Proyectos"
+            elif i.valor == 3:
+                i.descripcion = "Misión"
+            elif i.valor == 4:
+                i.descripcion = "Existencia"
+
+    return lista
+
+
+# Calcula los valores de la matriz de MIDIij = MIDij + Sum(Minimo[(MID ik, MID ik])
+def calcular_midi(request, idEstudio):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     influencias_mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
@@ -826,87 +846,164 @@ def calcular_midi(request, idEstudio, tipo):
     # se realiza la suma MID ij + Sum(Minimo [(MID ik, MID ik])
     indice = 0
     posicion = 0
-    li = 0       # valor de la ultima columna
+    influencia = 0  # valor de la ultima columna
     for i in range(len(influencias_mid)):
         indice += 1
-        if tipo == "MIDI":
-            valor = influencias_mid[i].valor + lista_total[i]
-        elif tipo == "MAXIMA":
-            if influencias_mid[i].valor > lista_total[i]:
-                valor = influencias_mid[i].valor
-            else:
-                valor = lista_total[i]
+        valor = influencias_mid[i].valor + lista_total[i]
+        valores_midi.append(Valor_posicion(posicion=indice, valor=valor, descripcion=valor))
 
-        valores_midi.append(Valor_posicion(posicion=indice,
-                                           valor=valor,
-                                           descripcion=valor))
-        # se calcula el valor li, donde no se incluye la influencia sobre si mismo
+        # se calcula el valor influencia, no se incluye la influencia sobre si mismo
         if influencias_mid[i].idActorY != influencias_mid[i].idActorX and indice <= actores.count():
-            li += influencias_mid[i].valor + lista_total[i]
+            influencia += valor
 
         # se determina la posicion donde se va a colocar el nombre corto de la nueva fila
         if indice == actores.count():
-            # se determina la posicion del nombre cortose suma 2 debido a las columna extras (nombreCorto y li)
+            # se determina la posicion del nombre corto se suma 2 debido a las columna extras (nombre e influencia)
             posicion_nombre = (actores.count() + 2) * posicion
             valores_midi.insert(posicion_nombre, Valor_posicion(posicion=0,
                                                                 valor=actores[posicion].nombreCorto,
                                                                 descripcion=actores[posicion].nombreLargo))
-            # se determina la posición de la columna li y se inserta en la posicion establecida
+            # se determina la posición de la columna influencia y se inserta en la posicion establecida
             posicion_li = posicion_nombre + actores.count() + 1
-            valores_midi.insert(posicion_li, Valor_posicion(posicion=actores.count() + 1, valor=li, descripcion=li))
+            valores_midi.insert(posicion_li, Valor_posicion(posicion=actores.count()+1, valor=influencia, descripcion=influencia))
 
-            # se reinician los parametros paera recalcular
             indice = 0
             posicion += 1
-            li = 0
+            influencia = 0
 
     # se calculan los valores di (ultima fila)
     valores_midi.append(Valor_posicion(posicion=0, valor="D.DI", descripcion="DEPENDENCIA DIRECTA E INDIRECTA"))
-    indice = 1
-    di = 0
-    suma_di = 0
-    while indice <= actores.count():
-        for i in valores_midi:
-            if i.posicion == indice:
-                di += i.valor
-
-        # se obtiene el valor de influecia sobre si mismo para restarlo a di
-        valor_auto_influencia = valores_midi[((actores.count() + 2) * (indice - 1)) + indice].valor
-        di = di - valor_auto_influencia
-
-        # se inserta el valor di a la lista de valores midi
-        valores_midi.append(Valor_posicion(posicion="", valor=di, descripcion=di))
-        # se actualizan los parametros de iteracion
-        suma_di += di     # sumatoria total de di
-        indice += 1
-        di = 0
-    # se inserta la sumatoria total di donde di_total = li_total, ultima celda
-    valores_midi.append(Valor_posicion(posicion="", valor=suma_di, descripcion=suma_di))
+    valores_midi = establecer_dependencias(valores_midi, actores.count(), "MIDI")
 
     return valores_midi
 
 
-"""Realiza la parte derecha de la formula MIDI (Sum(Minimo [(MID ik, MID ik])), que consiste en determinar los valores
- minimos al comparar las influencias que ejerce el actorY recibido con las que los otros actores ejercen sobre el actor
- en X, para luego sumar los valores minimos determinados"""
-
-
+# Suma de valores minimos (lado derecho formula midi)
 def sumar_valores_minimos(request, actorY, idEstudio):
 
-    #determinar_valores_minimos(request, actorY, idEstudio)
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    valores_izquierdos = []       # contiene los valores izquierdos a comparar
-    valores_derechos = []         # contiene los valores derechos a comparar
-    valores_minimos = []          # contiene los valores minimos establecidos al comparar valores_izquierdos vs derechos
-    lista_suma = []               # contiene la suma de los valores minimos establecidos al comparar
+    lista_suma = []  # contiene la suma de los valores minimos establecidos al comparar
 
-    """------------------------------------------------INICIO CORTE----------------------------------------"""
+    mayor_valores_minimos(request, actorY, idEstudio)
+
+    for i in range(len(mid)):
+        lista_suma.append(0)
+
+    valores_minimos = obtener_valores_minimos(request, idEstudio, actorY)
+
+    inicio_sublista = 0             # indica el punto inicial de la sublista
+    fin_sublista = actores.count()  # indica el punto final de la sublista
+
+    # la lista valores_minimos es divida y sumada
+    for i in range(fin_sublista):
+        if i < actores.count() - 1:
+            lista_suma = map(sum, zip(lista_suma, valores_minimos[inicio_sublista:fin_sublista]))
+            inicio_sublista = fin_sublista
+            fin_sublista = fin_sublista + actores.count()
+    return lista_suma
+
+
+# Calcula la maxima influencia directa e indirecta
+def calcular_maxima_influencia(request, idEstudio):
+
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    influencias_mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY',
+                                                                                                           'idActorX')
+    lista_comparacion_minimo = []  # contiene las sublistas de valores minimos por cada actores Y
+    lista_maximos = []  # contiene lista_comparacion_minimo concatenado (sin sublista)
+    valores_maximos = []  # contiene los valores que se muestran a la matriz luego de comparar
+
+    # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
+    for i in range(len(influencias_mid)):
+        if influencias_mid[i].idActorY == influencias_mid[i].idActorX:
+            # cada valor de actorY permite el calculo de una fila de la matriz
+            lista_comparacion_minimo.append(mayor_valores_minimos(request, actorY=i, idEstudio=idEstudio))
+
+    # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
+    for i in lista_comparacion_minimo:
+        lista_maximos += i
+
+    # se realiza la comparacion para determinar cual valor es mayor
+    indice = 0
+    posicion = 0
+    influencia = 0  # valor de la ultima columna
+    for i in range(len(influencias_mid)):
+        indice += 1
+        if influencias_mid[i].valor > lista_maximos[i]:
+            valor = influencias_mid[i].valor
+        else:
+            valor = lista_maximos[i]
+        valores_maximos.append(Valor_posicion(posicion=indice, valor=valor, descripcion=valor))
+
+        # se calcula el valor de influencia (ultima columna), no se incluye la influencia sobre si mismo
+        if influencias_mid[i].idActorY != influencias_mid[i].idActorX and indice <= actores.count():
+            influencia += valor
+
+        # se determina la posicion donde se va a colocar el nombre corto de la nueva fila
+        if indice == actores.count():
+            # se determina la posicion del nombre corto se suma 2 debido a las columna extras (nombreCorto y li)
+            posicion_nombre = (actores.count() + 2) * posicion
+            valores_maximos.insert(posicion_nombre, Valor_posicion(posicion=0,
+                                                                   valor=actores[posicion].nombreCorto,
+                                                                   descripcion=actores[posicion].nombreLargo))
+            # se determina la posición de la columna li y se inserta en la posicion establecida
+            posicion_li = posicion_nombre + actores.count() + 1
+            valores_maximos.insert(posicion_li, Valor_posicion(posicion=actores.count() + 1,
+                                                               valor=influencia, descripcion=influencia))
+            # se reinician los parametros para recalcular
+            indice = 0
+            posicion += 1
+            influencia = 0
+
+    valores_maximos.append(
+        Valor_posicion(posicion=0, valor="DDI.M", descripcion="DEPENDENCIA DIRECTA E INDIRECTA MAXIMA"))
+    valores_maximos = establecer_dependencias(valores_maximos, actores.count(), "MAXIMA")
+
+    return valores_maximos
+
+
+# Determinacion de valores minimos mayores, (lado derecho formula maxima)
+def mayor_valores_minimos(request, actorY, idEstudio):
+
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    lista_minimos = obtener_valores_minimos(request, idEstudio, actorY)
+    lista_comparar = []
+    lista_mayores = []
+
+    contador = 0
+    for i in lista_minimos:
+        if contador <= actores.count():
+            lista_comparar.append(Valor_posicion(posicion=contador, valor=i, descripcion=""))
+            contador += 1
+        if contador + 1 > actores.count():
+            contador = 0
+
+    posicion = 0
+    while posicion < actores.count():
+        mayor = 0
+        for i in lista_comparar:
+            if i.posicion == posicion and i.valor > mayor:
+                mayor = i.valor
+        lista_mayores.append(mayor)
+        posicion += 1
+
+    return lista_mayores
+
+
+# Obtencion de valores minimos, necesarios para midi y maxima
+def obtener_valores_minimos(request, idEstudio, actorY):
+
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    valores_izquierdos = []  # contiene los valores izquierdos a comparar
+    valores_derechos = []  # contiene los valores derechos a comparar
+    valores_minimos = []  # contiene los valores minimos establecidos al comparar valores_izquierdos vs derechos
+
     # Valores_derechos: influencias de los actores influenciados por Y sobre el actor X excepto Y
     indice = 1
     aux = 0
     for i in range(len(mid)):
-        lista_suma.append(0)
         # se verifica si en el registro actual (i), el campo idActorY no corresponde al actorY recibido
         if mid[i].idActorY != mid[actorY].idActorY:
             valores_derechos.append(Valor_posicion(posicion=indice, valor=mid[i].valor, descripcion=""))
@@ -942,42 +1039,36 @@ def sumar_valores_minimos(request, actorY, idEstudio):
                     valores_minimos.append(valores_izquierdos[indice].valor)
                 else:
                     valores_minimos.append(valores_derechos[i].valor)
-
-    """------------------------------------------------FIN CORTE----------------------------------------"""
-
-    inicio_sublista = 0             # indica el punto inicial de la sublista
-    fin_sublista = actores.count()  # indica el punto final de la sublista
-
-    #print(valores_minimos[inicio_sublista:fin_sublista])
-    print(len(lista_suma))
-    # la lista valores_minimos es divida y sumada
-    for i in range(fin_sublista):
-        if i < actores.count() - 1:
-            # se suman los valores minimos
-            lista_suma = map(sum, zip(lista_suma, valores_minimos[inicio_sublista:fin_sublista]))
-            inicio_sublista = fin_sublista                  # se actualiza el punto de inicio
-            fin_sublista = fin_sublista + actores.count()   # se actualiza el punto final
-
-    return lista_suma
+    return valores_minimos
 
 
-# Agrega a la lista de valores mid y midi la descripcion del valor
-def agregar_descripcion_mid(idEstudio, lista):
+# Establece los valores de dependencias de las matrices midi y maxima
+def establecer_dependencias(lista, cant_actores, tipo):
 
-    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    indice = 1
+    dependencia = 0
+    suma_di = 0
+    while indice <= cant_actores:
+        for i in lista:
+            if i.posicion == indice:
+                dependencia += i.valor
+        # se obtiene el valor de influecia sobre si mismo para restarlo a dependencia
+        valor_auto_influencia = lista[((cant_actores + 2) * (indice - 1)) + indice].valor
+        dependencia = dependencia - valor_auto_influencia
 
-    for i in lista:
-        if i.posicion in range(actores.count() + 1):
-            if i.valor == 0:
-                i.descripcion = "Sin influencia"
-            elif i.valor == 1:
-                i.descripcion = "Procesos"
-            elif i.valor == 2:
-                i.descripcion = "Proyectos"
-            elif i.valor == 3:
-                i.descripcion = "Misión"
-            elif i.valor == 4:
-                i.descripcion = "Existencia"
+        if tipo == "MAXIMA":
+            # se colocan en 0 los valores de la diagonal
+            lista[((cant_actores + 2) * (indice - 1)) + indice].valor = 0
+            lista[((cant_actores + 2) * (indice - 1)) + indice].descripcion = 0
+
+        # se inserta el valor dependencia a la lista de valores midi
+        lista.append(Valor_posicion(posicion="", valor=dependencia, descripcion=dependencia))
+        # se actualizan los parametros de iteracion
+        suma_di += dependencia  # sumatoria total de dependencia
+        indice += 1
+        dependencia = 0
+    # se inserta la sumatoria total dependencia donde di_total = li_total, ultima celda
+    lista.append(Valor_posicion(posicion="", valor=suma_di, descripcion=suma_di))
 
     return lista
 
@@ -1407,7 +1498,6 @@ def calcular_ri(request, idEstudio):
     for i in range(len(valores_ri)):
         res = valores_ri[i]/ri_prom
         valores_ri[i] = res
-        print(res)
 
     return valores_ri
 
@@ -1951,6 +2041,35 @@ def datos_histograma_caa_daa(request):
         data = {'labels': lista_nombres,
                 'caa': datos_caa,
                 'daa': datos_daa}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
+def histograma_ri(request, idEstudio):
+
+    usuario = obtener_tipo_usuario(request, int(idEstudio))
+    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    contexto = {'estudio': estudio_mactor, 'usuario': usuario}
+    return render(request, 'influencia/histograma_ri.html', contexto)
+
+
+def datos_histograma_ri(request):
+
+    if request.is_ajax():
+        idEstudio = int(request.GET['estudio'])
+        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        valores_ri = calcular_ri(request, idEstudio)
+        lista_nombres = []
+
+        for i in actores:
+            lista_nombres.append(i.nombreCorto)
+
+        for i in range(len(valores_ri)):
+            valores_ri[i] = round(valores_ri[i], 2)
+
+        data = {'labels': lista_nombres,
+                'valores_ri': valores_ri}
 
         json_data = json.dumps(data)
         return HttpResponse(json_data)
