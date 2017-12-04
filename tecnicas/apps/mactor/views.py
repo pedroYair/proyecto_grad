@@ -703,34 +703,33 @@ def Crear_auto_influencia(request, idEstudio):
                 a.save()
 
 
-# Establece la lista de valores mid enviandos por contexto mostrados en la matriz
+# Establece la lista de valores mid enviandos por contexto a la matriz
 def establecer_valores_mid(idEstudio, influencias):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     lista_valores_mid = []
-    posicion = 0                    # controla y asignar la posicion de acuerdo al numero de actores e influencias
-    indice = 0                      # representa el indice del nombreCorto que se ha de colocar en valores
+    posicion = 0               # controla y asignar la posicion de acuerdo al numero de actores e influencias
+    indice = 0                 # representa el indice del nombreCorto que se ha de colocar en valores
     suma_fila_influencias = 0
     suma_columna_dependencia = 0
 
     for i in range(len(influencias)):
 
         posicion += 1
-        # se obtienen los valores de las influencias registradas colocando una posicion para facilitar su visualizacion
+        # se asigna a las influencias registradas una posicion para facilitar su visualizacion y manejo
         lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=influencias[i].valor, descripcion=""))
 
         # Se calcula el valor de influencia directa I.D
         if influencias[i].valor != VALOR_RELACION_NO_REGISTRADA:
             suma_fila_influencias += influencias[i].valor
 
-        # Si cantidad de valores igual a la cantidad de actores se agrega el valor de influencias
+        # Si posicion (representa el numero de la columna) es igual a la cantidad de actores agrega total de influencias
         if posicion == actores.count():
             lista_valores_mid.append(Valor_posicion(posicion=posicion + 1,
                                                     valor=suma_fila_influencias,
                                                     descripcion=suma_fila_influencias))
             # Se determina la posicion donde se va a colocar el nombre corto de la nueva fila
             pos_nombre = (actores.count() + 2) * indice
-            # Se inserta el nombre corto de la nueva fila
             lista_valores_mid.insert(pos_nombre, Valor_posicion(posicion=0,
                                                                 valor=actores[indice].nombreCorto,
                                                                 descripcion=actores[indice].nombreLargo))
@@ -836,7 +835,7 @@ def calcular_midi(request, idEstudio):
     # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
     for i in range(len(influencias_mid)):
         if influencias_mid[i].idActorY == influencias_mid[i].idActorX:
-            # cada valor de pos permite el calculo de una fila de la matriz
+            # cada valor i que representa a un actor permite el calculo de una fila de la matriz
             lista_comparacion_minimo.append(sumar_valores_minimos(request, actorY=i, idEstudio=idEstudio))
 
     # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
@@ -875,6 +874,7 @@ def calcular_midi(request, idEstudio):
     valores_midi.append(Valor_posicion(posicion=0, valor="D.DI", descripcion="DEPENDENCIA DIRECTA E INDIRECTA"))
     valores_midi = establecer_dependencias(valores_midi, actores.count(), "MIDI")
 
+    calcular_balance_liquido(valores_midi)
     return valores_midi
 
 
@@ -930,15 +930,12 @@ def calcular_maxima_influencia(request, idEstudio):
     influencia = 0  # valor de la ultima columna
     for i in range(len(influencias_mid)):
         indice += 1
-        if influencias_mid[i].valor > lista_maximos[i]:
-            valor = influencias_mid[i].valor
-        else:
-            valor = lista_maximos[i]
-        valores_maximos.append(Valor_posicion(posicion=indice, valor=valor, descripcion=valor))
+        maximo = max(influencias_mid[i].valor, lista_maximos[i])
+        valores_maximos.append(Valor_posicion(posicion=indice, valor=maximo, descripcion=maximo))
 
         # se calcula el valor de influencia (ultima columna), no se incluye la influencia sobre si mismo
         if influencias_mid[i].idActorY != influencias_mid[i].idActorX and indice <= actores.count():
-            influencia += valor
+            influencia += maximo
 
         # se determina la posicion donde se va a colocar el nombre corto de la nueva fila
         if indice == actores.count():
@@ -1012,7 +1009,7 @@ def obtener_valores_minimos(request, idEstudio, actorY):
                 indice += 1
                 aux = 0
 
-    # Valores_izquierdos del minimo: influencias del actorY recibido, sobre los demas.
+    # Valores_izquierdos: influencias del actorY recibido, sobre los demas.
     indice = 0
     for i in range(len(mid)):
         longitud = len(valores_izquierdos)
@@ -1028,19 +1025,35 @@ def obtener_valores_minimos(request, idEstudio, actorY):
     indice = 0
     for i in range(len(valores_derechos)):
         if valores_izquierdos[indice].posicion == valores_derechos[i].posicion and indice < actores.count():
-            if valores_izquierdos[indice].valor <= valores_derechos[i].valor:
-                valores_minimos.append(valores_izquierdos[indice].valor)
-            else:
-                valores_minimos.append(valores_derechos[i].valor)
+            minimo = min(valores_izquierdos[indice].valor, valores_derechos[i].valor)
+            valores_minimos.append(minimo)
         else:
             indice += 1
             if valores_izquierdos[indice].posicion == valores_derechos[i].posicion:
-                if valores_izquierdos[indice].valor <= valores_derechos[i].valor:
-                    valores_minimos.append(valores_izquierdos[indice].valor)
-                else:
-                    valores_minimos.append(valores_derechos[i].valor)
+                minimo = min(valores_izquierdos[indice].valor, valores_derechos[i].valor)
+                valores_minimos.append(minimo)
     return valores_minimos
 
+
+# Calcular balance liquido
+def calcular_balance_liquido(valores_midi):
+
+    lista_inversa = []
+    columna = 0
+    lista_inversa.append("nombre")
+    #valores_midi = calcular_midi(request, 1)
+
+    while columna < 5:
+        for i in valores_midi:
+            if type(i.posicion) == int and i.posicion in range(5+1) and i.posicion == columna+1:
+                lista_inversa.append(i.valor)
+        if columna + 1 != 5:
+            lista_inversa.append("influencia")
+            lista_inversa.append("nombre")
+        columna += 1
+
+    for i in lista_inversa:
+        print(i)
 
 # Establece los valores de dependencias de las matrices midi y maxima
 def establecer_dependencias(lista, cant_actores, tipo):
@@ -1502,6 +1515,7 @@ def calcular_ri(request, idEstudio):
     return valores_ri
 
 
+# Genera la matriz mao en caso de que este incompleta, solo 1mao y 2mao
 def generar_mao_incompleta(idEstudio, mao):
 
     lista_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
