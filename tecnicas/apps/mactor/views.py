@@ -552,10 +552,23 @@ def Generar_matriz_ri(request, idEstudio):
         lista_contexto.append(Valor_posicion(posicion=0, valor=actores[i].nombreCorto, descripcion=actores[i].nombreLargo))
         lista_contexto.append(Valor_posicion(posicion=1, valor=round(valores_ri[i], 2), descripcion=round(valores_ri[i], 2)))
 
-    print(len(lista_contexto))
     contexto = {'lista_contexto': lista_contexto, 'estudio': estudio}
 
     return render(request, 'influencia/matriz_ri.html', contexto)
+
+
+# Genera la matriz de balance liquido
+def Generar_matriz_balance(request, idEstudio):
+
+    idEstudio = int(idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
+    valores_balance = calcular_balance_liquido(request, idEstudio)
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+
+    contexto = {'actores': actores, 'valores_balance': valores_balance,
+                'posicion_salto':actores.count()+1, 'estudio': estudio}
+
+    return render(request, 'influencia/matriz_balance.html', contexto)
 
 
 # -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
@@ -874,7 +887,6 @@ def calcular_midi(request, idEstudio):
     valores_midi.append(Valor_posicion(posicion=0, valor="D.DI", descripcion="DEPENDENCIA DIRECTA E INDIRECTA"))
     valores_midi = establecer_dependencias(valores_midi, actores.count(), "MIDI")
 
-    calcular_balance_liquido(valores_midi)
     return valores_midi
 
 
@@ -968,6 +980,7 @@ def mayor_valores_minimos(request, actorY, idEstudio):
     lista_comparar = []
     lista_mayores = []
 
+    # Se asigna una posicion a los valores minimos para facilitar la comparacion y posterior visualizacion
     contador = 0
     for i in lista_minimos:
         if contador <= actores.count():
@@ -976,6 +989,7 @@ def mayor_valores_minimos(request, actorY, idEstudio):
         if contador + 1 > actores.count():
             contador = 0
 
+    # Se determinan el valor mayor dentro de la lista de valores minimos por cada pareja ij
     posicion = 0
     while posicion < actores.count():
         mayor = 0
@@ -1036,24 +1050,47 @@ def obtener_valores_minimos(request, idEstudio, actorY):
 
 
 # Calcular balance liquido
-def calcular_balance_liquido(valores_midi):
+def calcular_balance_liquido(request, idEstudio):
 
+    valores_midi = calcular_midi(request, idEstudio)
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     lista_inversa = []
+    lista_balance = []
     columna = 0
-    lista_inversa.append("nombre")
-    #valores_midi = calcular_midi(request, 1)
+    suma_fila = 0
 
-    while columna < 5:
-        for i in valores_midi:
-            if type(i.posicion) == int and i.posicion in range(5+1) and i.posicion == columna+1:
+    indice = 0
+    for i in range(len(valores_midi)):
+        if valores_midi[i].valor == "D.DI":
+            indice = i
+
+    lista_inversa.append("nombre")
+    while columna < actores.count():
+        for i in valores_midi[0:indice]:
+            if i.posicion == columna+1:
                 lista_inversa.append(i.valor)
-        if columna + 1 != 5:
+        if columna + 1 != actores.count():
             lista_inversa.append("influencia")
             lista_inversa.append("nombre")
         columna += 1
+    lista_inversa.append("influencia")
 
-    for i in lista_inversa:
-        print(i)
+    for i in range(len(valores_midi[0:indice])):
+        if valores_midi[i].posicion == 0:
+            lista_balance.append(valores_midi[i])
+        elif valores_midi[i].posicion > 0 and valores_midi[i].posicion < actores.count()+1:
+            balance = valores_midi[i].valor - lista_inversa[i]
+            suma_fila += balance
+            lista_balance.append(Valor_posicion(posicion=valores_midi[i].posicion, valor=balance, descripcion=balance))
+        elif valores_midi[i].posicion == actores.count()+1:
+            lista_balance.append(Valor_posicion(posicion=valores_midi[i].posicion, valor=suma_fila, descripcion=suma_fila))
+            suma_fila = 0
+
+    for i in lista_balance:
+        print(i.posicion, i.valor)
+
+    return lista_balance
+
 
 # Establece los valores de dependencias de las matrices midi y maxima
 def establecer_dependencias(lista, cant_actores, tipo):
@@ -1558,10 +1595,7 @@ def generar_mao_incompleta(idEstudio, mao):
 # Agrega a la lista de valores mid y midi la descripcion del valor
 def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
 
-    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
-
-    indice = 0
 
     if tipo_matriz == 1:
         for i in lista:
@@ -1575,7 +1609,7 @@ def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
 
     elif tipo_matriz == 2:
         for i in lista:
-            if type(i.posicion) == int and i.posicion > 0 and i.posicion <= objetivos.count():
+            if i.posicion in range(objetivos.count()+1) and i.descripcion == "":
                 if i.valor == abs(i.valor):
                     i.descripcion = "Acuerdo"
                 else:
@@ -1583,7 +1617,7 @@ def agregar_descripcion_mao(idEstudio, tipo_matriz, lista):
 
     elif tipo_matriz == 3:
         for i in lista:
-            if i.posicion in range(objetivos.count() + 1) and i.descripcion == " ":
+            if i.posicion in range(objetivos.count() + 1) and i.descripcion == "":
                 i.descripcion = i.valor
     return lista
 

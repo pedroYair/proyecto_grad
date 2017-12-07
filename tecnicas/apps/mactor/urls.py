@@ -6,7 +6,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
     Crear_relacion_mid, Generar_matriz_mid, Generar_matriz_midi, Generar_matriz_maxima, Generar_matriz_ri, \
-    Crear_1mao, Crear_2mao, Generar_matriz_mao, Generar_matrices_caa_daa,  \
+    Generar_matriz_balance, Crear_1mao, Crear_2mao, Generar_matriz_mao, Generar_matrices_caa_daa,  \
     Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
     histograma_implicacion, obtener_datos_histograma, histograma_movilizacion, histograma_ri, datos_histograma_ri, \
@@ -52,6 +52,7 @@ urlpatterns = [
     url(r'^matriz_midi/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_midi), name='matriz_midi'),
     url(r'^matriz_maxima/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_maxima), name='matriz_maxima'),
     url(r'^matriz_ri/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_ri), name='matriz_ri'),
+    url(r'^matriz_balance/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_balance), name='matriz_balance'),
 
     # Urls modelo Relacion_MAO y matrices
     url(r'^1mao/(?P<idEstudio>\d+)/$', login_required(Crear_1mao), name='1mao'),
@@ -69,9 +70,6 @@ urlpatterns = [
 
     # Urls exportar a excel
     url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudios_xls), name='estudios_xls'),
-    url(r'exportar_actores/xls/(?P<idEstudio>\d+)/$', login_required(exportar_actores_xls), name='actores_xls'),
-    url(r'exportar_fichas/xls/(?P<idEstudio>\d+)/$', login_required(exportar_fichas_xls), name='fichas_xls'),
-    url(r'exportar_objetivos/xls/(?P<idEstudio>\d+)/$', login_required(exportar_objetivos_xls), name='objetivos_xls'),
 
     # Urls histogramas mao
     url(r'^histograma_implicacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', login_required(histograma_implicacion),
