@@ -6,8 +6,8 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
     Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
     Crear_relacion_mid, Generar_matriz_mid, Generar_matriz_midi, Generar_matriz_maxima, Generar_matriz_ri, \
-    Generar_matriz_balance, Crear_1mao, Crear_2mao, Generar_matriz_mao, Generar_matrices_caa_daa,  \
-    Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
+    Generar_matriz_balance, Generar_indicador_estabilidad, Crear_1mao, Crear_2mao, Generar_matriz_mao,\
+    Generar_matrices_caa_daa, Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
     histograma_implicacion, obtener_datos_histograma, histograma_movilizacion, histograma_ri, datos_histograma_ri, \
     datos_histograma_caa_daa, histograma_caa_daa, \
@@ -53,6 +53,7 @@ urlpatterns = [
     url(r'^matriz_maxima/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_maxima), name='matriz_maxima'),
     url(r'^matriz_ri/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_ri), name='matriz_ri'),
     url(r'^matriz_balance/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_balance), name='matriz_balance'),
+    url(r'^estabilidad/(?P<idEstudio>\d+)/$', login_required(Generar_indicador_estabilidad), name='estabilidad'),
 
     # Urls modelo Relacion_MAO y matrices
     url(r'^1mao/(?P<idEstudio>\d+)/$', login_required(Crear_1mao), name='1mao'),

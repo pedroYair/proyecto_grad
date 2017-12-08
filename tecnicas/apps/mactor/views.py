@@ -562,13 +562,32 @@ def Generar_matriz_balance(request, idEstudio):
 
     idEstudio = int(idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
-    valores_balance = calcular_balance_liquido(request, idEstudio)
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio,
+                                                    idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    tamano_matriz_completa = len(actores) * len(actores)
+    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
 
-    contexto = {'actores': actores, 'valores_balance': valores_balance,
-                'posicion_salto':actores.count()+1, 'estudio': estudio}
+    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
+        valores_balance = calcular_balance_liquido(request, idEstudio)
+        contexto = {'actores': actores, 'valores_balance': valores_balance,
+                    'posicion_salto': actores.count()+1, 'estudio': estudio, 'usuario': tipo_usuario}
+    else:
+        contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
     return render(request, 'influencia/matriz_balance.html', contexto)
+
+
+# Genera la matriz de balance liquido
+def Generar_indicador_estabilidad(request, idEstudio):
+
+    idEstudio = int(idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
+    indicador = calcular_estabilidad(request, idEstudio)
+
+    contexto = {'indicador': indicador, 'estudio': estudio}
+
+    return render(request, 'influencia/indicador_estabilidad.html', contexto)
 
 
 # -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
@@ -1086,8 +1105,7 @@ def calcular_balance_liquido(request, idEstudio):
             lista_balance.append(Valor_posicion(posicion=valores_midi[i].posicion, valor=suma_fila, descripcion=suma_fila))
             suma_fila = 0
 
-    for i in lista_balance:
-        print(i.posicion, i.valor)
+    calcular_estabilidad(request, idEstudio)
 
     return lista_balance
 
@@ -1121,6 +1139,30 @@ def establecer_dependencias(lista, cant_actores, tipo):
     lista.append(Valor_posicion(posicion="", valor=suma_di, descripcion=suma_di))
 
     return lista
+
+
+# Calcula el indicador de estabilidad del estudio
+def calcular_estabilidad(request, idEstudio):
+
+    actores = Actor.objects.filter(idEstudio=idEstudio)
+    valores_midi = calcular_midi(request, idEstudio)
+    lista_influencias = []
+    lista_dependencias = []
+    total = valores_midi[len(valores_midi) - 1].valor
+    estabilidad = 0
+
+    for i in valores_midi:
+        if i.posicion == actores.count() + 1:
+            lista_influencias.append(i.valor)
+
+        elif i.posicion == "" and len(lista_dependencias) < actores.count():
+            lista_dependencias.append(i.valor)
+
+    for i in range(len(lista_influencias)):
+        estabilidad += abs(lista_influencias[i] - lista_dependencias[i])
+
+    estabilidad = round((estabilidad / (2 * total)) * 100, 2)
+    return estabilidad
 
 
 # <<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
