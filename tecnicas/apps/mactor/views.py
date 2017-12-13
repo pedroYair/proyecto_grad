@@ -1782,7 +1782,7 @@ def obtener_tipo_usuario(request, idEstudio):
 
     # Si el usuario es coordinador y experto
     if request.user in lista_expertos and estudio.idCoordinador == request.user:
-        tipo = "COORDINADOR"
+        tipo = "COORDINADOR_EXPERTO"
     # Si el usuario solo es coordinador
     elif estudio.idCoordinador == request.user:
         tipo = "COORDINADOR"

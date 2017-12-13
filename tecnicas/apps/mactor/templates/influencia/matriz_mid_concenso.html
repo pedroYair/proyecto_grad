@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    <div class="container">
+                <div class="row">
+                    <div class="col-md-10">
+                        <div class="widget wgreen">
+                            <div class="widget-head">
+                                 <div class="pull-left">MID - Matriz de Influencias Directas (CONCENSO)</div>
+                                 <div class="widget-icons pull-right">
+                                 </div>
+                                 <div class="clearfix"></div>
+                            </div>
+                            <div id="div_tabla" class="widget-content">
+                                <table class="table table-bordered" id="matriz_mid">
+                                    <thead>
+                                            <tr>
+                                                {%if actores and valores %}
+                                                    <input style='text-align: center;' type="text" size="4" readonly value="">
+                                                        {% for actor in actores %}
+                                                            <input id="act{{actor.id}}" name="col"
+                                                                   title="{{actor.nombreLargo|upper}}" style='text-align: center; background-color: #5e5e5e; color:
+                                                             white' readonly
+                                                                   type="text" size="4" value="{{actor.nombreCorto}}"
+                                                                   data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% endfor %}
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="4" title="INFLUENCIA DIRECTA" value="I.D">
+                                                {% endif %}
+                                                <br>
+                                             </tr>
+                                        </thead>
+                                    <tbody>
+                                        {% if valores %}
+                                        <tr>
+                                            {% for i in valores %}
+                                                <!--Inserta el ultimo valor de la fila antes del salto de linea (Valores de influencia directa)-->
+                                                {% if i.posicion == posicion_salto %}
+                                                    <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
+                                                    <br>
+                                                <!--Inserta los nombres en el eje Y-->
+                                                {% elif i.posicion == 0 %}
+                                                        {% if i.valor != 'D.D' %}
+                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                                    data-toggle="modal" href="#modal_Consultar_actor">
+                                                        {% else %}
+                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
+                                                        {% endif %}
+                                                <!--Inserta los valores mid posteriores al nombre en Y y previos al valor de la ultima celda-->
+                                                {% else %}
+                                                    <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
+                                                {% endif %}
+                                            {% endfor %}
+                                        {% else %}
+                                            <h3>Registre los actores del estudio.</h3>
+                                        {% endif %}
+                                                <br>
+                                        </tr>
+                                        </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+</body>
+</html>
