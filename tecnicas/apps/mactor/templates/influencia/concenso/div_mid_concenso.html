@@ -17,9 +17,6 @@
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis MID</option>
                                         <option style="color: red;" value="">Histograma Influencia - Dependencia</option>
-                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                            <option style="color: red;" value="">Concenso MID</option>
-                                         {% endif %}
                                      </select>
                                     {% endif %}
                                  </div>
@@ -63,15 +60,11 @@
                                                         {% endif %}
                                                 <!--Inserta los valores mid posteriores al nombre en Y y previos al valor de la ultima celda-->
                                                 {% else %}
-                                                    {% if i.valor == 100 %}
-                                                        <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="Influencia sin registrar" size="4" value="X">
-                                                    {% else %}
                                                     <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
-                                                    {% endif %}
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}
-                                            <h3>Registre los actores del estudio.</h3>
+                                            <h3>Ningún experto ha finalizado de diligenciar la matriz MID correspondiente.</h3>
                                         {% endif %}
                                                 <br>
                                         </tr>

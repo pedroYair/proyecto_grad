@@ -12,7 +12,8 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     histograma_implicacion, obtener_datos_histograma, histograma_movilizacion, histograma_ri, datos_histograma_ri, \
     datos_histograma_caa_daa, histograma_caa_daa, \
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
-    generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa
+    generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
+    generar_mid_concenso
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -54,6 +55,7 @@ urlpatterns = [
     url(r'^matriz_ri/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_ri), name='matriz_ri'),
     url(r'^matriz_balance/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_balance), name='matriz_balance'),
     url(r'^estabilidad/(?P<idEstudio>\d+)/$', login_required(Generar_indicador_estabilidad), name='estabilidad'),
+    url(r'^mid_concenso/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(generar_mid_concenso), name='mid_concenso'),
 
     # Urls modelo Relacion_MAO y matrices
     url(r'^1mao/(?P<idEstudio>\d+)/$', login_required(Crear_1mao), name='1mao'),

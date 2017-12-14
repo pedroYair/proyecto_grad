@@ -44,7 +44,7 @@
                                             <td style="text-align: justify">{{ficha.estrategia}}</td>
                                             <td>
                                                 <a id="ver{{ficha.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modalConsultar"><i class="fa fa-eye"></i></a>
-                                                {% if usuario == 'COORDINADOR' %}
+                                                {% if usuario != 'EXPERTO' %}
                                                     <a class="btn btn-warning" id="editarFicha" title="Editar"
                                                        href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
                                                     <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete"
@@ -90,7 +90,7 @@
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
                    <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_actores' estudio.id%}"><i class="fa fa-arrow-left"></i> Actores</a>
-                   {% if usuario == 'COORDINADOR' %}
+                   {% if usuario != 'EXPERTO' %}
                     <a class="btn btn-primary" id="agregarFicha" href="{%url 'mactor:ficha' estudio.id%}"><i class="fa fa-plus"></i> Agregar</a>
                    {% endif %}
                    <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>

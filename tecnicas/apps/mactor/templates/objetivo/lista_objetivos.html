@@ -71,11 +71,15 @@
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
                     <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}"><i class="fa fa-arrow-left"></i> Estrategias</a>
-                    {% if usuario == 'COORDINADOR' %}
+                    {% if usuario != 'EXPERTO' %}
                     <button id="boton_agregar" class="btn btn-primary" data-toggle="modal" href="#myModal1"><i class="fa fa-plus"></i> Agregar</button>
                     {% endif %}
                     <a class="btn btn-primary" data-toggle="modal" href="#myModal5"><i class="fa fa-book"></i> Ayuda</a>
+                    {% if usuario != 'COORDINADOR' %}
                     <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id%}">Influencias MID<i class="fa fa-arrow-right"></i></a>
+                    {% else %}
+                    <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id%}">Matriz MID <i class="fa fa-arrow-right"></i></a>
+                    {% endif %}
                 </div>
             </div>
 

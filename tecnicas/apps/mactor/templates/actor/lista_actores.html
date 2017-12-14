@@ -47,7 +47,7 @@
                                                 <td style="text-align: justify">{{actor.descripcion}}</td>
                                                 <td>
                                                     <a id="ver{{actor.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal5"><i class="fa fa-eye"></i></a>
-                                                    {% if usuario == 'COORDINADOR' %}
+                                                    {% if usuario != 'EXPERTO' %}
                                                     <a id="act{{actor.id}}" class="btn btn-warning .edit" title="Editar" data-toggle="modal"
                                                                href="#myModal3"><i class="fa fa-pencil"></i></a>
                                                     <a href="#myModal2" role="button" class="btn btn-danger delete" title="Eliminar" data-toggle="modal"
@@ -69,7 +69,7 @@
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-8">
                         <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Estudios</a>
-                        {% if usuario == 'COORDINADOR' %}
+                        {% if usuario != 'EXPERTO' %}
                             {% if cantidad_registrados < 15 %}
                             <button class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</button>
                             {% endif %}

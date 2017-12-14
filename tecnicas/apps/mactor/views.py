@@ -455,22 +455,26 @@ def Crear_relacion_mid(request, idEstudio):
 # View generadora de la matriz MID
 def Generar_matriz_mid(request, idEstudio):
 
+    concenso = False
+    if idEstudio[0] == '0':
+        concenso = True
     idEstudio = int(idEstudio)
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    lista_influencias = []
     tamano_matriz_completa = len(lista_actores) * len(lista_actores)
     posicion_salto_linea = lista_actores.count() + 1
+    lista_influencias = []
 
+    # muestra la matriz diligenciada por el usuario en sesion
     if tipo_usuario != "COORDINADOR":
         lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio,
                                                         idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    else:
+    # muestra la matriz grupal
+    elif tipo_usuario == 'COORDINADOR' or concenso is True:
         lista_influencias = concenso_mid(idEstudio)
 
     if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
-
         valores_mid = establecer_valores_mid(idEstudio, lista_influencias)
 
         contexto = {'actores': lista_actores,
@@ -488,7 +492,10 @@ def Generar_matriz_mid(request, idEstudio):
     else:
         contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario}
 
-    return render(request, 'influencia/matriz_mid.html', contexto)
+    if concenso is False:
+        return render(request, 'influencia/matriz_mid.html', contexto)
+    else:
+        return render(request, 'influencia/concenso/mid_concenso.html', contexto)
 
 
 # View generadora de la matriz MIDI
@@ -2403,6 +2410,14 @@ def limpiar_matriz(lista_valores, actores):
 
 # -------------------------------------------CONSENSO----------------------------------------------------------
 
+def generar_mid_concenso(request, idEstudio, matriz):
+
+    idEstudio = "0"+idEstudio
+
+    if int(matriz) == 1:
+        return Generar_matriz_mid(request, idEstudio)
+
+
 def concenso_mid(idEstudio):
 
     estudio = Estudio_Mactor.objects.get(id=idEstudio)
@@ -2426,9 +2441,6 @@ def concenso_mid(idEstudio):
     if len(lista_concenso) > 0:
         for i in lista_concenso:
             i.valor = round(i.valor / contador)
-            """print(i.idActorX, i.idActorY, i.valor, contador)
-            print(i.idActorX, i.idActorY, round(i.valor))
-            print("--------------------------------")"""
 
     return lista_concenso
 
