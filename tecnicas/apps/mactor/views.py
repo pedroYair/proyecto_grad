@@ -458,11 +458,16 @@ def Generar_matriz_mid(request, idEstudio):
     idEstudio = int(idEstudio)
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio,
-                                                    idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    tamano_matriz_completa = len(lista_actores)*len(lista_actores)
-    posicion_salto_linea = lista_actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    lista_influencias = []
+    tamano_matriz_completa = len(lista_actores) * len(lista_actores)
+    posicion_salto_linea = lista_actores.count() + 1
+
+    if tipo_usuario != "COORDINADOR":
+        lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio,
+                                                        idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    else:
+        lista_influencias = concenso_mid(idEstudio)
 
     if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
 
@@ -2394,6 +2399,41 @@ def limpiar_matriz(lista_valores, actores):
             lista_limpia.append(i.valor)
 
     return lista_limpia
+
+
+# -------------------------------------------CONSENSO----------------------------------------------------------
+
+def concenso_mid(idEstudio):
+
+    estudio = Estudio_Mactor.objects.get(id=idEstudio)
+    lista_expertos = estudio.idExpertos.all()
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    tamano_matriz_completa = len(actores)*len(actores)
+    lista_concenso = []
+    contador = 0
+
+    for experto in lista_expertos:
+        consulta = Relacion_MID.objects.filter(idEstudio=idEstudio,
+                                                        idExperto=experto.id).order_by('idActorY', 'idActorX')
+        if len(consulta) == tamano_matriz_completa and len(lista_concenso) == 0:
+            lista_concenso = consulta
+            contador += 1
+        elif len(consulta) == tamano_matriz_completa:
+            contador += 1
+            for i in range(len(lista_concenso)):
+                lista_concenso[i].valor += consulta[i].valor
+
+    if len(lista_concenso) > 0:
+        for i in lista_concenso:
+            i.valor = round(i.valor / contador)
+            """print(i.idActorX, i.idActorY, i.valor, contador)
+            print(i.idActorX, i.idActorY, round(i.valor))
+            print("--------------------------------")"""
+
+    return lista_concenso
+
+
+
 
 
 
