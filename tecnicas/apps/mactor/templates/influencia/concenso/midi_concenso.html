@@ -8,27 +8,30 @@
 {% endblock %}
 
 {% block content %}
+
     {% if usuario != 'EXPERTO' %}
-        <!--MATRIZ MID CONCENSO-------------------------------------------------------------------------------------------------->
-            {% include 'influencia/concenso/div_mid_concenso.html' %}
-            <br>
-            <br>
+
+        <!--MATRIZ MIDI------------------------------------------------------------------------------------------------->
+
+        {% include 'influencia/concenso/div_midi_concenso.html' %}
 
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" href="{% url 'mactor:matriz_maxima' estudio.id %}"><i class="fa fa-table"></i> MAX</a>
+                <a class="btn btn-primary" href="{% url 'mactor:matriz_balance' estudio.id %}"><i class="fa fa-table"></i> BL</a>
             </div>
         </div>
 
         <!--INICIO MODAL CONSULTAR ACTOR------------------------------------------------------------------------------->
 
-            {% include 'actor/modal_detalle_actor.html' %}
+                    {% include 'actor/modal_detalle_actor.html' %}
 
         <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
 
-            <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">
                                              <div class="modal-content">
                                              <div class="modal-header">
@@ -55,12 +58,11 @@
                                           </div>
                                             </div>
                                         </div>
-            </div>
+                            </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
     {% endif %}
-
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js_mactor_modals/consultar/consultar_actor_objetivo_matriz.js'%}"></script>
