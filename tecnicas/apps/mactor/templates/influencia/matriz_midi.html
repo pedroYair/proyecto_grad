@@ -8,9 +8,7 @@
 {% endblock %}
 
 {% block content %}
-
     {% if usuario != '' %}
-        {% if usuario != 'COORDINADOR' %}
 
         <!--MATRIZ MIDI------------------------------------------------------------------------------------------------->
         <div class="container">
@@ -18,7 +16,11 @@
                     <div class="col-md-10">
                         <div class="widget wgreen">
                             <div class="widget-head">
+                                {% if usuario != 'COORDINADOR' %}
                                  <div class="pull-left">MIDI - Matriz de Influencias Directas e Indirectas</div>
+                                {% else %}
+                                <div class="pull-left">Concenso - Matriz de Influencias Directas e Indirectas</div>
+                                {% endif %}
                                 <div class="widget-icons pull-right">
                                     {% if valores_midi %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
@@ -26,6 +28,7 @@
                                         <option value="{% url 'mactor:mapa_actores' estudio.id %}">Mapa de actores</option>
                                         <option value="{% url 'mactor:matriz_ri' estudio.id %}">Coeficiente de fuerza Ri</option>
                                         <option value="{% url 'mactor:estabilidad' estudio.id %}">Coeficiente de estabilidad H</option>
+                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 2 %}">Concenso MIDI</option>
                                      </select>
                                     {% endif %}
                                 </div>
@@ -83,9 +86,6 @@
                     </div>
                 </div>
             </div>
-        {% else %}
-            {% include 'influencia/concenso/div_midi_concenso.html' %}
-        {% endif %}
 
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">

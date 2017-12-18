@@ -8,9 +8,7 @@
 {% endblock %}
 
 {% block content %}
-
     {% if usuario != '' %}
-        {% if usuario != 'COORDINADOR' %}
 
         <!--MATRIZ MID-------------------------------------------------------------------------------------------------->
         <div class="container">
@@ -18,14 +16,18 @@
                     <div class="col-md-10">
                         <div class="widget wgreen">
                             <div class="widget-head">
+                                {% if usuario != 'COORDINADOR' %}
                                  <div class="pull-left">MID - Matriz de Influencias Directas</div>
+                                {% else %}
+                                 <div class="pull-left">Concenso - Matriz de Influencias Directas</div>
+                                {% endif %}
                                  <div class="widget-icons pull-right">
                                      {% if valores %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis MID</option>
                                         <option style="color: red;" value="">Histograma Influencia - Dependencia</option>
                                          {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                            <option value="{% url 'mactor:mid_concenso' estudio.id 1 %}">Concenso MID</option>
+                                            <option value="{% url 'mactor:concenso_influencias' estudio.id 1 %}">Concenso MID</option>
                                          {% endif %}
                                      </select>
                                     {% endif %}
@@ -89,9 +91,6 @@
                     </div>
                 </div>
             </div>
-        {% else %}
-            {% include 'influencia/concenso/div_mid_concenso.html' %}
-        {% endif %}
 
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">
@@ -101,8 +100,10 @@
                 {% else %}
                 <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_objetivos' estudio.id%}"><i class="fa fa-arrow-left"></i> Objetivos</a>
                 {% endif %}
+
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
                 <a class="btn btn-primary" href="{% url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-table"></i> MIDI</a>
+
                 {% if usuario != 'COORDINADOR' %}
                 <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao' estudio.id %}">Inf. 1MAO<i class="fa fa-arrow-right"></i></a>
                 {% else %}

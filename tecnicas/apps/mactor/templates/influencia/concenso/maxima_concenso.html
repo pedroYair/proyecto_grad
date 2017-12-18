@@ -10,26 +10,18 @@
 {% block content %}
     {% if usuario != '' %}
 
-        <!--MATRIZ MIDI------------------------------------------------------------------------------------------------->
-
+        <!--MATRIZ MAXIMA---------------------------------------------------------------------------------------------->
         <div class="container">
                 <div class="row">
                     <div class="col-md-10">
                         <div class="widget wgreen">
                             <div class="widget-head">
-                                {% if usuario != 'COORDINADOR' %}
-                                    <div class="pull-left">MMDII - Matriz de Máxima Influencia Directa e Indirecta</div>
-                                {% else %}
-                                    <div class="pull-left">Concenso - Matriz de Máximas Influencias Directas e Indirectas</div>
-                                {% endif %}
+                                 <div class="pull-left">Concenso - Matriz de Máxima Influencia Directa e Indirecta</div>
                                 <div class="widget-icons pull-right">
                                     {% if valores_maximos %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis Matriz Máxima</option>
                                          <option style="color: red;" value="">Histograma Influencia - Dependencia Máxima</option>
-                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                         <option value="{% url 'mactor:concenso_influencias' estudio.id 3 %}">Concenso Matriz Máxima</option>
-                                         {% endif %}
                                      </select>
                                     {% endif %}
                                 </div>
@@ -88,6 +80,7 @@
                 </div>
             </div>
 
+        <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
