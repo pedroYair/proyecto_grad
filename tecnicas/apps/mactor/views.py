@@ -455,40 +455,39 @@ def Crear_relacion_mid(request, idEstudio):
 # View generadora de la matriz MID
 def Generar_matriz_mid(request, idEstudio):
 
-    concenso = verificar_concenso(idEstudio)
-    idEstudio = int(idEstudio)
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
-    lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     tamano_matriz_completa = len(lista_actores) * len(lista_actores)
     posicion_salto_linea = lista_actores.count() + 1
     lista_influencias = []
 
-    # muestra la matriz diligenciada por el usuario en sesion
-    if tipo_usuario != "COORDINADOR":
-        lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio,
-                                                        idExperto=request.user.id).order_by('idActorY', 'idActorX')
     # muestra la matriz grupal
-    elif tipo_usuario == 'COORDINADOR' or concenso is True:
-        lista_influencias = concenso_mid(idEstudio)
+    if concenso is True:
+        lista_influencias = concenso_mid(estudio.id)
+    # muestra la matriz diligenciada por el usuario en sesion
+    elif tipo_usuario != "COORDINADOR":
+        lista_influencias = Relacion_MID.objects.filter(idEstudio=estudio.id,
+                                                        idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
-        valores_mid = establecer_valores_mid(idEstudio, lista_influencias)
+    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+        valores_mid = establecer_valores_mid(estudio.id, lista_influencias)
 
         contexto = {'actores': lista_actores,
                     'posicion_salto': posicion_salto_linea,
                     'valores': valores_mid,
-                    'estudio': estudio_mactor,
+                    'estudio': estudio,
                     'usuario': tipo_usuario}
 
     elif len(lista_influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
-        valores_mid = generar_mid_incompleta(request, idEstudio)
+        valores_mid = generar_mid_incompleta(request, estudio.id)
 
         contexto = {'actores': lista_actores, 'posicion_salto': posicion_salto_linea,
-                    'valores': valores_mid, 'estudio': estudio_mactor, 'usuario': tipo_usuario}
+                    'valores': valores_mid, 'estudio': estudio, 'usuario': tipo_usuario}
     # si no se han registrado actores
     else:
-        contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario}
+        contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
     if concenso is False:
         return render(request, 'influencia/matriz_mid.html', contexto)
@@ -499,6 +498,7 @@ def Generar_matriz_mid(request, idEstudio):
 # View generadora de la matriz MIDI
 def Generar_matriz_midi(request, idEstudio):
 
+    concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     lista_influencias = Relacion_MID.objects.filter(idEstudio=estudio.id,
@@ -507,7 +507,7 @@ def Generar_matriz_midi(request, idEstudio):
     posicion_salto_linea = lista_actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or tipo_usuario == "COORDINADOR":
+    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
         valores_midi = calcular_midi(request, idEstudio)
         contexto = {'actores': lista_actores,
                     'posicion_salto': posicion_salto_linea,
@@ -516,8 +516,6 @@ def Generar_matriz_midi(request, idEstudio):
                     'usuario': tipo_usuario}
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
-
-    concenso = verificar_concenso(idEstudio)
 
     if concenso is False:
         return render(request, 'influencia/matriz_midi.html', contexto)
@@ -528,6 +526,7 @@ def Generar_matriz_midi(request, idEstudio):
 # View generadora de la matriz MIDI
 def Generar_matriz_maxima(request, idEstudio):
 
+    concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     lista_influencias = Relacion_MID.objects.filter(idEstudio=estudio.id,
@@ -536,7 +535,7 @@ def Generar_matriz_maxima(request, idEstudio):
     posicion_salto_linea = lista_actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
 
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or tipo_usuario == "COORDINADOR":
+    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
 
         valores_maximos = calcular_maxima_influencia(request, idEstudio)
 
@@ -548,8 +547,6 @@ def Generar_matriz_maxima(request, idEstudio):
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
-    concenso = verificar_concenso(idEstudio)
-
     if concenso is False:
         return render(request, 'influencia/matriz_maxima.html', contexto)
     else:
@@ -560,14 +557,15 @@ def Generar_matriz_maxima(request, idEstudio):
 def Generar_matriz_ri(request, idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    valores_ri = calcular_ri(request, 1)
-    actores = Actor.objects.filter(idEstudio=1).order_by('id')
+    valores_ri = calcular_ri(request, idEstudio)
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     lista_contexto = []
 
     for i in range(len(actores)):
         lista_contexto.append(Valor_posicion(posicion=0, valor=actores[i].nombreCorto, descripcion=actores[i].nombreLargo))
         lista_contexto.append(Valor_posicion(posicion=1, valor=round(valores_ri[i], 2), descripcion=round(valores_ri[i], 2)))
 
+    lista_contexto[len(lista_contexto)-1].posicion = ""
     contexto = {'lista_contexto': lista_contexto, 'estudio': estudio}
 
     return render(request, 'influencia/matriz_ri.html', contexto)
@@ -576,22 +574,25 @@ def Generar_matriz_ri(request, idEstudio):
 # Genera la matriz de balance liquido
 def Generar_matriz_balance(request, idEstudio):
 
-    idEstudio = int(idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
-    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    lista_influencias = Relacion_MID.objects.filter(idEstudio=idEstudio,
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+    lista_influencias = Relacion_MID.objects.filter(idEstudio=estudio.id,
                                                     idExperto=request.user.id).order_by('idActorY', 'idActorX')
     tamano_matriz_completa = len(actores) * len(actores)
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0:
+    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
         valores_balance = calcular_balance_liquido(request, idEstudio)
         contexto = {'actores': actores, 'valores_balance': valores_balance,
                     'posicion_salto': actores.count()+1, 'estudio': estudio, 'usuario': tipo_usuario}
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
-    return render(request, 'influencia/matriz_balance.html', contexto)
+    if concenso is False:
+        return render(request, 'influencia/matriz_balance.html', contexto)
+    else:
+        return render(request, 'influencia/concenso/balance_concenso.html', contexto)
 
 
 # Genera la matriz de balance liquido
@@ -853,6 +854,7 @@ def generar_mid_incompleta(request, idEstudio):
 
 # Agrega a la lista de valores mid y midi la descripcion del valor
 def agregar_descripcion_mid(idEstudio, lista):
+
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
 
     for i in lista:
@@ -879,9 +881,8 @@ def calcular_midi(request, idEstudio):
     lista_comparacion_minimo = []   # contiene las sublistas de valores minimos por cada actores Y
     lista_total = []                # contiene lista_comparacion_minimo concatenado
     valores_midi = []               # contiene los valores correspondientes a MIDI
-    tipo_usuario = obtener_tipo_usuario(request, estudio)
 
-    if tipo_usuario == "COORDINADOR" or verificar_concenso(idEstudio):
+    if verificar_concenso(request, idEstudio):
         influencias_mid = concenso_mid(estudio)
     else:
         influencias_mid = Relacion_MID.objects.filter(idEstudio=estudio, idExperto=request.user.id).order_by(
@@ -937,11 +938,10 @@ def sumar_valores_minimos(request, actorY, idEstudio):
     estudio = int(idEstudio)
     actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
     lista_suma = []  # contiene la suma de los valores minimos establecidos al comparar
-    tipo_usuario = obtener_tipo_usuario(request, estudio)
 
     # mayor_valores_minimos(request, actorY, idEstudio)
     # si se accede al concenso midi (en este caso idEstudio = str)
-    if tipo_usuario == "COORDINADOR" or verificar_concenso(idEstudio):
+    if verificar_concenso(request, idEstudio):
         mid = concenso_mid(estudio)
     else:
         mid = Relacion_MID.objects.filter(idEstudio=estudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
@@ -967,22 +967,22 @@ def sumar_valores_minimos(request, actorY, idEstudio):
 # Calcula la maxima influencia directa e indirecta idEstudio = str
 def calcular_maxima_influencia(request, idEstudio):
 
-    concenso = verificar_concenso(idEstudio)
-    idEstudio = int(idEstudio)
-    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = int(idEstudio)
+    actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
     influencias_mid = []
     lista_comparacion_minimo = []  # contiene las sublistas de valores minimos por cada actores Y
     lista_maximos = []  # contiene lista_comparacion_minimo concatenado (sin sublista)
     valores_maximos = []  # contiene los valores que se muestran a la matriz luego de comparar
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    tipo_usuario = obtener_tipo_usuario(request, estudio)
 
-    # muestra la matriz diligenciada por el usuario en sesion
-    if tipo_usuario != "COORDINADOR":
-        influencias_mid = Relacion_MID.objects.filter(idEstudio=idEstudio,
-                                                        idExperto=request.user.id).order_by('idActorY', 'idActorX')
     # muestra la matriz grupal
-    elif tipo_usuario == 'COORDINADOR' or concenso is True:
-        influencias_mid = concenso_mid(idEstudio)
+    if concenso is True:
+        influencias_mid = concenso_mid(estudio)
+    # muestra la matriz diligenciada por el usuario en sesion
+    else:
+        influencias_mid = Relacion_MID.objects.filter(idEstudio=estudio,
+                                                        idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
     for i in range(len(influencias_mid)):
@@ -1033,8 +1033,7 @@ def calcular_maxima_influencia(request, idEstudio):
 # Determinacion de valores minimos mayores, (lado derecho formula maxima)
 def mayor_valores_minimos(request, actorY, idEstudio):
 
-    estudio = int(idEstudio)
-    actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
+    actores = Actor.objects.filter(idEstudio=int(idEstudio)).order_by('id')
     lista_minimos = obtener_valores_minimos(request, idEstudio, actorY)
     lista_comparar = []
     lista_mayores = []
@@ -1069,9 +1068,8 @@ def obtener_valores_minimos(request, idEstudio, actorY):
     valores_izquierdos = []  # contiene los valores izquierdos a comparar
     valores_derechos = []  # contiene los valores derechos a comparar
     valores_minimos = []  # contiene los valores minimos establecidos al comparar valores_izquierdos vs derechos
-    tipo_usuario = obtener_tipo_usuario(request, estudio)
 
-    if tipo_usuario == "COORDINADOR" or verificar_concenso(idEstudio):
+    if verificar_concenso(request, idEstudio):
         mid = concenso_mid(estudio)
     else:
         mid = Relacion_MID.objects.filter(idEstudio=estudio, idExperto=request.user.id).order_by('idActorY',
@@ -1119,10 +1117,9 @@ def obtener_valores_minimos(request, idEstudio, actorY):
 def calcular_balance_liquido(request, idEstudio):
 
     valores_midi = calcular_midi(request, idEstudio)
-    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    actores = Actor.objects.filter(idEstudio=int(idEstudio)).order_by('id')
     lista_inversa = []
     lista_balance = []
-    columna = 0
     suma_fila = 0
 
     indice = 0
@@ -1130,6 +1127,7 @@ def calcular_balance_liquido(request, idEstudio):
         if valores_midi[i].valor == "D.DI":
             indice = i
 
+    columna = 0
     lista_inversa.append("nombre")
     while columna < actores.count():
         for i in valores_midi[0:indice]:
@@ -1141,6 +1139,7 @@ def calcular_balance_liquido(request, idEstudio):
         columna += 1
     lista_inversa.append("influencia")
 
+    print(len(valores_midi[0:indice]))
     for i in range(len(valores_midi[0:indice])):
         if valores_midi[i].posicion == 0:
             lista_balance.append(valores_midi[i])
@@ -1152,8 +1151,7 @@ def calcular_balance_liquido(request, idEstudio):
             lista_balance.append(Valor_posicion(posicion=valores_midi[i].posicion, valor=suma_fila, descripcion=suma_fila))
             suma_fila = 0
 
-    calcular_estabilidad(request, idEstudio)
-
+    lista_balance[len(lista_balance)-1].posicion = ""  # para que no realize el salto despues de la ultima fila
     return lista_balance
 
 
@@ -1591,7 +1589,7 @@ def calcular_valores_3mao(request, idEstudio, idUsuario):
 # Calculo del valor ri para la matriz 3mao
 def calcular_ri(request, idEstudio):
 
-    cant_actor = len(Actor.objects.filter(idEstudio=idEstudio).order_by('id'))
+    cant_actor = len(Actor.objects.filter(idEstudio=int(idEstudio)).order_by('id'))
     valores_midi = calcular_midi(request, idEstudio)
     valores_diagonal = []  # valores de la diagonal de la matriz midi
     valores_Ii = []        # valores Ii de midi
@@ -2445,10 +2443,11 @@ def limpiar_matriz(lista_valores, actores):
 
 # -------------------------------------------CONSENSO----------------------------------------------------------
 
-def verificar_concenso(idEstudio):
+def verificar_concenso(request, idEstudio):
 
     concenso = False
-    if type(idEstudio) == str and idEstudio[0] == '0':
+    tipo_usuario = obtener_tipo_usuario(request, int(idEstudio))
+    if tipo_usuario == "COORDINADOR" or type(idEstudio) == str and idEstudio[0] == '0':
         concenso = True
     return concenso
 
@@ -2464,6 +2463,10 @@ def generar_concenso_influencias(request, idEstudio, matriz):
         return Generar_matriz_midi(request, idEstudio)
     elif int(matriz) == 3:
         return Generar_matriz_maxima(request, idEstudio)
+    elif int(matriz) == 4:
+        return Generar_matriz_balance(request, idEstudio)
+    elif int(matriz) == 5:
+        return Generar_matriz_ri(request, idEstudio)
 
 
 def concenso_mid(idEstudio):

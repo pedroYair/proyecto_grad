@@ -16,17 +16,10 @@
         <div class="container">
                 <div class="row">
                     <div class="col-md-10">
-                        <div class="widget wgreen">
+                        <div class="widget wblue">
                             <div class="widget-head">
-                                 <div class="pull-left">BL - Matriz de Balance Líquido de Influencias Directas e Indirectas</div>
-                                <div class="widget-icons pull-right">
-                                    {% if valores_balance and usuario != 'COORDINADOR' %}
-                                     <select name="graficos_midi" class="form-control" onchange="location = this.value;">
-                                        <option value="">Análisis Balance Líquido</option>
-                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 4 %}">Concenso Balance</option>
-                                     </select>
-                                    {% endif %}
-                                </div>
+                                 <div class="pull-left">Concenso - Matriz de Balance Líquido de Influencias Directas e Indirectas</div>
+                                <div class="widget-icons pull-right"></div>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">
