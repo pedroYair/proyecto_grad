@@ -2,13 +2,13 @@
 {% load staticfiles %}
 
 {% block head_title %}
-    {% if usuario != '' %}
+    {% if usuario != 'EXPERTO' %}
         <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
     {% endif %}
 {% endblock %}
 
 {% block content %}
-    {% if usuario != '' %}
+    {% if usuario != 'EXPERTO' %}
 
         <!--MATRIZ MAXIMA---------------------------------------------------------------------------------------------->
         <div class="container">
@@ -79,6 +79,9 @@
                     </div>
                 </div>
             </div>
+
+        <p><h3>Número de expertos en concenso = {{expertos}}</h3></p>
+        <br>
 
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">

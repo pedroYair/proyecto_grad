@@ -2,29 +2,20 @@
 {% load staticfiles %}
 
 {% block head_title %}
-	{% if usuario != '' %}
+	{% if usuario != 'EXPERTO' %}
 		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 	{% endif %}
 {% endblock %}
 
 {% block content %}
-
-	{% if usuario != '' %}
+	{% if usuario != 'EXPERTO' %}
 		<div class="matter">
 					<div class="container">
 						<div class="row">
 							<div class="col-md-12">
-								<div class="widget wgreen">
+								<div class="widget wblue">
               						<div class="widget-head">
-									  <div class="pull-left">H - Indicador de Estabilidad de las Relaciones entre Actores</div>
-										<div class="widget-icons pull-right">
-											{% if usuario == 'COORDINADOR_EXPERTO' %}
-											 <select name="graficos_ri" class="form-control" onchange="location = this.value;">
-												<option value="">Análisis Ri</option>
-												 <option value="{% url 'mactor:concenso_influencias' estudio.id 6 %}">Concenso Estabilidad</option>
-											 </select>
-											{% endif %}
-										</div>
+									  <div class="pull-left">Concenso - Indicador de Estabilidad de las Relaciones entre Actores</div>
 									  <div class="clearfix"></div>
 									</div>
 									<div class="widget-content">
@@ -57,6 +48,9 @@
 						</div>
 					</div>
 </div>
+
+		<p><h3>Número de expertos en concenso = {{expertos}}</h3></p>
+        <br>
 	{% else %}
 		<img src="{% static 'img/acceso_denegado.png' %}">
 		<h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
