@@ -3,7 +3,11 @@
 
 {% block head_title %}
 	{% if usuario != '' %}
-		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% if expertos %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="0{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% else %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% endif %}
 {% endif %}
 {% endblock %}
 
@@ -25,8 +29,7 @@
 			// se obtienen los datos a graficar
 			$.ajax(
                         {
-                            data : {
-                                    'estudio': idEstudio},
+                            data : {'estudio': idEstudio},
                             url: 'datos_histograma_ri',
                             type: 'get',
                             success: function (data)
@@ -89,6 +92,9 @@
 			};
 
             </script>
+    {% if usuario != 'EXPERTO' and expertos %}
+        <p><h3>Expertos en concenso = {{expertos}}</h3></p>
+    {% endif %}
 
 <br>
 <br>

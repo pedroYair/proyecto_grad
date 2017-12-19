@@ -2223,18 +2223,26 @@ def datos_histograma_caa_daa(request):
 
 def histograma_ri(request, idEstudio):
 
-    usuario = obtener_tipo_usuario(request, int(idEstudio))
+    concenso = verificar_concenso(request, idEstudio)
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'usuario': usuario}
+    usuario = obtener_tipo_usuario(request, estudio_mactor.id)
+
+    if concenso is True:
+        influencias_mid = concenso_mid(estudio_mactor.id)
+        cantidad_expertos = influencias_mid['num_expertos']
+        contexto = {'estudio': estudio_mactor, 'usuario': usuario, 'expertos': cantidad_expertos}
+    else:
+        contexto = {'estudio': estudio_mactor, 'usuario': usuario}
+
     return render(request, 'influencia/histograma_ri.html', contexto)
 
 
 def datos_histograma_ri(request):
 
     if request.is_ajax():
-        idEstudio = int(request.GET['estudio'])
-        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-        valores_ri = calcular_ri(request, idEstudio)
+        estudio = int(request.GET['estudio'])
+        actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
+        valores_ri = calcular_ri(request, str(request.GET['estudio']))  # str para que verifique si es concenso
         lista_nombres = []
 
         for i in actores:
@@ -2492,7 +2500,7 @@ def verificar_concenso(request, idEstudio):
     return concenso
 
 
-def generar_concenso_influencias(request, idEstudio, matriz):
+def concenso_matriz_influencias(request, idEstudio, matriz):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
@@ -2508,6 +2516,25 @@ def generar_concenso_influencias(request, idEstudio, matriz):
     elif int(matriz) == 5:
         return Generar_matriz_ri(request, idEstudio)
     elif int(matriz) == 6:
+        return Generar_indicador_estabilidad(request, idEstudio)
+
+
+def concenso_grafico_influencias(request, idEstudio, grafico):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    idEstudio = "0"+str(estudio.id)
+
+    if int(grafico) == 1:
+        return Generar_matriz_mid(request, idEstudio)
+    elif int(grafico) == 2:
+        return Generar_matriz_midi(request, idEstudio)
+    elif int(grafico) == 3:
+        return Generar_matriz_maxima(request, idEstudio)
+    elif int(grafico) == 4:
+        return Generar_matriz_balance(request, idEstudio)
+    elif int(grafico) == 5:
+        return histograma_ri(request, idEstudio)
+    elif int(grafico) == 6:
         return Generar_indicador_estabilidad(request, idEstudio)
 
 

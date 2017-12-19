@@ -20,7 +20,7 @@
                                     {% if lista_contexto %}
                                      <select name="graficos_ri" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis Ri</option>
-                                        <option value="{% url 'mactor:histograma_ri' estudio.id %}">Histograma Ri</option>
+                                        <option value="{% url 'mactor:concenso_inf_graficos' estudio.id 5 %}">Histograma Ri Concenso</option>
                                     </select>
                                     {% endif %}
                                 </div>
@@ -68,9 +68,8 @@
                 </div>
         </div>
 
-        <p><h3>Número de expertos en concenso = {{expertos}}</h3></p>
+        <p><h3>Expertos en concenso = {{expertos}}</h3></p>
         <br>
-
 
         <!--BOTONES----------------------------------------------------------------------------------------------------->
     <div class="form-group">

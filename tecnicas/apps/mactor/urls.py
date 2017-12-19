@@ -13,7 +13,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     datos_histograma_caa_daa, histograma_caa_daa, \
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
-    generar_concenso_influencias
+    concenso_matriz_influencias, concenso_grafico_influencias
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -96,7 +96,8 @@ urlpatterns = [
     url(r'^grafo_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', login_required(generar_grafo_daa), name='grafo_daa'),
     url(r'datos_grafo_daa', login_required(datos_grafo_daa)),
 
-    # Urls concensos
-    url(r'^concenso_influencias/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(generar_concenso_influencias), name='concenso_influencias'),
+    # Urls concenso influencias mid
+    url(r'^concenso_influencias/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(concenso_matriz_influencias), name='concenso_influencias'),
+    url(r'^concenso_grafico_influencias/(?P<idEstudio>\d+)/(?P<grafico>\d)/', login_required(concenso_grafico_influencias), name='concenso_inf_graficos'),
 
 ]
