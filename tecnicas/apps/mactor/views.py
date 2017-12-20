@@ -2119,6 +2119,61 @@ def exportar_objetivos_xls(request, idEstudio):
 
 # ----------------------------------------HISTOGRAMAS--------------------------------------------------------->
 
+def histograma_mid(request, idEstudio):
+
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    usuario = obtener_tipo_usuario(request, estudio.id)
+
+    if concenso is True:
+        influencias_mid = concenso_mid(estudio.id)
+        cantidad_expertos = influencias_mid['num_expertos']
+        contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
+    else:
+        contexto = {'estudio': estudio, 'usuario': usuario}
+
+    return render(request, 'influencia/graficos/histograma_mid.html', contexto)
+
+
+def datos_histograma_mid(request):
+
+    if request.is_ajax():
+        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
+        usuario = obtener_tipo_usuario(request, estudio.id)
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+        lista_nombres = []
+        lista_influencias = []
+        lista_dependencias = []
+
+        concenso = verificar_concenso(request, request.GET['estudio'])
+        valores_mid = []
+        if concenso is True:
+            valores_mid = concenso_mid(estudio.id)
+            valores_mid = valores_mid['concenso']
+        elif usuario != "COORDINADOR":
+            valores_mid = Relacion_MID.objects.filter(idEstudio=estudio.id,
+                                                            idExperto=request.user.id).order_by('idActorY', 'idActorX')
+        valores_mid = establecer_valores_mid(estudio.id, valores_mid)
+
+        for i in valores_mid:
+            # Valores de influencia
+            if i.posicion == actores.count()+1:
+                lista_influencias.append(i.valor)
+            # Valores de dependencia
+            if i.posicion == "" and len(lista_dependencias) < actores.count():
+                lista_dependencias.append(i.valor)
+
+        for i in actores:
+            lista_nombres.append(i.nombreCorto)
+
+        data = {'labels': lista_nombres,
+                'influencias': lista_influencias,
+                'dependencias': lista_dependencias}
+
+        json_data = json.dumps(data)
+        return HttpResponse(json_data)
+
+
 def histograma_implicacion(request, idEstudio, numero_matriz):
 
     usuario = obtener_tipo_usuario(request, int(idEstudio))
@@ -2224,25 +2279,25 @@ def datos_histograma_caa_daa(request):
 def histograma_ri(request, idEstudio):
 
     concenso = verificar_concenso(request, idEstudio)
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    usuario = obtener_tipo_usuario(request, estudio_mactor.id)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    usuario = obtener_tipo_usuario(request, estudio.id)
 
     if concenso is True:
-        influencias_mid = concenso_mid(estudio_mactor.id)
+        influencias_mid = concenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
-        contexto = {'estudio': estudio_mactor, 'usuario': usuario, 'expertos': cantidad_expertos}
+        contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
     else:
-        contexto = {'estudio': estudio_mactor, 'usuario': usuario}
+        contexto = {'estudio': estudio, 'usuario': usuario}
 
-    return render(request, 'influencia/histograma_ri.html', contexto)
+    return render(request, 'influencia/graficos/histograma_ri.html', contexto)
 
 
 def datos_histograma_ri(request):
 
     if request.is_ajax():
+        valores_ri = calcular_ri(request, request.GET['estudio'])  # str para que verifique si es concenso
         estudio = int(request.GET['estudio'])
         actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
-        valores_ri = calcular_ri(request, str(request.GET['estudio']))  # str para que verifique si es concenso
         lista_nombres = []
 
         for i in actores:
@@ -2262,20 +2317,28 @@ def datos_histograma_ri(request):
 
 def generar_mapa_midi(request, idEstudio):
 
-    usuario = obtener_tipo_usuario(request, int(idEstudio))
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto= {'estudio': estudio_mactor, 'usuario': usuario}
-    return render(request, 'influencia/mapa_actores.html', contexto)
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    usuario = obtener_tipo_usuario(request, estudio.id)
+
+    if concenso is True:
+        influencias_mid = concenso_mid(estudio.id)
+        cantidad_expertos = influencias_mid['num_expertos']
+        contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
+    else:
+        contexto = {'estudio': estudio, 'usuario': usuario}
+
+    return render(request, 'influencia/graficos/mapa_actores.html', contexto)
 
 
 def datos_mapa_midi(request):
 
     if request.is_ajax():
-        idEstudio = int(request.GET['estudio'])
-        valores_midi = calcular_midi(request, int(idEstudio))
+        valores_midi = calcular_midi(request, request.GET['estudio'])
         lista_nombres = []
         valores_ejeX = []
         valores_ejeY = []
+        idEstudio = int(request.GET['estudio'])
 
         labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
 
@@ -2283,8 +2346,10 @@ def datos_mapa_midi(request):
             lista_nombres.append(i.nombreCorto)
 
         for i in valores_midi:
+            # Valores de influencia
             if i.posicion == labels.count()+1:
                 valores_ejeX.append(i.valor)
+            # Valores de dependencia
             if i.posicion == "" and len(valores_ejeY) < labels.count():
                 valores_ejeY.append(i.valor)
 
@@ -2525,17 +2590,11 @@ def concenso_grafico_influencias(request, idEstudio, grafico):
     idEstudio = "0"+str(estudio.id)
 
     if int(grafico) == 1:
-        return Generar_matriz_mid(request, idEstudio)
+        return histograma_mid(request, idEstudio)
     elif int(grafico) == 2:
-        return Generar_matriz_midi(request, idEstudio)
+        return generar_mapa_midi(request, idEstudio)
     elif int(grafico) == 3:
-        return Generar_matriz_maxima(request, idEstudio)
-    elif int(grafico) == 4:
-        return Generar_matriz_balance(request, idEstudio)
-    elif int(grafico) == 5:
         return histograma_ri(request, idEstudio)
-    elif int(grafico) == 6:
-        return Generar_indicador_estabilidad(request, idEstudio)
 
 
 def concenso_mid(idEstudio):

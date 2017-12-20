@@ -22,10 +22,10 @@
                                 <div class="widget-icons pull-right">
                                     {% if valores_midi %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
-                                        <option value="">Análisis MIDI</option>
-                                        <option value="{% url 'mactor:mapa_actores' estudio.id %}">Mapa de actores</option>
-                                        <option value="{% url 'mactor:matriz_ri' estudio.id %}">Coeficiente de fuerza Ri</option>
-                                        <option value="{% url 'mactor:estabilidad' estudio.id %}">Coeficiente de estabilidad H</option>
+                                        <option value="">Análisis Concenso MIDI</option>
+                                        <option value="{% url 'mactor:concenso_inf_graficos' estudio.id 2 %}">Mapa de actores</option>
+                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 5 %}">Coeficiente de fuerza Ri</option>
+                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 6 %}">Coeficiente de estabilidad H</option>
                                      </select>
                                     {% endif %}
                                 </div>
@@ -84,18 +84,20 @@
                 </div>
             </div>
 
-        <p><h3>Expertos en concenso = {{expertos}}</h3></p>
+        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
         <br>
 
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
+                {% if usuario == 'COORDINADOR_EXPERTO' %}
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_midi' estudio.id %}" title="MIDI del usuario"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% else %}
                 <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="MID"><i class="fa fa-arrow-left"></i> Atrás</a>
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                {% if usuario == 'COORDINADOR' %}
-                <a class="btn btn-primary" href="{% url 'mactor:matriz_maxima' estudio.id %}"><i class="fa fa-table"></i> MAX</a>
-                <a class="btn btn-primary" href="{% url 'mactor:matriz_balance' estudio.id %}"><i class="fa fa-table"></i> BL</a>
                 {% endif %}
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" href="{%url 'mactor:concenso_influencias' estudio.id 3%}"><i class="fa fa-table"></i> MAX</a>
+                <a class="btn btn-primary" href="{%url 'mactor:concenso_influencias' estudio.id 4%}"><i class="fa fa-table"></i> BL</a>
             </div>
         </div>
 

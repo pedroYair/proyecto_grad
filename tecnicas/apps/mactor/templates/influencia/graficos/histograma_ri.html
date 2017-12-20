@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+{% block head_title %}
+	{% if usuario != '' %}
+        {% if expertos %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="0{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% else %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% endif %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+
+        {% include 'js_histogramas_planos.html' %}
+
+ {% if usuario != '' %}
+        <br>
+		<div style="width: 75%">
+        	<canvas id="canvas"></canvas>
+    	</div>
+
+        <script>
+            var idEstudio = $('input[name="idEstudio"]').val();
+            var lista_ri = []
+            var lista_labels = []
+
+			// se obtienen los datos a graficar
+			$.ajax(
+                        {
+                            data : {'estudio': idEstudio},
+                            url: 'datos_histograma_ri',
+                            type: 'get',
+                            success: function (data)
+                            {
+                                var object = JSON.parse(data);
+
+                                for(var i=0; i<object.labels.length; i++)
+                                {
+                                    lista_labels.push(object.labels[i])
+                                }
+                                for(var j=0; j<object.valores_ri.length; j++)
+                                {
+                                    lista_ri.push(object.valores_ri[j])
+                                }
+                                generar()
+                            },
+                             error: function()
+                             {
+                                 console.log("Error no se puede graficar")
+                             }
+                        });
+
+            // se asignan los valores a graficar
+			var barChartData = {
+				labels: lista_labels,
+				datasets:
+                    [{
+					label: 'Ri',
+					backgroundColor: 'rgba(255,99,132,1)',
+					data: lista_ri
+				    }]
+			};
+
+			// Funcion que genera la grafica
+			function generar () {
+				var ctx = document.getElementById("canvas").getContext("2d");
+				window.myBar = new Chart(ctx, {
+					type: 'bar',
+					data: barChartData,
+					options: {
+						title:{
+							display:true,
+							text:"Coeficiente de Fuerza Ri"
+						},
+						tooltips: {
+							mode: 'index',
+							intersect: false
+						},
+						responsive: true,
+						scales: {
+							xAxes: [{
+								stacked: true,
+							}],
+							yAxes: [{
+								stacked: true
+							}]
+						}
+					}
+				});
+			};
+
+            </script>
+    {% if usuario != 'EXPERTO' and expertos %}
+        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+    {% endif %}
+
+<br>
+<br>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-8">
+                {% if expertos %}
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:concenso_influencias' estudio.id 5 %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% else %}
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_ri' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% endif %}
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+            </div>
+        </div>
+{% else %}
+        <img src="{% static 'img/acceso_denegado.png' %}">
+        <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
+{% endif %}
+
+{% endblock %}

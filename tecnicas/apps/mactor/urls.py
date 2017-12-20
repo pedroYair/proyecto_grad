@@ -9,7 +9,8 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Generar_matriz_balance, Generar_indicador_estabilidad, Crear_1mao, Crear_2mao, Generar_matriz_mao,\
     Generar_matrices_caa_daa, Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
     exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
-    histograma_implicacion, obtener_datos_histograma, histograma_movilizacion, histograma_ri, datos_histograma_ri, \
+    histograma_mid, datos_histograma_mid, histograma_ri, datos_histograma_ri, \
+    histograma_implicacion, obtener_datos_histograma, histograma_movilizacion,  \
     datos_histograma_caa_daa, histograma_caa_daa, \
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
@@ -66,7 +67,9 @@ urlpatterns = [
     url(r'mid-ajax/$', login_required(Consultar_actores_faltantes)),  # obtiene lista actores X registrados en la mid
     url(r'mao-ajax/$', login_required(Consultar_objetivos_faltantes)),  # obtiene lista objetivos X registrados en la mao
 
-    # Urls histograma ri
+    # Urls histogramas de influencia
+    url(r'^histograma_mid/(?P<idEstudio>\d+)/$', login_required(histograma_mid), name='histograma_mid'),
+    url(r'datos_histograma_mid', login_required(datos_histograma_mid)),
     url(r'^histograma_ri/(?P<idEstudio>\d+)/$', login_required(histograma_ri), name='histograma_ri'),
     url(r'datos_histograma_ri', login_required(datos_histograma_ri)),
 

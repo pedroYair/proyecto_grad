@@ -20,7 +20,7 @@
                                     {% if lista_contexto %}
                                      <select name="graficos_ri" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis Ri</option>
-                                        <option value="{% url 'mactor:concenso_inf_graficos' estudio.id 5 %}">Histograma Ri Concenso</option>
+                                        <option value="{% url 'mactor:concenso_inf_graficos' estudio.id 3 %}">Histograma Ri Concenso</option>
                                     </select>
                                     {% endif %}
                                 </div>
@@ -68,13 +68,13 @@
                 </div>
         </div>
 
-        <p><h3>Expertos en concenso = {{expertos}}</h3></p>
+        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
         <br>
 
         <!--BOTONES----------------------------------------------------------------------------------------------------->
     <div class="form-group">
         <div class="col-md-offset-2 col-md-8">
-            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_midi' estudio.id%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+            <a class="btn btn-sm btn-success" href="{%url 'mactor:concenso_influencias' estudio.id 2%}"><i class="fa fa-arrow-left"></i> Atrás</a>
             <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
         </div>
     </div>

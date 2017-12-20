@@ -3,7 +3,7 @@
 
 {% block head_title %}
 	{% if usuario != '' %}
-        {% if expertos %}
+         {% if expertos %}
 		<input hidden class="col-sm-1" type="number" name="idEstudio" value="0{{estudio.id}}">Estudio: {{estudio.titulo}}
         {% else %}
         <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
@@ -23,14 +23,15 @@
 
         <script>
             var idEstudio = $('input[name="idEstudio"]').val();
-            var lista_ri = []
+            var influencias = []
+			var dependencias = []
             var lista_labels = []
 
 			// se obtienen los datos a graficar
 			$.ajax(
                         {
                             data : {'estudio': idEstudio},
-                            url: 'datos_histograma_ri',
+                            url: 'datos_histograma_mid',
                             type: 'get',
                             success: function (data)
                             {
@@ -40,9 +41,10 @@
                                 {
                                     lista_labels.push(object.labels[i])
                                 }
-                                for(var j=0; j<object.valores_ri.length; j++)
+                                for(var j=0; j<object.influencias.length; j++)
                                 {
-                                    lista_ri.push(object.valores_ri[j])
+                                    influencias.push(object.influencias[j])
+									dependencias.push(object.dependencias[j])
                                 }
                                 generar()
                             },
@@ -55,12 +57,15 @@
             // se asignan los valores a graficar
 			var barChartData = {
 				labels: lista_labels,
-				datasets:
-                    [{
-					label: 'Ri',
+				datasets: [{
+					label: 'Influencia',
+					backgroundColor: 'rgba(54, 162, 235, 0.2)',
+					data: influencias
+				}, {
+					label: 'Dependencia',
 					backgroundColor: 'rgba(255,99,132,1)',
-					data: lista_ri
-				    }]
+					data: dependencias
+				}]
 			};
 
 			// Funcion que genera la grafica
@@ -72,7 +77,7 @@
 					options: {
 						title:{
 							display:true,
-							text:"Coeficiente de Fuerza Ri"
+							text:"Histograma Influencia - Dependencia MID"
 						},
 						tooltips: {
 							mode: 'index',
@@ -92,15 +97,19 @@
 			};
 
             </script>
-    {% if usuario != 'EXPERTO' and expertos %}
-        <p><h3>Expertos en concenso = {{expertos}}</h3></p>
-    {% endif %}
-
 <br>
+{% if expertos %}
+    <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+    <br>
+{% endif %}
 <br>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
-                <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_ri' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% if expertos %}
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:concenso_influencias' estudio.id 1 %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% else %}
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% endif %}
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
             </div>
         </div>

@@ -20,7 +20,7 @@
 										<div class="widget-icons pull-right">
 											{% if usuario == 'COORDINADOR_EXPERTO' %}
 											 <select name="graficos_ri" class="form-control" onchange="location = this.value;">
-												<option value="">Análisis Ri</option>
+												<option value="">Análisis Estabilidad</option>
 												 <option value="{% url 'mactor:concenso_influencias' estudio.id 6 %}">Concenso Estabilidad</option>
 											 </select>
 											{% endif %}
