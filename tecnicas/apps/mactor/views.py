@@ -689,14 +689,19 @@ def Crear_2mao(request, idEstudio):
 
 def Generar_matriz_mao(request, idEstudio, numero_matriz):
 
-    contexto = crear_contexto_mao(request, int(idEstudio), int(numero_matriz))
+    concenso = verificar_concenso(request, idEstudio)
+    print(concenso)
+    contexto = crear_contexto_mao(request, idEstudio, int(numero_matriz))
 
     if int(numero_matriz) == 1:
-        return render(request, 'mao/matriz_1mao.html', contexto)
+        if concenso is True:
+            return render(request, 'mao/concenso/concenso_1mao.html', contexto)
+        else:
+            return render(request, 'mao/matriz_1mao.html', contexto)
     elif int(numero_matriz) == 2:
         return render(request, 'mao/matriz_2mao.html', contexto)
     elif int(numero_matriz) == 3:
-        Generar_matriz_ri(request, 1)
+        # Generar_matriz_ri(request, 1)
         return render(request, 'mao/matriz_3mao.html', contexto)
     else:
         raise Http404("Error: Esta vista no existe")
@@ -1255,27 +1260,32 @@ def calcular_estabilidad(request, idEstudio):
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
 def crear_contexto_mao(request, idEstudio, numero_matriz):
 
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
-    lista_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
-    lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+    lista_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
+    lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tamano_matriz_completa = (len(lista_actores)*len(lista_objetivos))
     lista_mao = []
 
-    if numero_matriz == 1 or numero_matriz == 2:
-        lista_mao = Relacion_MAO.objects.filter(idEstudio=idEstudio,
-                                                tipo=numero_matriz,
+    if numero_matriz < 3:
+        concenso = verificar_concenso(request, idEstudio)
+        if concenso is True:
+            lista_mao = concenso_mao(estudio.id, numero_matriz)
+            lista_mao = lista_mao['concenso']
+        else:
+            lista_mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=numero_matriz,
                                                 idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
+            concenso_mao(estudio.id, int(numero_matriz))
     else:
-        estado_mao3 = verificar_mid_mao2(idEstudio, request.user.id)
+        estado_mao3 = verificar_mid_mao2(estudio.id, request.user.id)
         if estado_mao3:
-            lista_mao = calcular_valores_3mao(request, idEstudio, request.user.id)
+            lista_mao = calcular_valores_3mao(request, estudio.id, request.user.id)
     # Si la matriz esta completa
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
-        lista_contexto = calcular_valores_mao(idEstudio, lista_mao, MATRIZ_COMPLETA)
-        valores_mao = agregar_descripcion_mao(idEstudio, numero_matriz, lista_contexto[0])
-        valores_caa = agregar_descripcion_caa_daa(idEstudio, lista_contexto[1])
-        valores_daa = agregar_descripcion_caa_daa(idEstudio, lista_contexto[2])
+        lista_contexto = calcular_valores_mao(estudio.id, lista_mao, MATRIZ_COMPLETA)
+        valores_mao = agregar_descripcion_mao(estudio.id, numero_matriz, lista_contexto[0])
+        valores_caa = agregar_descripcion_caa_daa(estudio.id, lista_contexto[1])
+        valores_daa = agregar_descripcion_caa_daa(estudio.id, lista_contexto[2])
 
         contexto = {'objetivos': lista_objetivos,
                     'actores': lista_actores,
@@ -1286,13 +1296,13 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
                     'posicion_salto_caa_daa': lista_actores.count(),
                     'valores_daa': valores_daa,
                     'estado_matriz': MATRIZ_COMPLETA,
-                    'estudio': estudio_mactor,
+                    'estudio': estudio,
                     'usuario': tipo_usuario}
     # Si la matriz es 1mao o 2mao y esta incompleta
     elif len(lista_mao) != tamano_matriz_completa and numero_matriz != 3 or len(lista_mao) == 0 and numero_matriz != 3:
 
-        valores_mao = generar_mao_incompleta(idEstudio, lista_mao)
-        valores_mao = agregar_descripcion_mao(idEstudio, numero_matriz, valores_mao)
+        valores_mao = generar_mao_incompleta(estudio.id, lista_mao)
+        valores_mao = agregar_descripcion_mao(estudio.id, numero_matriz, valores_mao)
         contexto = {'objetivos': lista_objetivos,
                     'actores': lista_actores,
                     'valores_mao': valores_mao,
@@ -1301,10 +1311,10 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
                     'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
                     'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
                     'estado_matriz': MATRIZ_INCOMPLETA,
-                    'estudio': estudio_mactor,
+                    'estudio': estudio,
                     'usuario': tipo_usuario}
     else:
-        contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'estado_matriz': MATRIZ_INCOMPLETA}
+        contexto = {'estudio': estudio, 'usuario': tipo_usuario, 'estado_matriz': MATRIZ_INCOMPLETA}
 
     return contexto
 
@@ -2556,6 +2566,7 @@ def limpiar_matriz(lista_valores, actores):
 
 # -------------------------------------------CONSENSO----------------------------------------------------------
 
+# Verifica si el usuario desea visuaizar un concenso
 def verificar_concenso(request, idEstudio):
 
     concenso = False
@@ -2565,6 +2576,7 @@ def verificar_concenso(request, idEstudio):
     return concenso
 
 
+# Ejecuta el concenso de alguna matriz de influencias
 def concenso_matriz_influencias(request, idEstudio, matriz):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -2582,8 +2594,11 @@ def concenso_matriz_influencias(request, idEstudio, matriz):
         return Generar_matriz_ri(request, idEstudio)
     elif int(matriz) == 6:
         return Generar_indicador_estabilidad(request, idEstudio)
+    else:
+        raise Http404("Error: Esta vista no existe")
 
 
+# Ejecuta el concenso de algun grafico de influencias
 def concenso_grafico_influencias(request, idEstudio, grafico):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -2595,6 +2610,8 @@ def concenso_grafico_influencias(request, idEstudio, grafico):
         return generar_mapa_midi(request, idEstudio)
     elif int(grafico) == 3:
         return histograma_ri(request, idEstudio)
+    else:
+        raise Http404("Error: Esta vista no existe")
 
 
 def concenso_mid(idEstudio):
@@ -2625,6 +2642,46 @@ def concenso_mid(idEstudio):
     calculo = {'concenso': lista_concenso, 'num_expertos': cantidad}
 
     return calculo
+
+
+def concenso_matriz_mao(request, idEstudio, matriz):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    idEstudio = "0"+str(estudio.id)
+
+    return Generar_matriz_mao(request, idEstudio, matriz)
+
+
+def concenso_mao(idEstudio, num_matriz):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
+    lista_expertos = estudio.idExpertos.all()
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+    objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
+    tamano_matriz_completa = len(actores)*len(objetivos)
+    lista_concenso = []
+    contador = 0
+
+    for experto in lista_expertos:
+        consulta = Relacion_MAO.objects.filter(idEstudio=estudio.id, idExperto=experto.id,
+                                                        tipo=num_matriz).order_by('idActorY', 'idObjetivoX')
+        if len(consulta) == tamano_matriz_completa and len(lista_concenso) == 0:
+            lista_concenso = consulta
+            contador += 1
+        elif len(consulta) == tamano_matriz_completa:
+            contador += 1
+            for i in range(len(lista_concenso)):
+                lista_concenso[i].valor += consulta[i].valor
+
+    if len(lista_concenso) > 0:
+        for i in lista_concenso:
+            i.valor = round(i.valor / contador)
+            #print(i.valor)
+
+    cantidad = str(contador) + "/" + str(len(lista_expertos))
+    resultado = {'concenso': lista_concenso, 'num_expertos': cantidad}
+
+    return resultado
 
 
 

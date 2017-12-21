@@ -17,19 +17,12 @@
                     <div class="col-md-10">
                         <div class="widget wgreen">
                             <div class="widget-head">
-                                {% if usuario != 'COORDINADOR' %}
-                                    <div class="pull-left">MMDII - Matriz de Máxima Influencia Directa e Indirecta</div>
-                                {% else %}
-                                    <div class="pull-left">Concenso - Matriz de Máximas Influencias Directas e Indirectas</div>
-                                {% endif %}
+                                <div class="pull-left">MMDII - Matriz de Máxima Influencia Directa e Indirecta</div>
                                 <div class="widget-icons pull-right">
-                                    {% if valores_maximos %}
+                                    {% if valores_maximos and usuario == 'COORDINADOR_EXPERTO' %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis Matriz Máxima</option>
-                                         <option style="color: red;" value="">Histograma Influencia - Dependencia Máxima</option>
-                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
                                          <option value="{% url 'mactor:concenso_influencias' estudio.id 3 %}">Concenso Matriz Máxima</option>
-                                         {% endif %}
                                      </select>
                                     {% endif %}
                                 </div>
