@@ -690,7 +690,6 @@ def Crear_2mao(request, idEstudio):
 def Generar_matriz_mao(request, idEstudio, numero_matriz):
 
     concenso = verificar_concenso(request, idEstudio)
-    print(concenso)
     contexto = crear_contexto_mao(request, idEstudio, int(numero_matriz))
 
     if int(numero_matriz) == 1:
@@ -701,7 +700,6 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
     elif int(numero_matriz) == 2:
         return render(request, 'mao/matriz_2mao.html', contexto)
     elif int(numero_matriz) == 3:
-        # Generar_matriz_ri(request, 1)
         return render(request, 'mao/matriz_3mao.html', contexto)
     else:
         raise Http404("Error: Esta vista no existe")
@@ -1266,20 +1264,24 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
     lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tamano_matriz_completa = (len(lista_actores)*len(lista_objetivos))
     lista_mao = []
+    num_expertos = []
 
     if numero_matriz < 3:
         concenso = verificar_concenso(request, idEstudio)
+        print(concenso)
         if concenso is True:
             lista_mao = concenso_mao(estudio.id, numero_matriz)
+            num_expertos = lista_mao['expertos']
             lista_mao = lista_mao['concenso']
         else:
             lista_mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=numero_matriz,
                                                 idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
-            concenso_mao(estudio.id, int(numero_matriz))
+
     else:
         estado_mao3 = verificar_mid_mao2(estudio.id, request.user.id)
         if estado_mao3:
             lista_mao = calcular_valores_3mao(request, estudio.id, request.user.id)
+
     # Si la matriz esta completa
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
         lista_contexto = calcular_valores_mao(estudio.id, lista_mao, MATRIZ_COMPLETA)
@@ -1297,7 +1299,8 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
                     'valores_daa': valores_daa,
                     'estado_matriz': MATRIZ_COMPLETA,
                     'estudio': estudio,
-                    'usuario': tipo_usuario}
+                    'usuario': tipo_usuario,
+                    'expertos': num_expertos}
     # Si la matriz es 1mao o 2mao y esta incompleta
     elif len(lista_mao) != tamano_matriz_completa and numero_matriz != 3 or len(lista_mao) == 0 and numero_matriz != 3:
 
@@ -2659,27 +2662,45 @@ def concenso_mao(idEstudio, num_matriz):
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
     tamano_matriz_completa = len(actores)*len(objetivos)
-    lista_concenso = []
     contador = 0
+    lista_sublistas = []
 
+    cont1 = 0
+    while cont1 < tamano_matriz_completa:
+        lista_sublistas.append([])
+        cont1 += 1
+
+    consulta = []
     for experto in lista_expertos:
         consulta = Relacion_MAO.objects.filter(idEstudio=estudio.id, idExperto=experto.id,
                                                         tipo=num_matriz).order_by('idActorY', 'idObjetivoX')
-        if len(consulta) == tamano_matriz_completa and len(lista_concenso) == 0:
-            lista_concenso = consulta
+        if len(consulta) == tamano_matriz_completa and len(consulta) > 0:
             contador += 1
-        elif len(consulta) == tamano_matriz_completa:
-            contador += 1
-            for i in range(len(lista_concenso)):
-                lista_concenso[i].valor += consulta[i].valor
+            for i in range(len(consulta)):
+                sublista = lista_sublistas[i]
+                sublista.append(consulta[i].valor)
+                lista_sublistas[i] = sublista
 
-    if len(lista_concenso) > 0:
-        for i in lista_concenso:
-            i.valor = round(i.valor / contador)
-            #print(i.valor)
+    if len(consulta) > 0:
+        for i in range(len(lista_sublistas)):
+            print(lista_sublistas[i], "----")
+            cont_uno_pos = lista_sublistas[i].count(1)
+            cont_cero = lista_sublistas[i].count(0)
+            cont_uno_neg = lista_sublistas[i].count(-1)
+            if cont_uno_pos > max(cont_cero, cont_uno_neg):
+                consulta[i].valor = 1
+                print("1 es mayor")
+            elif cont_cero >= cont_uno_pos and cont_cero > cont_uno_neg:
+                consulta[i].valor = 0
+                print("0 es mayor")
+            elif cont_uno_neg >= max(cont_uno_pos, cont_cero):
+                consulta[i].valor = -1
+                print("-1 es mayor")
+
+            print("-----------------------")
 
     cantidad = str(contador) + "/" + str(len(lista_expertos))
-    resultado = {'concenso': lista_concenso, 'num_expertos': cantidad}
+    resultado = {'concenso': consulta, 'expertos': cantidad}
 
     return resultado
 
