@@ -21,6 +21,9 @@
                                         <option value="">Histogramas</option>
                                         <option value="{% url 'mactor:implicacion' estudio.id 2 %}">Histograma de Implicaciones</option>
                                         <option value="{% url 'mactor:movilizacion' estudio.id 2 %}">Histograma de Movilizaciones</option>
+                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
+                                        <option value="{% url 'mactor:concenso_mao' estudio.id 2 %}">Concenso 2MAO</option>
+                                        {% endif %}
                                     </select>
                                 </div>
                                 <div class="clearfix"></div>
@@ -39,7 +42,6 @@
                         <div class="col-md-offset-2 col-md-8">
                             <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao' estudio.id%}"><i class="fa fa-arrow-left"></i> Inf. 2MAO</a>
                             <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
                             <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:caa_daa' estudio.id 2%}"><i class="fa fa-table"></i> CAA-DAA</a>
                             <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 3%}">Matriz 3MAO <i class="fa fa-arrow-right"></i></a>
                         </div>

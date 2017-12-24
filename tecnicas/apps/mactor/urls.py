@@ -15,7 +15,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
     concenso_matriz_influencias, concenso_grafico_influencias, \
-    concenso_matriz_mao
+    activar_concenso_mao
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -103,6 +103,6 @@ urlpatterns = [
     # Urls concensos
     url(r'^concenso_influencias/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(concenso_matriz_influencias), name='concenso_influencias'),
     url(r'^concenso_grafico_influencias/(?P<idEstudio>\d+)/(?P<grafico>\d)/', login_required(concenso_grafico_influencias), name='concenso_inf_graficos'),
-    url(r'^concenso_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(concenso_matriz_mao), name='concenso_mao'),
+    url(r'^concenso_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(activar_concenso_mao), name='concenso_mao'),
 
 ]

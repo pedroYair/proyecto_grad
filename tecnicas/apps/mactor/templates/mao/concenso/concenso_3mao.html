@@ -9,61 +9,60 @@
 
 {% block content %}
     {% if usuario != '' %}
-        <!--Matriz 1MAO-------------------------------------------------------------------------------------------------->
+        <!--Matriz 3MAO-------------------------------------------------------------------------------------------------->
         <div class="container">
                 <div class="row">
                     <div class="col-md-10">
                         <div class="widget wblue">
                             <div class="widget-head">
-                                 <div class="pull-left">Concenso - Matriz de Posiciones Simples 1MAO</div>
+                                 <div class="pull-left">Concenso - Matriz Valorada y Ponderada de Posiciones 3MAO</div>
                                 <div class="widget-icons pull-right">
-                                    <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
+                                    {% if estado_matriz == 1 %}
+                                    <select name="histogramas" class="form-control" onchange="location = this.value;">
                                         <option value="">Histogramas</option>
-                                        <option value="{% url 'mactor:implicacion' estudio.id 1 %}">Histograma de Implicaciones</option>
-                                        <option value="{% url 'mactor:movilizacion' estudio.id 1 %}">Histograma de Movilizaciones</option>
+                                        <option value="{% url 'mactor:implicacion' estudio.id 3 %}">Histograma de Implicaciones</option>
+                                        <option value="{% url 'mactor:movilizacion' estudio.id 3 %}">Histograma de Movilizaciones</option>
                                     </select>
+                                    {% endif %}
                                 </div>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">
-                                    {% include 'mao/table_matriz_mao.html' %}
+                                {% include 'mao/table_matriz_mao.html' %}
                             </div>
                         </div>
                     </div>
                 </div>
-        </div>
+            </div>
+
         {% if expertos %}
         <p><h5>Expertos en concenso = {{expertos}}</h5></p>
         {% else %}
-        <p><h5>Ningún experto ha finalizado la matriz 1MAO</h5></p>
+        <p><h5>Ningún experto ha finalizado la matriz MID y 2MAO.</h5></p>
         {% endif %}
         <br>
 
-
-        <!--BOTONES----------------------------------------------------------------------------------------------------->
+        <!--BOTONES-->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if usuario == 'COORDINADOR_EXPERTO' %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 3%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% else %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="MID"><i class="fa fa-arrow-left"></i> Matriz MID</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 2%}"><i class="fa fa-arrow-left"></i> Matriz 2MAO</a>
                 {% endif %}
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:caa_daa' estudio.id 1%}"><i class="fa fa-table"></i> CAA-DAA</a>
-                {% if usuario == 'COORDINADOR' %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 2%}">Matriz 2MAO <i class="fa fa-arrow-right"></i></a>
-                {% endif %}
+                <a id="caa_daa" class="btn btn-primary" href="{%url 'mactor:caa_daa' estudio.id 3%}"><i class="fa fa-table"></i> CAA-DAA</a>
+                <a class="btn btn-sm btn-success" href="#">Informe <i class="fa fa-arrow-right"></i></a>
             </div>
         </div>
 
-        <!--INICIO MODAL CONSULTAR ACTOR Y OBJETIVO--------------------------------------------------------------------->
+        <!--INICIO MODAL CONSULTAR ACTOR Y OBJETIVO----------------->
 
                     {% include 'actor/modal_detalle_actor.html' %}
 
                     {% include 'objetivo/modal_detalle_objetivo.html' %}
 
-
-        <!--MODAL AYUDA------------------------------------------------------------------------------------------>
+        <!--INICIO MODAL AYUDA------------------------------------->
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                                         <div class="modal-dialog">

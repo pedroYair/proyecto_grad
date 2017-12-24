@@ -219,8 +219,8 @@ def Crear_ficha(request, idEstudio):
 
 def Lista_fichas(request, idEstudio):
 
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    fichas_estudio = Ficha_actor.objects.filter(idEstudio=estudio_mactor.id).order_by('idActorY', 'idActorX')
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    fichas_estudio = Ficha_actor.objects.filter(idEstudio=estudio.id).order_by('idActorY', 'idActorX')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
 
     page = request.GET.get('page', 1)
@@ -232,7 +232,7 @@ def Lista_fichas(request, idEstudio):
     except EmptyPage:
         fichas_contexto = paginator.page(paginator.num_pages)
 
-    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_fichas': fichas_contexto}
+    contexto = {'estudio': estudio, 'usuario': tipo_usuario, 'lista_fichas': fichas_contexto}
     return render(request, 'ficha/lista_fichas.html', contexto)
 
 
@@ -466,7 +466,7 @@ def Generar_matriz_mid(request, idEstudio):
 
     # muestra la matriz grupal
     if concenso is True:
-        lista_influencias = concenso_mid(estudio.id)
+        lista_influencias = calcular_concenso_mid(estudio.id)
         cantidad_expertos = lista_influencias['num_expertos']
         lista_influencias = lista_influencias['concenso']
     # muestra la matriz diligenciada por el usuario en sesion
@@ -515,7 +515,7 @@ def Generar_matriz_midi(request, idEstudio):
         valores_midi = calcular_midi(request, idEstudio)
         cantidad_expertos = 0
         if concenso is True:
-            influencias_mid = concenso_mid(estudio.id)
+            influencias_mid = calcular_concenso_mid(estudio.id)
             cantidad_expertos = influencias_mid['num_expertos']
 
         contexto = {'actores': lista_actores,
@@ -549,7 +549,7 @@ def Generar_matriz_maxima(request, idEstudio):
         valores_maximos = calcular_maxima_influencia(request, idEstudio)
         cantidad_expertos = 0
         if concenso is True:
-            influencias_mid = concenso_mid(estudio.id)
+            influencias_mid = calcular_concenso_mid(estudio.id)
             cantidad_expertos = influencias_mid['num_expertos']
 
         contexto = {'actores': lista_actores,
@@ -585,7 +585,7 @@ def Generar_matriz_ri(request, idEstudio):
 
     cantidad_expertos = 0
     if concenso is True:
-        influencias_mid = concenso_mid(estudio.id)
+        influencias_mid = calcular_concenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
     contexto = {'lista_contexto': lista_contexto, 'expertos': cantidad_expertos,
                 'estudio': estudio, 'usuario': tipo_usuario}
@@ -611,7 +611,7 @@ def Generar_matriz_balance(request, idEstudio):
         valores_balance = calcular_balance_liquido(request, idEstudio)
         cantidad_expertos = 0
         if concenso is True:
-            influencias_mid = concenso_mid(estudio.id)
+            influencias_mid = calcular_concenso_mid(estudio.id)
             cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'actores': actores, 'valores_balance': valores_balance, 'posicion_salto': actores.count()+1,
                     'expertos': cantidad_expertos, 'estudio': estudio, 'usuario': tipo_usuario}
@@ -634,7 +634,7 @@ def Generar_indicador_estabilidad(request, idEstudio):
 
     cantidad_expertos = 0
     if concenso is True:
-        influencias_mid = concenso_mid(estudio.id)
+        influencias_mid = calcular_concenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
 
     contexto = {'indicador': indicador, 'expertos': cantidad_expertos, 'estudio': estudio, 'usuario': tipo_usuario}
@@ -647,6 +647,7 @@ def Generar_indicador_estabilidad(request, idEstudio):
 
 # -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
 
+# Agrega la relacion 1mao
 def Crear_1mao(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -667,6 +668,7 @@ def Crear_1mao(request, idEstudio):
                                                    'objetivos': objetivos})
 
 
+# Agrega la relacion 2mao
 def Crear_2mao(request, idEstudio):
 
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -687,6 +689,7 @@ def Crear_2mao(request, idEstudio):
                                                    'objetivos': objetivos})
 
 
+# Genera las matrices mao
 def Generar_matriz_mao(request, idEstudio, numero_matriz):
 
     concenso = verificar_concenso(request, idEstudio)
@@ -698,13 +701,20 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
         else:
             return render(request, 'mao/matriz_1mao.html', contexto)
     elif int(numero_matriz) == 2:
-        return render(request, 'mao/matriz_2mao.html', contexto)
+        if concenso is True:
+            return render(request, 'mao/concenso/concenso_2mao.html', contexto)
+        else:
+            return render(request, 'mao/matriz_2mao.html', contexto)
     elif int(numero_matriz) == 3:
-        return render(request, 'mao/matriz_3mao.html', contexto)
+        if concenso is True:
+            return render(request, 'mao/concenso/concenso_3mao.html', contexto)
+        else:
+            return render(request, 'mao/matriz_3mao.html', contexto)
     else:
         raise Http404("Error: Esta vista no existe")
 
 
+# Genera las matrices de convergencia y divergencia
 def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
 
     if int(numero_matriz) >= 1 and int(numero_matriz) <= 3:
@@ -924,7 +934,7 @@ def calcular_midi(request, idEstudio):
     valores_midi = []               # contiene los valores correspondientes a MIDI
 
     if verificar_concenso(request, idEstudio):
-        influencias_mid = concenso_mid(estudio)
+        influencias_mid = calcular_concenso_mid(estudio)
         influencias_mid = influencias_mid['concenso']
     else:
         influencias_mid = Relacion_MID.objects.filter(idEstudio=estudio, idExperto=request.user.id).order_by(
@@ -984,7 +994,7 @@ def sumar_valores_minimos(request, actorY, idEstudio):
     # mayor_valores_minimos(request, actorY, idEstudio)
     # si se accede al concenso midi (en este caso idEstudio = str)
     if verificar_concenso(request, idEstudio):
-        mid = concenso_mid(estudio)
+        mid = calcular_concenso_mid(estudio)
         mid = mid['concenso']
     else:
         mid = Relacion_MID.objects.filter(idEstudio=estudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
@@ -1019,7 +1029,7 @@ def calcular_maxima_influencia(request, idEstudio):
 
     # muestra la matriz grupal
     if concenso is True:
-        influencias_mid = concenso_mid(estudio)
+        influencias_mid = calcular_concenso_mid(estudio)
         influencias_mid = influencias_mid['concenso']
     # muestra la matriz diligenciada por el usuario en sesion
     else:
@@ -1112,7 +1122,7 @@ def obtener_valores_minimos(request, idEstudio, actorY):
     valores_minimos = []  # contiene los valores minimos establecidos al comparar valores_izquierdos vs derechos
 
     if verificar_concenso(request, idEstudio):
-        mid = concenso_mid(estudio)
+        mid = calcular_concenso_mid(estudio)
         mid = mid['concenso']
     else:
         mid = Relacion_MID.objects.filter(idEstudio=estudio, idExperto=request.user.id).order_by('idActorY',
@@ -1258,6 +1268,7 @@ def calcular_estabilidad(request, idEstudio):
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
 def crear_contexto_mao(request, idEstudio, numero_matriz):
 
+    concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     lista_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
@@ -1267,20 +1278,22 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
     num_expertos = []
 
     if numero_matriz < 3:
-        concenso = verificar_concenso(request, idEstudio)
-        print(concenso)
         if concenso is True:
-            lista_mao = concenso_mao(estudio.id, numero_matriz)
+            lista_mao = calcular_concenso_mao(estudio.id, numero_matriz)
             num_expertos = lista_mao['expertos']
             lista_mao = lista_mao['concenso']
         else:
             lista_mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=numero_matriz,
                                                 idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
-
     else:
-        estado_mao3 = verificar_mid_mao2(estudio.id, request.user.id)
-        if estado_mao3:
-            lista_mao = calcular_valores_3mao(request, estudio.id, request.user.id)
+        if concenso is True:
+            lista_mao = calcular_valores_3mao(request, idEstudio)
+            num_expertos = calcular_concenso_mao(estudio.id, 2)
+            num_expertos = num_expertos['expertos']
+        else:
+            estado_mao3 = verificar_mid_mao2(request, estudio.id)
+            if estado_mao3:
+                lista_mao = calcular_valores_3mao(request, estudio.id)
 
     # Si la matriz esta completa
     if len(lista_mao) == tamano_matriz_completa and tamano_matriz_completa > 0:
@@ -1543,7 +1556,6 @@ def establecer_valores_movilizacion(objetivos, valores):
     lista_positivos = []
     lista_negativos = []
     lista_movilizacion = []
-    movilizacion = 0
     suma_positivos = 0
     suma_negativos = 0
     posicion_movilizacion = objetivos.count() + 4  # +4 por las cuatro columnas extras (nombresCortos y sumatorias)
@@ -1553,19 +1565,18 @@ def establecer_valores_movilizacion(objetivos, valores):
     while indice <= objetivos.count():
         for i in valores:
             if i.posicion == indice:
-                if i.valor != VALOR_RELACION_NO_REGISTRADA:
-                    movilizacion += abs(i.valor)
                 if i.valor == abs(i.valor) and i.valor != VALOR_RELACION_NO_REGISTRADA:
                     suma_positivos += i.valor
                 elif i.valor != abs(i.valor) and i.valor != VALOR_RELACION_NO_REGISTRADA:
                     suma_negativos += abs(i.valor)
-
+        negativo = round(suma_negativos, 1)
+        positivo = round(suma_positivos, 1)
+        total = positivo + negativo
         # se agregan a la lista los valores de movilizacion
-        lista_negativos.append(Valor_posicion(posicion=0, valor=suma_negativos, descripcion=suma_negativos))
-        lista_positivos.append(Valor_posicion(posicion=0, valor=suma_positivos, descripcion=suma_positivos))
-        lista_movilizacion.append(Valor_posicion(posicion=0, valor=movilizacion, descripcion=movilizacion))
+        lista_negativos.append(Valor_posicion(posicion=0, valor=negativo, descripcion=negativo))
+        lista_positivos.append(Valor_posicion(posicion=0, valor=positivo, descripcion=positivo))
+        lista_movilizacion.append(Valor_posicion(posicion=0, valor=total, descripcion=total))
         indice += 1         # iteracion de las posiciones
-        movilizacion = 0    # reinicio del valor movilizacion
         suma_positivos = 0  # reinicio de la suma positiva
         suma_negativos = 0  # reinicio de la suma negativa
 
@@ -1594,12 +1605,12 @@ def establecer_valores_movilizacion(objetivos, valores):
 
 
 # Verifica si las matrices MID y 2MAO estan totalmente diligenciadas para proceder al calculo de la matriz 3mao
-def verificar_mid_mao2(idEstudio, idUsuario):
+def verificar_mid_mao2(request, idEstudio):
 
     objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=idUsuario).order_by('idActorY', 'idActorX')
-    mao2 = Relacion_MAO.objects.filter(tipo=2, idEstudio=idEstudio, idExperto=idUsuario).order_by('idActorY', 'idObjetivoX')
+    mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    mao2 = Relacion_MAO.objects.filter(tipo=2, idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
     tamano_mid = len(actores) * len(actores)
     tamano_2mao = len(actores) * len(objetivos)
     estado_3mao = False
@@ -1611,12 +1622,20 @@ def verificar_mid_mao2(idEstudio, idUsuario):
 
 
 # Calculo de los valores 3mao = 2mao * ri
-def calcular_valores_3mao(request, idEstudio, idUsuario):
+def calcular_valores_3mao(request, idEstudio):
 
-    cant_objetivos = len(Objetivo.objects.filter(idEstudio=idEstudio).order_by('id'))
-    mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2, idExperto=idUsuario).order_by('idActorY', 'idObjetivoX')
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    cant_objetivos = len(Objetivo.objects.filter(idEstudio=estudio.id).order_by('id'))
     valores_ri = calcular_ri(request, idEstudio)  # valores ri a partir de los midi
     valores_3mao = []  # lista que contiene a los 3mao
+
+    if concenso is True:
+        mao = calcular_concenso_mao(estudio.id, 2)
+        mao = mao['concenso']
+    else:
+        mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=2, idExperto=request.user.id).order_by('idActorY',
+                                                                                                            'idObjetivoX')
 
     # Multiplicacion de los valores 2mao por los valores ri para hallar los valores 3mao
     cont = 0
@@ -1780,6 +1799,7 @@ def agregar_descripcion_caa_daa(idEstudio, lista):
 
 # ------------------------------------VIEWS AJAX----------------------------------------------------
 
+# Devuelve la lista de actores que no se han registrado en determina matriz
 def Consultar_actores_faltantes(request):
 
     if request.is_ajax():
@@ -1826,6 +1846,7 @@ def Consultar_actores_faltantes(request):
         return HttpResponse(response.content)
 
 
+# Devuelve la lista de objetivos que no se han registrado en determinada matriz mao
 def Consultar_objetivos_faltantes(request):
 
     if request.is_ajax():
@@ -2139,7 +2160,7 @@ def histograma_mid(request, idEstudio):
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if concenso is True:
-        influencias_mid = concenso_mid(estudio.id)
+        influencias_mid = calcular_concenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
     else:
@@ -2161,7 +2182,7 @@ def datos_histograma_mid(request):
         concenso = verificar_concenso(request, request.GET['estudio'])
         valores_mid = []
         if concenso is True:
-            valores_mid = concenso_mid(estudio.id)
+            valores_mid = calcular_concenso_mid(estudio.id)
             valores_mid = valores_mid['concenso']
         elif usuario != "COORDINADOR":
             valores_mid = Relacion_MID.objects.filter(idEstudio=estudio.id,
@@ -2296,7 +2317,7 @@ def histograma_ri(request, idEstudio):
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if concenso is True:
-        influencias_mid = concenso_mid(estudio.id)
+        influencias_mid = calcular_concenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
     else:
@@ -2335,7 +2356,7 @@ def generar_mapa_midi(request, idEstudio):
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if concenso is True:
-        influencias_mid = concenso_mid(estudio.id)
+        influencias_mid = calcular_concenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
     else:
@@ -2617,7 +2638,8 @@ def concenso_grafico_influencias(request, idEstudio, grafico):
         raise Http404("Error: Esta vista no existe")
 
 
-def concenso_mid(idEstudio):
+# Calcula el concenso de la matriz mid
+def calcular_concenso_mid(idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
@@ -2647,15 +2669,16 @@ def concenso_mid(idEstudio):
     return calculo
 
 
-def concenso_matriz_mao(request, idEstudio, matriz):
+# Agrega un cero al inicio del idEstudio para activar el concenso mao
+def activar_concenso_mao(request, idEstudio, matriz):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
-
     return Generar_matriz_mao(request, idEstudio, matriz)
 
 
-def concenso_mao(idEstudio, num_matriz):
+# Calcula el concenso de las matrices 1mao y 2mao
+def calcular_concenso_mao(idEstudio, num_matriz):
 
     estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
@@ -2670,39 +2693,69 @@ def concenso_mao(idEstudio, num_matriz):
         lista_sublistas.append([])
         cont1 += 1
 
-    consulta = []
+    consulta_base = []
     for experto in lista_expertos:
         consulta = Relacion_MAO.objects.filter(idEstudio=estudio.id, idExperto=experto.id,
                                                         tipo=num_matriz).order_by('idActorY', 'idObjetivoX')
+
         if len(consulta) == tamano_matriz_completa and len(consulta) > 0:
+            consulta_base = consulta
             contador += 1
             for i in range(len(consulta)):
                 sublista = lista_sublistas[i]
                 sublista.append(consulta[i].valor)
                 lista_sublistas[i] = sublista
 
-    if len(consulta) > 0:
+    if len(consulta_base) > 0 and num_matriz == 1:
         for i in range(len(lista_sublistas)):
-            print(lista_sublistas[i], "----")
             cont_uno_pos = lista_sublistas[i].count(1)
             cont_cero = lista_sublistas[i].count(0)
             cont_uno_neg = lista_sublistas[i].count(-1)
-            if cont_uno_pos > max(cont_cero, cont_uno_neg):
-                consulta[i].valor = 1
-                print("1 es mayor")
-            elif cont_cero >= cont_uno_pos and cont_cero > cont_uno_neg:
-                consulta[i].valor = 0
-                print("0 es mayor")
-            elif cont_uno_neg >= max(cont_uno_pos, cont_cero):
-                consulta[i].valor = -1
-                print("-1 es mayor")
 
-            print("-----------------------")
+            if cont_uno_pos > max(cont_cero, cont_uno_neg):
+                consulta_base[i].valor = 1
+            elif cont_cero >= cont_uno_pos and cont_cero > cont_uno_neg:
+                consulta_base[i].valor = 0
+            elif cont_uno_neg >= max(cont_uno_pos, cont_cero):
+                consulta_base[i].valor = -1
+
+    elif len(consulta_base) > 0 and num_matriz == 2:
+        for i in range(len(lista_sublistas)):
+            cont_4 = lista_sublistas[i].count(-4)
+            cont_3 = lista_sublistas[i].count(-3)
+            cont_2 = lista_sublistas[i].count(-2)
+            cont_1 = lista_sublistas[i].count(-1)
+            cont0 = lista_sublistas[i].count(0)
+            cont1 = lista_sublistas[i].count(1)
+            cont2 = lista_sublistas[i].count(2)
+            cont3 = lista_sublistas[i].count(3)
+            cont4 = lista_sublistas[i].count(4)
+
+            if cont_4 >= max(cont_3, cont_2, cont_1, cont0, cont1, cont2, cont3, cont4):
+                consulta_base[i].valor = -4
+            elif cont_3 >= max(cont_2, cont_1, cont0, cont1, cont2, cont3, cont4):
+                consulta_base[i].valor = -3
+            elif cont_2 >= max(cont_1, cont0, cont1, cont2, cont3, cont4):
+                consulta_base[i].valor = -2
+            elif cont_1 >= max(cont0, cont1, cont2, cont3, cont4):
+                consulta_base[i].valor = -1
+            elif cont0 >= max(cont1, cont2, cont3, cont4):
+                consulta_base[i].valor = 0
+            elif cont1 >= max(cont2, cont3, cont4):
+                consulta_base[i].valor = 1
+            elif cont2 >= max(cont3, cont4):
+                consulta_base[i].valor = 2
+            elif cont3 >= cont4:
+                consulta_base[i].valor = 3
+            else:
+                consulta_base[i].valor = 4
 
     cantidad = str(contador) + "/" + str(len(lista_expertos))
-    resultado = {'concenso': consulta, 'expertos': cantidad}
+    resultado = {'concenso': consulta_base, 'expertos': cantidad}
 
     return resultado
+
+
 
 
 
