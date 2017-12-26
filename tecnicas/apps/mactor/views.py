@@ -717,19 +717,20 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
 # Genera las matrices de convergencia y divergencia
 def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
 
-    if int(numero_matriz) >= 1 and int(numero_matriz) <= 3:
-        estudio_mactor = get_object_or_404(Estudio_Mactor, id=idEstudio)
-        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-        contexto_mao = crear_contexto_mao(request, int(idEstudio), int(numero_matriz))
-        tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-        estado_matriz = MATRIZ_INCOMPLETA
-        mensaje = ""
-        contexto = {}
+    concenso = verificar_concenso(request, idEstudio)
+    numero_matriz = int(numero_matriz)
+    if numero_matriz in [1, 2, 3]:
+        estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+        tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+        contexto_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
 
-        if int(numero_matriz) == 1 or int(numero_matriz) == 2:
-            mensaje = "Finalice el registro de las posiciones " + numero_matriz + "MAO para visualizar esta matriz."
-        else:
-            mensaje = "Finalice el registro de las posiciones MID y 2MAO para visualizar esta matriz."
+        num_expertos = 0
+        if concenso is True:
+            if numero_matriz == 3:
+                numero_matriz = 2  # porque 3mao se calcula apartir de 2mao
+            num_expertos = calcular_concenso_mao(estudio.id, numero_matriz)
+            num_expertos = num_expertos['expertos']
 
         if contexto_mao['estado_matriz'] == MATRIZ_COMPLETA:
             contexto = {
@@ -737,17 +738,26 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
                 'valores_caa': contexto_mao['valores_caa'],
                 'posicion_salto_caa_daa': actores.count(),
                 'valores_daa': contexto_mao['valores_daa'],
-                'estudio': estudio_mactor,
+                'estudio': estudio,
                 'numero_matriz': numero_matriz,
-                'usuario': tipo_usuario}
+                'usuario': tipo_usuario,
+                'expertos': num_expertos}
         else:
+            if int(numero_matriz) in [1, 2]:
+                mensaje = "Finalice el registro de las posiciones " + numero_matriz + "MAO para visualizar esta matriz."
+            else:
+                mensaje = "Finalice el registro de las posiciones MID y 2MAO para visualizar esta matriz."
+
             contexto = {
-                'estudio': estudio_mactor,
+                'estudio': estudio,
                 'numero_matriz': numero_matriz,
                 'mensaje': mensaje,
                 'usuario': tipo_usuario}
 
-        return render(request, 'mao/matrices_caa_daa.html', contexto)
+        if concenso is True:
+            return render(request, 'mao/concenso/concenso_caa_daa.html', contexto)
+        else:
+            return render(request, 'mao/matrices_caa_daa.html', contexto)
     else:
         raise Http404("Error: Esta vista no existe")
 
@@ -1627,8 +1637,8 @@ def calcular_valores_3mao(request, idEstudio):
     concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     cant_objetivos = len(Objetivo.objects.filter(idEstudio=estudio.id).order_by('id'))
-    valores_ri = calcular_ri(request, idEstudio)  # valores ri a partir de los midi
-    valores_3mao = []  # lista que contiene a los 3mao
+    valores_ri = calcular_ri(request, idEstudio)
+    valores_3mao = []
 
     if concenso is True:
         mao = calcular_concenso_mao(estudio.id, 2)
@@ -1636,24 +1646,17 @@ def calcular_valores_3mao(request, idEstudio):
     else:
         mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=2, idExperto=request.user.id).order_by('idActorY',
                                                                                                             'idObjetivoX')
-
     # Multiplicacion de los valores 2mao por los valores ri para hallar los valores 3mao
     cont = 0
     cont2 = 0
     for i in mao:
         if cont2 < cant_objetivos:
             valor = i.valor * valores_ri[cont]
-            # se agrega el valor calculado a la lista a mostrar
             valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1), descripcion=round(valor, 1)))
             cont2 += 1
-        # cuando se han calculado los valores (cantidad de objetivos) de una fila se reinician los parámetros
-        else:
-            cont2 = 0
-            cont += 1
-            valor = i.valor * valores_ri[cont]
-            # se agrega el valor calculado a la lista a mostrar
-            valores_3mao.append(Valor_posicion(posicion=cont2 + 1, valor=round(valor, 1), descripcion=round(valor, 1)))
-            cont2 += 1
+            if cont2 == cant_objetivos:
+                cont2 = 0
+                cont += 1
 
     return valores_3mao
 
@@ -2601,7 +2604,7 @@ def verificar_concenso(request, idEstudio):
 
 
 # Ejecuta el concenso de alguna matriz de influencias
-def concenso_matriz_influencias(request, idEstudio, matriz):
+def activar_concenso_influencias(request, idEstudio, matriz):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
@@ -2674,7 +2677,25 @@ def activar_concenso_mao(request, idEstudio, matriz):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
-    return Generar_matriz_mao(request, idEstudio, matriz)
+    matriz = int(matriz)
+
+    if matriz in [1, 2, 3]:
+        return Generar_matriz_mao(request, idEstudio, matriz)
+    else:
+        raise Http404("Error: Esta vista no existe")
+
+
+# Agrega un cero al inicio del idEstudio para activar el concenso de matrices de convergencia y divergencia
+def activar_concenso_caa_daa(request, idEstudio, matriz):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    idEstudio = "0" + str(estudio.id)
+    matriz = int(matriz)
+
+    if matriz in [1, 2, 3]:
+        return Generar_matrices_caa_daa(request, idEstudio, matriz)
+    else:
+        raise Http404("Error: Esta vista no existe")
 
 
 # Calcula el concenso de las matrices 1mao y 2mao
@@ -2750,7 +2771,7 @@ def calcular_concenso_mao(idEstudio, num_matriz):
             else:
                 consulta_base[i].valor = 4
 
-    cantidad = str(contador) + "/" + str(len(lista_expertos))
+    cantidad = str(contador) + " / " + str(len(lista_expertos))
     resultado = {'concenso': consulta_base, 'expertos': cantidad}
 
     return resultado
