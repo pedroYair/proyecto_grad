@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if usuario != '' %}
+    {% if usuario != '' and usuario != 'EXPERTO' %}
         <!--Matriz 3MAO-------------------------------------------------------------------------------------------------->
         <div class="container">
                 <div class="row">
@@ -19,9 +19,9 @@
                                 <div class="widget-icons pull-right">
                                     {% if estado_matriz == 1 %}
                                     <select name="histogramas" class="form-control" onchange="location = this.value;">
-                                        <option value="">Histogramas</option>
-                                        <option value="{% url 'mactor:implicacion' estudio.id 3 %}">Histograma de Implicaciones</option>
-                                        <option value="{% url 'mactor:movilizacion' estudio.id 3 %}">Histograma de Movilizaciones</option>
+                                        <option value="">Análisis concenso</option>
+                                        <option value="{% url 'mactor:concenso_grafico_mao' estudio.id 3 1 %}">Histograma de Implicaciones</option>
+                                        <option value="{% url 'mactor:concenso_grafico_mao' estudio.id 3 2 %}">Histograma de Movilizaciones</option>
                                     </select>
                                     {% endif %}
                                 </div>

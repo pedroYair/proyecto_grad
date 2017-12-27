@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if usuario != '' %}
+    {% if if usuario != '' and usuario != 'EXPERTO' %}
         <!--Matriz 1MAO-------------------------------------------------------------------------------------------------->
         <div class="container">
                 <div class="row">
@@ -18,9 +18,9 @@
                                  <div class="pull-left">Concenso - Matriz de Posiciones Simples 1MAO</div>
                                 <div class="widget-icons pull-right">
                                     <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
-                                        <option value="">Histogramas</option>
-                                        <option value="{% url 'mactor:implicacion' estudio.id 1 %}">Histograma de Implicaciones</option>
-                                        <option value="{% url 'mactor:movilizacion' estudio.id 1 %}">Histograma de Movilizaciones</option>
+                                        <option value="">Análisis concenso</option>
+                                        <option value="{% url 'mactor:concenso_grafico_mao' estudio.id 1 1%}">Histograma de Implicaciones</option>
+                                        <option value="{% url 'mactor:concenso_grafico_mao' estudio.id 1 2%}">Histograma de Movilizaciones</option>
                                     </select>
                                 </div>
                                 <div class="clearfix"></div>

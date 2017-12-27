@@ -3,8 +3,12 @@
 
 {% block head_title %}
 	{% if usuario != '' %}
-		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
-        <input hidden class="col-sm-1" type="number" name="numero_matriz" value="{{numero_matriz}}">
+        {% if expertos %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="0{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% else %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% endif %}
+		 <input hidden class="col-sm-1" type="number" name="numero_matriz" value="{{numero_matriz}}">
 {% endif %}
 {% endblock %}
 
@@ -12,8 +16,8 @@
 
         {% include 'js_histogramas_planos.html' %}
 
- {% if usuario != '' %}
-        <br>
+{% if usuario != '' %}
+<br>
 		<div style="width: 75%">
         	<canvas id="canvas"></canvas>
     	</div>
@@ -21,11 +25,10 @@
         <script>
             var idEstudio = $('input[name="idEstudio"]').val();
             var numero_matriz = $('input[name="numero_matriz"]').val();
-            var tipo_grafico = "IMPLICACION"
+            var tipo_grafico = "MOVILIZACION"
             var positivos = []
 			var negativos = []
             var lista_labels = []
-
 			// se obtienen los datos a graficar
 			$.ajax(
                         {
@@ -40,12 +43,9 @@
 
                                 for(var i=0; i<object.labels.length; i++)
                                 {
-                                    lista_labels.push(object.labels[i])
-                                }
-                                for(var j=0; j<object.valores_positivos.length; j++)
-                                {
-                                    positivos.push(object.valores_positivos[j])
-									negativos.push(object.valores_negativos[j])
+                                    lista_labels.push(object.labels[i]);
+                                    positivos.push(object.valores_positivos[i]);
+									negativos.push(object.valores_negativos[i]);
                                 }
                                 generar()
                             },
@@ -59,11 +59,11 @@
 			var barChartData = {
 				labels: lista_labels,
 				datasets: [{
-					label: 'Implicación Positiva',
+					label: 'Movilización Positiva',
 					backgroundColor: 'rgba(54, 162, 235, 0.2)',
 					data: positivos
 				}, {
-					label: 'Implicación Negativa',
+					label: 'Movilización Negativa',
 					backgroundColor: 'rgba(255,99,132,1)',
 					data: negativos
 				}]
@@ -78,7 +78,7 @@
 					options: {
 						title:{
 							display:true,
-							text:"Implicación de los actores"
+							text:"Movilización de los actores"
 						},
 						tooltips: {
 							mode: 'index',
@@ -99,6 +99,9 @@
 
             </script>
 <br>
+{% if expertos %}
+    <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+{% endif %}
 <h6>Matriz {{numero_matriz}}MAO.</h6>
 <br>
 <br>
@@ -109,6 +112,7 @@
                             <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
                         </div>
         </div>
+
 {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>

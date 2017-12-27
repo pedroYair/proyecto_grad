@@ -3,7 +3,7 @@
 
 {% block head_title %}
 	{% if usuario != '' %}
-         {% if expertos %}
+        {% if expertos %}
 		<input hidden class="col-sm-1" type="number" name="idEstudio" value="0{{estudio.id}}">Estudio: {{estudio.titulo}}
         {% else %}
         <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
