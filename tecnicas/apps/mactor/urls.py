@@ -15,7 +15,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
     activar_concenso_influencias, concenso_grafico_influencias, \
-    activar_concenso_mao, activar_concenso_grafico_mao, activar_concenso_caa_daa
+    activar_concenso_mao, activar_concenso_grafico_mao, activar_concenso_caa_daa, activar_concenso_mapa_caa_daa
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -74,9 +74,6 @@ urlpatterns = [
     url(r'^histograma_ri/(?P<idEstudio>\d+)/$', login_required(histograma_ri), name='histograma_ri'),
     url(r'datos_histograma_ri', login_required(datos_histograma_ri)),
 
-    # Urls exportar a excel
-    url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudios_xls), name='estudios_xls'),
-
     # Urls histogramas mao
     url(r'^histograma_implicacion/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', login_required(histograma_implicacion),
         name='implicacion'),
@@ -93,12 +90,13 @@ urlpatterns = [
     url(r'datos_mapa_caa_daa', login_required(datos_mapa_caa_daa)),
     url(r'^histograma_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/$', histograma_caa_daa, name='hist_caa_daa'),
     url(r'datos_caa_daa', login_required(datos_histograma_caa_daa)),
-
-    # Urls grafos
     url(r'^grafo_caa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', login_required(generar_grafo_caa), name='grafo_caa'),
     url(r'datos_grafo_caa', login_required(datos_grafo_caa)),
     url(r'^grafo_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)$', login_required(generar_grafo_daa), name='grafo_daa'),
     url(r'datos_grafo_daa', login_required(datos_grafo_daa)),
+
+    # Urls exportar a excel
+    url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudios_xls), name='estudios_xls'),
 
     # Urls concensos
     url(r'^concenso_influencias/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(activar_concenso_influencias), name='concenso_influencias'),
@@ -106,5 +104,6 @@ urlpatterns = [
     url(r'^concenso_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(activar_concenso_mao), name='concenso_mao'),
     url(r'^concenso_grafico_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<grafico>\d)', login_required(activar_concenso_grafico_mao), name='concenso_grafico_mao'),
     url(r'^concenso_caa_daa/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(activar_concenso_caa_daa), name='concenso_caa_daa'),
+    url(r'^concenso_mapa_caa_daa/(?P<idEstudio>\d+)/(?P<matriz>\d)/', login_required(activar_concenso_mapa_caa_daa), name='concenso_mapa_caa_daa'),
 
 ]

@@ -3,9 +3,13 @@
 
 {% block head_title %}
 	{% if usuario != '' %}
-		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+		{% if expertos %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="0{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% else %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% endif %}
         <input hidden class="col-sm-1" type="number" name="numero_matriz" value="{{numero_matriz}}">
-{% endif %}
+    {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -116,6 +120,9 @@
      </script>
 
 <br>
+{% if expertos %}
+    <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+{% endif %}
 <h6>Mapa de Convergencias y Divergencias entre Actores {{numero_matriz}}CAA - {{numero_matriz}}DAA.</h6>
 <br>
 <br>

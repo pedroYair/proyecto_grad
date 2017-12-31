@@ -20,9 +20,9 @@
                                 {% if actores %}
                                 <div class="widget-icons pull-right">
                                     <select name="caa" class="form-control" onchange="location = this.value;">
-                                        <option value="">Diagramas</option>
+                                        <option value="">Análisis CAA</option>
                                         <option value="{% url 'mactor:grafo_caa' estudio.id numero_matriz %}">Grafo de Convergencias</option>
-                                        <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
+                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
                                     </select>
                                 </div>
                                 {% endif %}
@@ -178,7 +178,7 @@
                             <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Matriz {{numero_matriz}}MAO</a>
                             {% endif %}
                             <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:mapa_caa_daa' estudio.id numero_matriz%}"><i class="fa fa-area-chart"></i> Mapa</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:concenso_mapa_caa_daa' estudio.id numero_matriz%}"><i class="fa fa-area-chart"></i> Mapa</a>
                         </div>
                     </div>
 

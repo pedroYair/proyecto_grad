@@ -2439,21 +2439,27 @@ def datos_mapa_midi(request):
 
 def generar_mapa_caa_daa(request, idEstudio, numero_matriz):
 
-    usuario = obtener_tipo_usuario(request, int(idEstudio))
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario':usuario}
-    return render(request, 'mao/mapa_caa_daa.html', contexto)
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    usuario = obtener_tipo_usuario(request, estudio.id)
+    if concenso is True:
+        influencias_mao = calcular_concenso_mao(request, estudio.id, int(numero_matriz))
+        cantidad_expertos = influencias_mao['expertos']
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
+                    'usuario': usuario, 'expertos': cantidad_expertos}
+    else:
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
+
+    return render(request, 'mao/graficos/mapa_caa_daa.html', contexto)
 
 
 def datos_mapa_caa_daa(request):
 
     if request.is_ajax():
-        idEstudio = int(request.GET['estudio'])
         numero_matriz = int(request.GET['numero_matriz'])
-        labels = []
         lista_nombres = []
 
-        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_mao = crear_contexto_mao(request, request.GET['estudio'], numero_matriz)
         if valores_mao['estado_matriz'] == MATRIZ_COMPLETA:
             valores_caa = valores_mao['valores_caa']
             valores_daa = valores_mao['valores_daa']
@@ -2464,7 +2470,7 @@ def datos_mapa_caa_daa(request):
         valores_ejeX = []
         valores_ejeY = []
 
-        labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        labels = Actor.objects.filter(idEstudio=int(request.GET['estudio'])).order_by('id')
         for i in valores_caa:
             if i.posicion == "":
                 valores_ejeY.append(i.valor)
@@ -2739,6 +2745,19 @@ def activar_concenso_caa_daa(request, idEstudio, matriz):
 
     if matriz in [1, 2, 3]:
         return Generar_matrices_caa_daa(request, idEstudio, matriz)
+    else:
+        raise Http404("Error: Esta vista no existe")
+
+
+def activar_concenso_mapa_caa_daa(request, idEstudio, matriz):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    idEstudio = "0" + str(estudio.id)
+    matriz = int(matriz)
+
+
+    if matriz in [1, 2, 3]:
+        return generar_mapa_caa_daa(request, idEstudio, matriz)
     else:
         raise Http404("Error: Esta vista no existe")
 
