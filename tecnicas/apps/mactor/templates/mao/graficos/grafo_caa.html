@@ -3,7 +3,11 @@
 
 {% block head_title %}
 	{% if usuario != '' %}
-		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% if expertos %}
+		<input hidden class="col-sm-1" type="number" name="idEstudio" value="0{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% else %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
+        {% endif %}
         <input hidden class="col-sm-1" type="number" name="numero_matriz" value="{{numero_matriz}}">
 {% endif %}
 {% endblock %}
@@ -13,11 +17,11 @@
         {% include 'js_grafos.html' %}
 
 {% if usuario != '' %}
-        <h6>Grafo de Divergencias entre Actores {{numero_matriz}}DAA.</h6>
+        <h6>Grafo de Convergencias entre Actores {{numero_matriz}}CAA.</h6>
         <br>
 		<div id="mynetwork" style="width: 100%; height: 400px"></div>
 
-    <script type="text/javascript">
+        <script type="text/javascript">
 
             var idEstudio = $('input[name="idEstudio"]').val();
             var numero_matriz = $('input[name="numero_matriz"]').val();
@@ -28,7 +32,7 @@
                     data : {'numero_matriz' : numero_matriz,
                             'estudio': idEstudio
                             },
-                    url: 'datos_grafo_daa',
+                    url: 'datos_grafo_caa',
                     type: 'get',
                     success: function (data)
                     {
@@ -72,11 +76,17 @@
 
 </script>
 
-<br>
+{% if expertos %}
+    <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+{% endif %}
 <br>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
-                <a class="btn btn-sm btn-success" href="{%url 'mactor:caa_daa' estudio.id numero_matriz %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% if expertos %}
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:concenso_caa_daa' estudio.id numero_matriz 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% else %}
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:caa_daa' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% endif %}
                 <a class="btn btn-primary" data-toggle="modal" href="#"><i class="fa fa-book"></i> Ayuda</a>
                 <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
             </div>
@@ -86,4 +96,5 @@
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
 {% endif %}
+
 {% endblock %}

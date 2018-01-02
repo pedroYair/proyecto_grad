@@ -21,8 +21,8 @@
                                 <div class="widget-icons pull-right">
                                     <select name="caa" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis CAA</option>
-                                        <option value="{% url 'mactor:grafo_caa' estudio.id numero_matriz %}">Grafo de Convergencias</option>
-                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
+                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 4%}">Grafo de Convergencias</option>
+                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 3%}">Histograma CAA - DAA</option>
                                     </select>
                                 </div>
                                 {% endif %}
@@ -100,9 +100,9 @@
                                 {% if actores %}
                                 <div class="widget-icons pull-right">
                                     <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
-                                        <option value="">Diagramas</option>
-                                        <option value="{% url 'mactor:grafo_daa' estudio.id numero_matriz %}">Grafo de Divergencias</option>
-                                        <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
+                                        <option value="">Análisis DAA</option>
+                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 5%}">Grafo de Divergencias</option>
+                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 3%}">Histograma CAA - DAA</option>
                                     </select>
                                 </div>
                                 {% endif %}
@@ -168,23 +168,22 @@
         <p><h5>Ningún experto ha finalizado la matriz {{numero_matriz}}MAO.</h5></p>
         {% endif %}
 
-
         <!--BOTONES----------------------------------------------------------------------------------------------------->
-                    <div class="form-group">
-                        <div class="col-md-offset-2 col-md-8">
-                            {% if usuario == 'COORDINADOR_EXPERTO' %}
-                            <a class="btn btn-sm btn-success" href="{% url 'mactor:caa_daa' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                            {% else %}
-                            <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Matriz {{numero_matriz}}MAO</a>
-                            {% endif %}
-                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:concenso_mapa_caa_daa' estudio.id numero_matriz%}"><i class="fa fa-area-chart"></i> Mapa</a>
-                        </div>
-                    </div>
+        <div class="form-group">
+            <div class="col-md-offset-2 col-md-8">
+                {% if usuario == 'COORDINADOR_EXPERTO' %}
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:caa_daa' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                {% else %}
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Matriz {{numero_matriz}}MAO</a>
+                {% endif %}
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:concenso_caa_daa' estudio.id numero_matriz 2%}"><i class="fa fa-area-chart"></i> Mapa</a>
+            </div>
+        </div>
 
         <!--INICIO MODAL CONSULTAR ACTOR Y OBJETIVO--------------------------------------------------------------------->
 
-                    {% include 'actor/modal_detalle_actor.html' %}
+        {% include 'actor/modal_detalle_actor.html' %}
 
         <!--MODAL AYUDA------------------------------------------------------------------------------------------>
 
@@ -207,7 +206,7 @@
                                                  se obtiene por el producto de la matriz que contiene sólo productos escalares
                                                  negativos, lo que representa el número de objetivos respecto de los cuales el
                                                  par de actores tiene una actitud divergente.
-          </p>
+                                                 </p>
                                              </div>
                                           <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>

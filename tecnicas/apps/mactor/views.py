@@ -729,7 +729,7 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         if concenso is True:
             if numero_matriz == 3:
                 numero_matriz = 2  # porque 3mao se calcula apartir de 2mao
-            num_expertos = calcular_concenso_mao(request, estudio.id, 2)
+            num_expertos = calcular_concenso_mao(request, estudio.id, numero_matriz)
             num_expertos = num_expertos['expertos']
 
         if contexto_mao['estado_matriz'] == MATRIZ_COMPLETA:
@@ -2343,21 +2343,29 @@ def datos_histogramas_mao(request):
 
 def histograma_caa_daa(request, idEstudio, numero_matriz):
 
-    usuario = obtener_tipo_usuario(request, int(idEstudio))
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
-    return render(request, 'mao/histograma_caa_daa.html', contexto)
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    usuario = obtener_tipo_usuario(request, estudio.id)
+    if concenso is True:
+        num_expertos = valores_mao = crear_contexto_mao(request, idEstudio, int(numero_matriz))
+        num_expertos = num_expertos['expertos']
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
+                    'expertos': num_expertos, 'usuario': usuario}
+    else:
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
+
+    return render(request, 'mao/graficos/histograma_caa_daa.html', contexto)
 
 
 def datos_histograma_caa_daa(request):
 
     if request.is_ajax():
-        idEstudio = int(request.GET['estudio'])
         numero_matriz = int(request.GET['numero_matriz'])
-        labels = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
+        labels = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
         lista_nombres = []
 
-        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_mao = crear_contexto_mao(request, request.GET['estudio'], numero_matriz)
         valores_caa = valores_mao['valores_caa']
         valores_daa = valores_mao['valores_daa']
         datos_caa = []
@@ -2495,21 +2503,29 @@ def datos_mapa_caa_daa(request):
 
 def generar_grafo_caa(request, idEstudio, numero_matriz):
 
-    usuario = obtener_tipo_usuario(request, int(idEstudio))
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario':usuario}
-    return render(request, 'mao/grafo_caa.html', contexto)
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    usuario = obtener_tipo_usuario(request, estudio.id)
+    if concenso is True:
+        influencias_mao = calcular_concenso_mao(request, estudio.id, int(numero_matriz))
+        cantidad_expertos = influencias_mao['expertos']
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
+                    'usuario': usuario, 'expertos': cantidad_expertos}
+    else:
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
+
+    return render(request, 'mao/graficos/grafo_caa.html', contexto)
 
 
 def datos_grafo_caa(request):
 
     if request.is_ajax():
-        idEstudio = int(request.GET['estudio'])
+        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
         numero_matriz = int(request.GET['numero_matriz'])
 
-        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_mao = crear_contexto_mao(request, request.GET['estudio'], numero_matriz)
         valores_caa = valores_mao['valores_caa']
-        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
         coordenadas = []
         nodos_id = []
         nodos_labels = []
@@ -2553,21 +2569,29 @@ def datos_grafo_caa(request):
 
 def generar_grafo_daa(request, idEstudio, numero_matriz):
 
-    usuario = obtener_tipo_usuario(request, int(idEstudio))
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    contexto = {'estudio': estudio_mactor, 'numero_matriz': int(numero_matriz), 'usuario':usuario}
-    return render(request, 'mao/grafo_daa.html', contexto)
+    concenso = verificar_concenso(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    usuario = obtener_tipo_usuario(request, estudio.id)
+    if concenso is True:
+        influencias_mao = calcular_concenso_mao(request, estudio.id, int(numero_matriz))
+        cantidad_expertos = influencias_mao['expertos']
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
+                    'usuario': usuario, 'expertos': cantidad_expertos}
+    else:
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
+
+    return render(request, 'mao/graficos/grafo_daa.html', contexto)
 
 
 def datos_grafo_daa(request):
 
     if request.is_ajax():
-        idEstudio = int(request.GET['estudio'])
+        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
         numero_matriz = int(request.GET['numero_matriz'])
 
-        valores_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
+        valores_mao = crear_contexto_mao(request, request.GET['estudio'], numero_matriz)
         valores_caa = valores_mao['valores_daa']
-        actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
         coordenadas = []
         nodos_id = []
         nodos_labels = []
@@ -2737,27 +2761,23 @@ def activar_concenso_grafico_mao(request, idEstudio, matriz, grafico):
 
 
 # Agrega un cero al inicio del idEstudio para activar el concenso de matrices de convergencia y divergencia
-def activar_concenso_caa_daa(request, idEstudio, matriz):
+def activar_concenso_caa_daa(request, idEstudio, matriz, tipo):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0" + str(estudio.id)
+    tipo = int(tipo)
     matriz = int(matriz)
 
-    if matriz in [1, 2, 3]:
+    if tipo == 1:
         return Generar_matrices_caa_daa(request, idEstudio, matriz)
-    else:
-        raise Http404("Error: Esta vista no existe")
-
-
-def activar_concenso_mapa_caa_daa(request, idEstudio, matriz):
-
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    idEstudio = "0" + str(estudio.id)
-    matriz = int(matriz)
-
-
-    if matriz in [1, 2, 3]:
+    elif tipo == 2:
         return generar_mapa_caa_daa(request, idEstudio, matriz)
+    elif tipo == 3:
+        return histograma_caa_daa(request, idEstudio, matriz)
+    elif tipo == 4:
+        return generar_grafo_caa(request, idEstudio, matriz)
+    elif tipo == 5:
+        return generar_grafo_daa(request, idEstudio, matriz)
     else:
         raise Http404("Error: Esta vista no existe")
 
