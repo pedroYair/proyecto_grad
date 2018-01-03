@@ -19,7 +19,7 @@
                                      {% if valores %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis MID</option>
-                                        <option value="{% url 'mactor:concenso_inf_graficos' estudio.id 1 %}">Histograma Influencia - Dependencia</option>
+                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 7%}">Histograma Influencia - Dependencia</option>
                                      </select>
                                     {% endif %}
                                  </div>

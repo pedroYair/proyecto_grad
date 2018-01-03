@@ -22,7 +22,7 @@
                                         <option value="{% url 'mactor:implicacion' estudio.id 1 %}">Histograma de Implicaciones</option>
                                         <option value="{% url 'mactor:movilizacion' estudio.id 1 %}">Histograma de Movilizaciones</option>
                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                        <option value="{% url 'mactor:concenso_mao' estudio.id 1 %}">Concenso 1MAO</option>
+                                        <option value="{% url 'mactor:concenso_mao' estudio.id 1 0 %}">Concenso 1MAO</option>
                                         {% endif %}
                                     </select>
                                 </div>

@@ -23,7 +23,7 @@
                                     {% if valores_midi %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis Concenso MIDI</option>
-                                        <option value="{% url 'mactor:concenso_inf_graficos' estudio.id 2 %}">Mapa de actores</option>
+                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 8 %}">Mapa de actores</option>
                                         <option value="{% url 'mactor:concenso_influencias' estudio.id 5 %}">Coeficiente de fuerza Ri</option>
                                         <option value="{% url 'mactor:concenso_influencias' estudio.id 6 %}">Coeficiente de estabilidad H</option>
                                      </select>

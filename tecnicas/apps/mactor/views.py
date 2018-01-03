@@ -1202,7 +1202,6 @@ def calcular_balance_liquido(request, idEstudio):
         columna += 1
     lista_inversa.append("influencia")
 
-    print(len(valores_midi[0:indice]))
     for i in range(len(valores_midi[0:indice])):
         if valores_midi[i].posicion == 0:
             lista_balance.append(valores_midi[i])
@@ -2662,39 +2661,29 @@ def verificar_concenso(request, idEstudio):
     return concenso
 
 
-# Ejecuta el concenso de alguna matriz de influencias
-def activar_concenso_influencias(request, idEstudio, matriz):
+def activar_concenso_influencias(request, idEstudio, tipo):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
+    tipo = int(tipo)
 
-    if int(matriz) == 1:
+    if tipo == 1:
         return Generar_matriz_mid(request, idEstudio)
-    elif int(matriz) == 2:
+    elif tipo == 2:
         return Generar_matriz_midi(request, idEstudio)
-    elif int(matriz) == 3:
+    elif tipo == 3:
         return Generar_matriz_maxima(request, idEstudio)
-    elif int(matriz) == 4:
+    elif tipo == 4:
         return Generar_matriz_balance(request, idEstudio)
-    elif int(matriz) == 5:
+    elif tipo == 5:
         return Generar_matriz_ri(request, idEstudio)
-    elif int(matriz) == 6:
+    elif tipo == 6:
         return Generar_indicador_estabilidad(request, idEstudio)
-    else:
-        raise Http404("Error: Esta vista no existe")
-
-
-# Ejecuta el concenso de algun grafico de influencias
-def concenso_grafico_influencias(request, idEstudio, grafico):
-
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    idEstudio = "0"+str(estudio.id)
-
-    if int(grafico) == 1:
+    elif tipo == 7:
         return histograma_mid(request, idEstudio)
-    elif int(grafico) == 2:
+    elif tipo == 8:
         return generar_mapa_midi(request, idEstudio)
-    elif int(grafico) == 3:
+    elif tipo == 9:
         return histograma_ri(request, idEstudio)
     else:
         raise Http404("Error: Esta vista no existe")
@@ -2732,29 +2721,18 @@ def calcular_concenso_mid(idEstudio):
 
 
 # Agrega un cero al inicio del idEstudio para activar el concenso mao
-def activar_concenso_mao(request, idEstudio, matriz):
+def activar_concenso_mao(request, idEstudio, matriz, tipo):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
     matriz = int(matriz)
+    tipo = int(tipo)
 
-    if matriz in [1, 2, 3]:
+    if matriz in [1, 2, 3] and tipo == 0:
         return Generar_matriz_mao(request, idEstudio, matriz)
-    else:
-        raise Http404("Error: Esta vista no existe")
-
-
-# Agrega un cero al inicio del idEstudio para activar el concenso mao
-def activar_concenso_grafico_mao(request, idEstudio, matriz, grafico):
-
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    idEstudio = "0" + str(estudio.id)
-    matriz = int(matriz)
-    grafico = int(grafico)
-
-    if grafico == 1:
+    elif tipo == 4:
         return histograma_implicacion(request, idEstudio, str(matriz))
-    elif grafico == 2:
+    elif tipo == 5:
         return histograma_movilizacion(request, idEstudio, str(matriz))
     else:
         raise Http404("Error: Esta vista no existe")
