@@ -8,14 +8,13 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_relacion_mid, Generar_matriz_mid, Generar_matriz_midi, Generar_matriz_maxima, Generar_matriz_ri, \
     Generar_matriz_balance, Generar_indicador_estabilidad, Crear_1mao, Crear_2mao, Generar_matriz_mao,\
     Generar_matrices_caa_daa, Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
-    exportar_estudios_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
+    Crear_informe, exportar_estudio_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
     histograma_mid, datos_histograma_mid, histograma_ri, datos_histograma_ri, \
     histograma_implicacion, histograma_movilizacion, datos_histogramas_mao,  \
     datos_histograma_caa_daa, histograma_caa_daa, \
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
-    activar_concenso_influencias, \
-    activar_concenso_mao, activar_concenso_grafico_mao, activar_concenso_caa_daa
+    activar_concenso_influencias, activar_concenso_mao, activar_concenso_caa_daa
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -96,11 +95,14 @@ urlpatterns = [
     url(r'datos_grafo_daa', login_required(datos_grafo_daa)),
 
     # Urls exportar a excel
-    url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudios_xls), name='estudios_xls'),
+    url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudio_xls), name='estudios_xls'),
 
     # Urls concensos
     url(r'^concenso_influencias/(?P<idEstudio>\d+)/(?P<tipo>\d)/', login_required(activar_concenso_influencias), name='concenso_influencias'),
     url(r'^concenso_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)', login_required(activar_concenso_mao), name='concenso_mao'),
     url(r'^concenso_caa_daa/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)/', login_required(activar_concenso_caa_daa), name='concenso_caa_daa'),
+
+    # Urls modelo Estudio_mactor
+    url(r'^informe_final/(?P<idEstudio>\d+)/$', login_required(Crear_informe), name='informe_final'),
 
 ]

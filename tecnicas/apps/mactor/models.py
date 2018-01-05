@@ -123,12 +123,14 @@ class Informe_Final(models.Model):
     fecha = models.DateField(auto_now=True)
     informe = models.TextField()
     estado = models.BooleanField(default=False)
+    idCoordinador = models.ForeignKey(User, verbose_name='coordinador', related_name='mact_coordinador')
     idEstudio = models.ForeignKey(Estudio_Mactor)
 
     class Meta:
         verbose_name = 'Informe_final'
         verbose_name_plural = 'Informes_finales'
+        unique_together = ('idCoordinador', 'idEstudio')
 
     def __str__(self):
-        return u'{0} - {1} - {2}'.format(self.idEstudio, self.fecha, self.informe)
+        return u'{0} - {1} - {2}'.format(self.idEstudio, self.fecha, self.informe, self.estado)
 

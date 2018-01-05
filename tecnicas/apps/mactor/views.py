@@ -1,14 +1,13 @@
 import xlwt
 import json
-#from django.contrib.auth.models import User
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import JsonResponse, HttpResponse, request, Http404
 from django.views.generic import CreateView, UpdateView
-from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO
-from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao
+from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO, Informe_Final
+from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao, Form_Informe
 
 
 # ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
@@ -23,7 +22,7 @@ class Crear_estudio(CreateView):
 
 def Listar_estudios(request):
 
-    estudios = Estudio_Mactor.objects.all().order_by('fecha_final')
+    estudios = Estudio_Mactor.objects.all().order_by('titulo', 'fecha_final')
     estudios_usuario = []
 
     for i in estudios:
@@ -31,7 +30,6 @@ def Listar_estudios(request):
         lista_expertos = estudio.idExpertos.all()
         if request.user in lista_expertos or request.user == i.idCoordinador:
             estudios_usuario.append(i)
-
 
     contexto = {'lista_estudios': estudios_usuario}
     return render(request, 'estudio/lista_estudios.html', contexto)
@@ -1906,7 +1904,7 @@ def obtener_tipo_usuario(request, idEstudio):
     if request.user in lista_expertos and estudio.idCoordinador == request.user:
         tipo = "COORDINADOR_EXPERTO"
     # Si el usuario solo es coordinador
-    elif estudio.idCoordinador == request.user:
+    elif estudio.idCoordinador == request.user or request.user.is_superuser:
         tipo = "COORDINADOR"
     # Si el usuario es solo experto
     elif request.user in lista_expertos:
@@ -1918,12 +1916,15 @@ def obtener_tipo_usuario(request, idEstudio):
 # ---------------------------------------EXPORTACION A EXCEL------------------------------------------------------->
 
 
-def exportar_estudios_xls(request, idEstudio):
+# Exporta a excel los datos basicos del estudio y sus respectivas entradas
+def exportar_estudio_xls(request, idEstudio):
 
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="estudios_mactor.xls"'
+    response['Content-Disposition'] = 'attachment; filename="estudio_mactor.xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
+    hoja_estudio = wb.add_sheet('Estudio')
     hoja_actores = wb.add_sheet('Actores')
     hoja_fichas = wb.add_sheet('Estrategias')
     hoja_objetivos = wb.add_sheet('Objetivos')
@@ -1938,14 +1939,19 @@ def exportar_estudios_xls(request, idEstudio):
     row_num4 = 0
     row_num5 = 0
     row_num6 = 0
+    row_num7 = 0
 
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
+    columns = ['Titulo', 'Descripción', 'Fecha Inicio', 'Fecha Fin']
     columns1 = ['Nombre Largo', 'Nombre Corto', 'Descripción']
     columns2 = ['Estrategias del actor', 'Sobre el actor', 'Estrategias']
     columns3 = ['Influencia del actor', 'Sobre el actor', 'Valor', 'Justificación']
     columns4 = ['Posicion del actor', 'Ante el objetivo', 'Valor', 'Justificación']
+
+    for col_num in range(len(columns)):
+        hoja_estudio.write(row_num7, col_num, columns[col_num], font_style)
 
     for col_num in range(len(columns1)):
         hoja_actores.write(row_num, col_num, columns1[col_num], font_style)
@@ -1960,7 +1966,7 @@ def exportar_estudios_xls(request, idEstudio):
         hoja_mid.write(row_num4, col_num, columns3[col_num], font_style)
 
     for col_num in range(len(columns4)):
-        hoja_1mao.write(row_num5, col_num, columns3[col_num], font_style)
+        hoja_1mao.write(row_num5, col_num, columns4[col_num], font_style)
 
     for col_num in range(len(columns4)):
         hoja_2mao.write(row_num6, col_num, columns3[col_num], font_style)
@@ -1969,6 +1975,11 @@ def exportar_estudios_xls(request, idEstudio):
     font_style = xlwt.XFStyle()
 
     filas = obtener_datos_estudio(request, int(idEstudio))
+
+    for row in filas['estudio']:
+        row_num7 += 1
+        for col_num in range(len(row)):
+            hoja_estudio.write(row_num7, col_num, row[col_num], font_style)
 
     for row in filas['actores']:
         row_num += 1
@@ -2007,48 +2018,50 @@ def exportar_estudios_xls(request, idEstudio):
 def obtener_datos_estudio(request, idEstudio):
 
     usuario = obtener_tipo_usuario(request, idEstudio)
-    filas_actores = Actor.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
-    filas_fichas = Ficha_actor.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
+    estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
+    fila_estudio = Estudio_Mactor.objects.filter(id=estudio.id).values_list('titulo', 'descripcion', 'fecha_inicio', 'fecha_final')
+    filas_actores = Actor.objects.filter(idEstudio=estudio.id).values_list('nombreLargo', 'nombreCorto', 'descripcion')
+    filas_fichas = Ficha_actor.objects.filter(idEstudio=estudio.id).values_list('idActorY__nombreLargo',
                                                                                'idActorX__nombreLargo',
                                                                                'estrategia')
-    filas_objetivos = Objetivo.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto',
+    filas_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).values_list('nombreLargo', 'nombreCorto',
                                                                                'descripcion')
 
-    if usuario == "COORDINADOR" or request.user.is_superuser:
-        filas_mid = Relacion_MID.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
+    if usuario == "COORDINADOR":
+        filas_mid = Relacion_MID.objects.filter(idEstudio=estudio.id).values_list('idActorY__nombreLargo',
                                                                                  'idActorX__nombreLargo',
                                                                                  'valor', 'justificacion').order_by(
             'idActorY', 'idActorX')
-        filas_1mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=1).values_list('idActorY__nombreLargo',
+        filas_1mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=1).values_list('idActorY__nombreLargo',
                                                                                           'idObjetivoX__nombreLargo',
                                                                                           'valor',
                                                                                           'justificacion').order_by(
             'idActorY', 'idObjetivoX')
-        filas_2mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2).values_list('idActorY__nombreLargo',
+        filas_2mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=2).values_list('idActorY__nombreLargo',
                                                                                           'idObjetivoX__nombreLargo',
                                                                                           'valor',
                                                                                           'justificacion').order_by(
             'idActorY', 'idObjetivoX')
     else:
-        filas_mid = Relacion_MID.objects.filter(idEstudio=idEstudio, idExperto=request.user.id).values_list(
+        filas_mid = Relacion_MID.objects.filter(idEstudio=estudio.id, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo',
             'idActorX__nombreLargo',
             'valor', 'justificacion').order_by(
             'idActorY', 'idActorX')
-        filas_1mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=1, idExperto=request.user.id).values_list(
+        filas_1mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=1, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo',
             'idObjetivoX__nombreLargo',
             'valor',
             'justificacion').order_by(
             'idActorY', 'idObjetivoX')
-        filas_2mao = Relacion_MAO.objects.filter(idEstudio=idEstudio, tipo=2, idExperto=request.user.id).values_list(
+        filas_2mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=2, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo',
             'idObjetivoX__nombreLargo',
             'valor',
             'justificacion').order_by(
             'idActorY', 'idObjetivoX')
 
-    filas = {'actores': filas_actores, 'fichas': filas_fichas, 'objetivos': filas_objetivos,
+    filas = {'estudio': fila_estudio, 'actores': filas_actores, 'fichas': filas_fichas, 'objetivos': filas_objetivos,
              'mid': filas_mid, '1mao': filas_1mao, '2mao': filas_2mao}
 
     return filas
@@ -2841,6 +2854,25 @@ def calcular_concenso_mao(request, idEstudio, num_matriz):
     resultado = {'concenso': consulta_base, 'expertos': cantidad}
 
     return resultado
+
+
+# VIEW MODELO INFORME FINAL
+
+def Crear_informe(request, idEstudio):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+    if request.method == 'POST':
+        form = Form_Informe(request.POST)
+        if form.is_valid():
+            form.save()
+        return redirect('mactor:lista_actores', estudio.id)
+    else:
+        form = Form_Informe()
+    return render(request, 'informe/crear_informe.html', {'form': form,
+                                                        'estudio': estudio,
+                                                        'usuario': tipo_usuario,
+                                                            })
 
 
 

@@ -1,11 +1,12 @@
 from django import forms
-from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO
+from .models import Estudio_Mactor, Ficha_actor, Relacion_MID, Relacion_MAO, Informe_Final
 from .choices import VALORES, VALORES_1MAO, VALORES_2MAO
 
 
 # FORMULARIO DE ESTUDIO MACTOR---------------------------------------------------------------------------------->
 
 class Form_Estudio(forms.ModelForm):
+
     def clean_titulo(self):
         mensaje = self.cleaned_data["titulo"]
         palabras = len(mensaje.split())
@@ -39,51 +40,6 @@ class Form_Estudio(forms.ModelForm):
         }
 
 
-# FORMULARIO DE ACTOR------------------------------------------------------------------------------------------>
-
-class Form_Actor(forms.ModelForm):
-
-    def clean_nombreCorto(self):
-        act = Actor.objects.all()
-        nombre = self.cleaned_data['nombreCorto']
-
-        for i in act:
-            if i.nombreCorto == nombre:
-                raise forms.ValidationError('Ya existe un actor con este nombre corto')
-            else:
-                return nombre
-
-    def clean_nombreLargo(self):
-        act = Actor.objects.all()
-        nombre = self.cleaned_data['nombreLargo']
-        palabras = len(nombre.split())
-
-        for i in act:
-            if i.nombreLargo == nombre:
-                raise forms.ValidationError('Ya existe un actor con este nombre largo')
-            elif palabras < 2:
-                raise forms.ValidationError(u"Se requieren mínimo dos palabras para el nombre largo")
-            else:
-                return nombre
-
-    class Meta:
-        model = Actor
-
-        fields = [
-            'nombreLargo',
-            'nombreCorto',
-            'descripcion',
-            'idEstudio',
-        ]
-
-        widgets = {
-            'nombreLargo': forms.TextInput(attrs={'class': 'form-control'}),
-            'nombreCorto': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'row': '3', 'placeholder': u'Ingrese información '
-                         'relacionada a objetivos, preferencias, motivaciones, propuestas, comportamientos o recursos del actor.'}),
-            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
-        }
-
 # FORMULARIO FICHA DEL ACTOR------------------------------------------------------------------------------------>
 
 
@@ -103,51 +59,6 @@ class Form_Ficha(forms.ModelForm):
             'idActorX': forms.Select(attrs={'class': 'form-control'}),
             'idActorY': forms.Select(attrs={'class': 'form-control'}),
             'estrategia': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
-            'idEstudio': forms.TextInput(attrs={'class': 'form-control'}, ),
-        }
-
-
-# FORMULARIO DE OBJETIVO----------------------------------------------------------------------------------------------->
-
-class Form_Objetivo(forms.ModelForm):
-
-    def clean_nombreLargo(self):
-        obj = Objetivo.objects.all()
-        nombre = self.cleaned_data['nombreLargo']
-        palabras = len(nombre.split())
-
-        for i in obj:
-            if i.nombreLargo == nombre:
-                raise forms.ValidationError('Ya existe un objetivo con este nombre largo')
-            elif palabras < 2:
-                raise forms.ValidationError(u"Se requieren mínimo dos palabras para el nombre largo")
-            else:
-                return nombre
-
-    def clean_nombreCorto(self):
-        obj = Objetivo.objects.all()
-        nombre = self.cleaned_data['nombreCorto']
-
-        for i in obj:
-            if i.nombreCorto == nombre:
-                raise forms.ValidationError('Ya existe un objetivo con este nombre corto')
-        else:
-            return nombre
-
-    class Meta:
-        model = Objetivo
-
-        fields = [
-            'nombreLargo',
-            'nombreCorto',
-            'descripcion',
-            'idEstudio',
-        ]
-
-        widgets = {
-            'nombreLargo': forms.TextInput(attrs={'class': 'form-control'}),
-            'nombreCorto': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idEstudio': forms.TextInput(attrs={'class': 'form-control'}, ),
         }
 
@@ -232,5 +143,30 @@ class Form_2mao(forms.ModelForm):
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
             'idEstudio': forms.Select(attrs={'class': 'form-control'}),
             }
+
+
+# FORMULARIO INFORME FINAL
+
+class Form_Informe(forms.ModelForm):
+
+    class Meta:
+        model = Informe_Final
+
+        fields = [
+            'informe',
+            'estado',
+            'idCoordinador',
+            'idEstudio',
+        ]
+
+        widgets = {
+            'fecha': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'informe': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'estado': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
+            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+
 
 

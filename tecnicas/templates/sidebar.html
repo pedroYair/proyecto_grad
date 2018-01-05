@@ -57,7 +57,7 @@
                     <li><a href="{% url 'mactor:matriz_mao' estudio.id 1%}">Matriz 1MAO</a></li>
                     <li><a href="{% url 'mactor:matriz_mao' estudio.id 2%}">Matriz 2MAO</a></li>
                     <li><a href="{% url 'mactor:matriz_mao' estudio.id 3%}">Matriz 3MAO</a></li>
-                    <li><a href="">Informe Final</a></li>
+                    <li><a href="{% url 'mactor:informe_final' estudio.id%}">Informe Final</a></li>
                 </ul>
             </li>
             {% endif %}
