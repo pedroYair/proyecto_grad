@@ -31,7 +31,16 @@ def Listar_estudios(request):
         if request.user in lista_expertos or request.user == i.idCoordinador:
             estudios_usuario.append(i)
 
-    contexto = {'lista_estudios': estudios_usuario}
+    page = request.GET.get('page', 1)
+    paginator = Paginator(estudios_usuario, 10)
+    try:
+        estudio_contexto = paginator.page(page)
+    except PageNotAnInteger:
+        estudio_contexto = paginator.page(1)
+    except EmptyPage:
+        estudio_contexto = paginator.page(paginator.num_pages)
+
+    contexto = {'lista_estudios': estudio_contexto}
     return render(request, 'estudio/lista_estudios.html', contexto)
 
 
@@ -41,11 +50,8 @@ def Consultar_estudio(request):
         id = request.GET['id']
         if id.count("est"):
             id = id.lstrip("est")
-        """elif id.count("id"):
-            id = id.lstrip("id")"""
         estudio = get_object_or_404(Estudio_Mactor, id=id)
-        response = JsonResponse(
-            {'titulo': estudio.titulo, 'descripcion': estudio.descripcion})
+        response = JsonResponse({'titulo': estudio.titulo, 'descripcion': estudio.descripcion})
         return HttpResponse(response.content)
     else:
         return redirect('/')
@@ -1903,8 +1909,8 @@ def obtener_tipo_usuario(request, idEstudio):
     # Si el usuario es coordinador y experto
     if request.user in lista_expertos and estudio.idCoordinador == request.user:
         tipo = "COORDINADOR_EXPERTO"
-    # Si el usuario solo es coordinador
-    elif estudio.idCoordinador == request.user or request.user.is_superuser:
+    # Si el usuario solo es coordinador or request.user.is_superuser
+    elif estudio.idCoordinador == request.user:
         tipo = "COORDINADOR"
     # Si el usuario es solo experto
     elif request.user in lista_expertos:
@@ -2862,19 +2868,46 @@ def Crear_informe(request, idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    if request.method == 'POST':
-        form = Form_Informe(request.POST)
+    informes = Informe_Final.objects.filter(idCoordinador=request.user.id).order_by('id')
+
+    flag = False
+    for i in informes:
+        if i.idEstudio.id == estudio.id and flag is False:
+            flag = True
+
+    print(flag)
+    if flag is False:
+        # si se va a guardar primera vez
+        if request.method == 'POST':
+            form = Form_Informe(request.POST)
+            if form.is_valid():
+                form.save()
+            return redirect('mactor:lista_actores', estudio.id)
+        else:
+            form = Form_Informe()
+        return render(request, 'informe/crear_informe.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
+                                                              })
+    else:
+        return Editar_informe(request, idEstudio)
+
+
+def Editar_informe(request, idEstudio):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+    informe_estudio = Informe_Final.objects.get(idEstudio=estudio.id)
+    if request.method == 'GET':
+        form = Form_Informe(instance=informe_estudio)
+    else:
+        form = Form_Informe(request.POST, instance=informe_estudio)
         if form.is_valid():
             form.save()
-        return redirect('mactor:lista_actores', estudio.id)
-    else:
-        form = Form_Informe()
+            return redirect('mactor:lista_actores', estudio.id)
     return render(request, 'informe/crear_informe.html', {'form': form,
                                                         'estudio': estudio,
                                                         'usuario': tipo_usuario,
+                                                        'datos': informe_estudio,
                                                             })
-
-
 
 
 

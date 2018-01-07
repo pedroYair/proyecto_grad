@@ -4,7 +4,7 @@
 
 {% block head_title %}
 
-    {% if usuario == 'COORDINADOR' %}
+    {% if usuario != 'EXPERTO' %}
         <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
     {% endif %}
 
@@ -12,7 +12,7 @@
 
 {% block content %}
 
- {% if usuario == 'COORDINADOR' %}
+ {% if usuario != 'EXPERTO' %}
 	<div class="matter">
 					<div class="container">
 						<div class="row">

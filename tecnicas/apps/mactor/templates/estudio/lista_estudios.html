@@ -28,6 +28,7 @@ Bienvenido: {{user.username}}
                                     <th style="text-align: center">Título</th>
                                     <th style="text-align: center">Fecha Inicio</th>
                                     <th style="text-align: center">Fecha Final</th>
+                                    <th style="text-align: center">Estado</th>
                                     <th style="text-align: center">Acciones</th>
                                 </tr>
                             {% endif %}
@@ -40,6 +41,13 @@ Bienvenido: {{user.username}}
                                             <td ><a href="{%url 'mactor:lista_actores' estudio.id%}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
                                             <td>{{estudio.fecha_inicio}}</td>
                                             <td>{{estudio.fecha_final}}</td>
+                                            <td>
+                                                {%if estudio.estado is True %}
+                                                <a class="btn btn-sm btn-success"><i class="fa fa-check"></i></a>
+                                                {%else%}
+                                                <a class="btn btn-sm btn-danger"><i class="fa fa-times"></i></a>
+                                                {% endif %}
+                                            </td>
                                             <td>
                                                 <a id="est{{estudio.id}}" class="btn btn-primary" title="Ver"
                                                    data-toggle="modal" href="#modal_Consultar"><i class="fa fa-eye"></i>
@@ -62,23 +70,27 @@ Bienvenido: {{user.username}}
                     </div>
 
 <!--PAGINACION ----------------------------------->
-                    <div class="widget-foot">
-										<ul class="pagination pull-right">
-										  <li>
-                                              {% if page_obj.has_previous %}
-                                              <a href="?page={{page_obj.previous_page_number}}">Anterior</a>
-                                              {% endif %}
-                                          </li>
-
-										  <li>
-                                              {% if page_obj.has_next %}
-                                              <a href="?page={{page_obj.next_page_number}}">Siguiente</a>
-                                              {% endif %}
-                                          </li>
-										</ul>
-
-										<div class="clearfix"></div>
-                    </div>
+                        {% if lista_estudios.has_other_pages %}
+                          <ul class="pagination">
+                            {% if lista_estudios.has_previous %}
+                              <li><a href="?page={{ lista_estudios.previous_page_number }}">&laquo;</a></li>
+                            {% else %}
+                              <li class="disabled"><span>&laquo;</span></li>
+                            {% endif %}
+                            {% for i in lista_estudios.paginator.page_range %}
+                              {% if lista_estudios.number == i %}
+                                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+                              {% else %}
+                                <li><a href="?page={{ i }}">{{ i }}</a></li>
+                              {% endif %}
+                            {% endfor %}
+                            {% if lista_estudios.has_next %}
+                              <li><a href="?page={{ lista_estudios.next_page_number }}">&raquo;</a></li>
+                            {% else %}
+                              <li class="disabled"><span>&raquo;</span></li>
+                            {% endif %}
+                          </ul>
+                        {% endif %}
 
                 </div>
             </div>

@@ -17,6 +17,18 @@
 								<div class="widget wblue">
               						<div class="widget-head">
 									  <div class="pull-left">Formulario - Informe Final</div>
+                                      <div class="widget-icons pull-right">
+                                          <div class="btn-group">
+                                            <button class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Exportar</button>
+                                            <ul class="dropdown-menu " role="menu">
+                                                <li><a href="#" onClick ="$('#id_informe').tableExport({type:'doc', escape:'false'});" style="color: #0e0e0e">
+                                                    <img src="{% static 'img/icons_exportar/word.png'%}" width='24px'> Word</a></li>
+                                                <li class="divider"></li>
+                                                <li><a id="pdf" onClick ="$('#id_informe').tableExport({type:'pdf',escape:'false'});" style="color: red">
+                                                    <img src="{% static 'img/icons_exportar/pdf.png'%}" width='24px'> PDF</a></li>
+                                            </ul>
+                                          </div>
+                                      </div>
 									  <div class="clearfix"></div>
 									</div>
 									<div class="widget-content">
@@ -32,8 +44,11 @@
                                                     <div class="col-md-8 col-md-offset-1">
                                                         <div class="form-group">
                                                           <label class="control-label" style="text-align: left">Informe</label>
-                                                            <textarea name="informe" cols="40" rows="20" class="form-control" row="3" required id="id_informe">
-                                                            </textarea>
+                                                            {%if datos %}
+                                                             <textarea name="informe" cols="40" rows="20" class="form-control" row="3" required>{{datos.informe}}</textarea>
+                                                            {%else%}
+                                                            <textarea name="informe" cols="40" rows="20" class="form-control" row="3" required id="id_informe"></textarea>
+                                                            {%endif%}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -43,7 +58,11 @@
                                                         <div class="form-group">
                                                           <label style="text-align: left"  class="control-label">Estado</label>
                                                             <br>
-                                                            <input type="checkbox" checked name="estado" >
+                                                            {%if datos.estado is True %}
+                                                            <input type="checkbox" checked name="estado">
+                                                            {%else%}
+                                                            <input type="checkbox" name="estado">
+                                                            {%endif%}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -88,6 +107,14 @@
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
     {% endif %}
+
+{% block extrajs %}
+<script src="{% static 'jquery/jquery.min.js' %}"></script>
+<script src="{% static 'js/tableExport.js'%}"></script>
+<script src="{% static 'js/jquery.base64.js'%}"></script>
+<script src="{% static 'js/html2canvas.js'%}"></script>
+{% endblock %}
+
 {% endblock %}
 
 

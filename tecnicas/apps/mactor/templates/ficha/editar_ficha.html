@@ -2,14 +2,14 @@
 {% load staticfiles %}
 
 {% block head_title %}
-	{% if usuario == 'COORDINADOR' %}
+	{% if usuario != 'EXPERTO' %}
 		<input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
 	{% endif %}
 {% endblock %}
 
 {% block content %}
 
-	{% if usuario == 'COORDINADOR' %}
+	{% if usuario != 'EXPERTO' %}
 		<div class="matter">
 					<div class="container">
 						<div class="row">
@@ -24,7 +24,7 @@
 
 										<hr />
 										<!-- Form starts.  -->
-										  {% if usuario == 'COORDINADOR' %}
+										  {% if usuario != 'EXPERTO' %}
 											<form class="form-horizontal" role="form" method="post" id="form_ficha">
                                             {% csrf_token %}
 
