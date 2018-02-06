@@ -49,6 +49,7 @@
                                                     		{{form.idActorY.errors}}
 												  			<label class="control-label" style="text-align: left">Relación del actor</label>
                                                     		<select name="idActorY" class="form-control" required id="id_idActorY">
+                                                    			{% if estudio.estado is True %}
 																			{% if actores %}
 																				<option value="" selected>----Seleccionar----</option>
 																				{% for actor in actores %}
@@ -57,6 +58,9 @@
 																			{% else %}
 																			 <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
 																			{% endif %}
+																{% else %}
+																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
+																{% endif %}				
 															</select>
 														</div>
 													</div>
@@ -74,6 +78,7 @@
 															{{form.idObjetivoX.errors}}
 												  			<label class="control-label" style="text-align: left">Sobre el objetivo</label>
                                                     		<select name="idObjetivoX" class="form-control" required id="id_idObjetivoX">
+                                                    			{% if estudio.estado is True %}
 																			{% if objetivos %}
 																				<option value="" selected>----Seleccionar----</option>
 																				{% for objetivo in objetivos %}
@@ -82,6 +87,9 @@
 																			{% else %}
 																			 <option value="" selected>----NO SE HAN REGISTRADO OBJETIVOS EN ESTE ESTUDIO----</option>
 																			{% endif %}
+																{% else %}
+																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
+																{% endif %}			
 															</select>
 														</div>
 													</div>

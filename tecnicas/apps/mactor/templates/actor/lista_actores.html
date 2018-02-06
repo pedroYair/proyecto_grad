@@ -47,7 +47,7 @@
                                                 <td style="text-align: justify">{{actor.descripcion}}</td>
                                                 <td>
                                                     <a id="ver{{actor.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal5"><i class="fa fa-eye"></i></a>
-                                                    {% if usuario != 'EXPERTO' %}
+                                                    {% if estudio.estado is True and usuario != 'EXPERTO' %}
                                                     <a id="act{{actor.id}}" class="btn btn-warning .edit" title="Editar" data-toggle="modal"
                                                                href="#myModal3"><i class="fa fa-pencil"></i></a>
                                                     <a href="#myModal2" role="button" class="btn btn-danger delete" title="Eliminar" data-toggle="modal"
@@ -99,7 +99,7 @@
 <script src="{% static 'js_mactor_modals/consultar/consultar_actor.js'%}"></script>
 {% endblock %}
 
-{% if cantidad_registrados == 15 %}
+{% if estudio.estado is False or cantidad_registrados == 15 %}
     <script type="text/javascript">
         document.getElementById("boton_agregar").disabled = true;
     </script>

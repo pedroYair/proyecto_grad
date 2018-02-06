@@ -23,7 +23,7 @@ urlpatterns = [
     # Urls modelo Estudio_mactor
     url(r'^agregar_estudio/$', Crear_estudio.as_view(), name='estudio'),
     url(r'^lista_estudios', login_required(Listar_estudios), name='lista_estudios'),
-    url(r'^editar_estudio/(?P<pk>\d+)/$', Editar_estudio.as_view(), name='editar_estudio'),
+    url(r'^editar_estudio/(?P<idEstudio>\d+)/$', login_required(Editar_estudio), name='editar_estudio'),
     url(r'^consultar_estudio/$', login_required(Consultar_estudio)),
 
     # Urls modelo Actor

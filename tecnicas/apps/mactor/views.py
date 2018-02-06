@@ -22,7 +22,7 @@ class Crear_estudio(CreateView):
 
 def Listar_estudios(request):
 
-    estudios = Estudio_Mactor.objects.all().order_by('titulo', 'fecha_final')
+    estudios = Estudio_Mactor.objects.all().order_by('-estado', 'titulo')
     estudios_usuario = []
 
     for i in estudios:
@@ -57,11 +57,26 @@ def Consultar_estudio(request):
         return redirect('/')
 
 
-class Editar_estudio(UpdateView):
-    model = Estudio_Mactor
-    form_class = Form_Estudio
-    template_name = 'estudio/update_estudio.html'
-    success_url = reverse_lazy('mactor:lista_estudios')
+def Editar_estudio(request, idEstudio):
+
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    informes = Informe_Final.objects.all().order_by('idEstudio')
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+    flag = False
+
+    for i in informes:
+        if i.idEstudio.id == int(idEstudio) and i.estado == True:
+            flag = True
+           
+    if request.method == 'GET':
+        form = Form_Estudio(instance=estudio)
+    else:
+        form = Form_Estudio(request.POST, instance=estudio)
+        if form.is_valid():
+            form.save()
+            return redirect('mactor:lista_estudios')
+    return render(request, 'estudio/editar_estudio.html', {'form': form, 'informe': flag,
+                                                             'estudio': estudio, 'usuario':tipo_usuario})
 
 # -------------------------------------------VIEWS MODELO ACTOR--------------------------------------->
 

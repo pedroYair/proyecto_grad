@@ -44,7 +44,7 @@
                                             <td style="text-align: justify">{{ficha.estrategia}}</td>
                                             <td>
                                                 <a id="ver{{ficha.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modalConsultar"><i class="fa fa-eye"></i></a>
-                                                {% if usuario != 'EXPERTO' %}
+                                                {% if estudio.estado is True and usuario != 'EXPERTO' %}
                                                     <a class="btn btn-warning" id="editarFicha" title="Editar"
                                                        href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
                                                     <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete"

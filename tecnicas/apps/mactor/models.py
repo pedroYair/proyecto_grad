@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.utils.timezone import now
 
 
 # MODELO ESTUDIO MACTOR---------------------------------------------------------------------------------------->
@@ -9,10 +10,12 @@ class Estudio_Mactor(models.Model):
     descripcion = models.TextField()
     idCoordinador = models.ForeignKey(User, verbose_name='coordinador', related_name='mactor_coordinador')
     idExpertos = models.ManyToManyField(User, verbose_name='Expertos', related_name='mactor_expertos_set')
-    fecha_inicio = models.DateField(null=True, blank=True)
-    fecha_final = models.DateField(null=True, blank=True)
+    fecha_inicio = models.DateField(default=now)
+    fecha_final = models.DateField(default=now)
     estado = models.BooleanField(default=True)
-    idProyecto = models.PositiveIntegerField(default=1)  # debe por llave foranea al proyecto
+    idProyecto = models.PositiveIntegerField(default=1)  # modelo de integracion que permite listar los 
+    # estudios donde el usuario es administrador, actualmente se listan solo aquellos donde el usuario es 
+    # coordinador o experto del estudio.
 
 # Definicion de nombre singular y plurar del modelo
     class Meta:
@@ -29,7 +32,7 @@ class Estudio_Mactor(models.Model):
 
 class Actor(models.Model):
     nombreLargo = models.CharField(max_length=50)
-    nombreCorto = models.CharField(max_length=10)
+    nombreCorto = models.CharField(max_length=5)
     descripcion = models.TextField(max_length=500)
     idEstudio = models.ForeignKey(Estudio_Mactor, null=True, blank=False, on_delete=models.CASCADE)
 
@@ -49,6 +52,7 @@ class Ficha_actor(models.Model):
     idActorX = models.ForeignKey(Actor, null=True, blank=False, related_name='mactor_actorX_ficha', on_delete=models.CASCADE)
     estrategia = models.TextField(null=True, blank=True)
     idEstudio = models.ForeignKey(Estudio_Mactor, null=True, blank=False, on_delete=models.CASCADE)
+    # verificar si es necesario el id del estudio al final se obtiene del id de los actores
 
     class Meta:
         verbose_name = 'Ficha_actor'
@@ -64,7 +68,7 @@ class Ficha_actor(models.Model):
 
 class Objetivo(models.Model):
     nombreLargo = models.CharField(max_length=50)
-    nombreCorto = models.CharField(max_length=10)
+    nombreCorto = models.CharField(max_length=5)
     descripcion = models.TextField(max_length=500)
     idEstudio = models.ForeignKey(Estudio_Mactor, null=True, blank=False, on_delete=models.CASCADE)
 

@@ -33,9 +33,9 @@ class Form_Estudio(forms.ModelForm):
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idExpertos': forms.SelectMultiple(attrs={'class': 'form-control'}),
-            'fecha_inicio': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'fecha_inicio': forms.DateInput(attrs={'class': 'datepicker'}),
             'fecha_final': forms.TextInput(attrs={'class': 'form-control'}, ),
-            'estado': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'estado': forms.CheckboxInput(attrs={'class': 'form-control'}, ),
             'id_Proyecto': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
@@ -162,7 +162,7 @@ class Form_Informe(forms.ModelForm):
         widgets = {
             'fecha': forms.TextInput(attrs={'class': 'form-control'}, ),
             'informe': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
-            'estado': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'estado': forms.CheckboxInput(attrs={'class': 'form-control'}),
             'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idEstudio': forms.Select(attrs={'class': 'form-control'}),
         }

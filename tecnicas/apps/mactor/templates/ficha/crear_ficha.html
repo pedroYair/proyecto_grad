@@ -45,6 +45,7 @@
                                                     		{{form.idActorY.errors}}
 												  			<label class="control-label" style="text-align: left">Estrategias del actor</label>
 																	<select name="idActorY" class="form-control" required id="id_idActorY">
+																	{% if estudio.estado is True %}	
   																		{% if actores %}
 																			<option value="" selected>----Seleccionar----</option>
 																			{% for actor in actores %}
@@ -53,6 +54,9 @@
                                                                         {% else %}
                                                                          <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
 																		{% endif %}
+																	{% else %}
+																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
+																	{% endif %}		
 																	</select>
 														</div>
 													</div>
@@ -71,6 +75,7 @@
 													        {{form.idActorX.errors}}
 												            <label class="control-label" style="text-align: left">Sobre el actor</label>
 																	<select name="idActorX" class="form-control" required id="id_idActorX">
+																	{% if estudio.estado is True %}		
 																		{% if actores %}
 																			<option value="" selected>----Seleccionar----</option>
 																			{% for actor in actores %}
@@ -79,6 +84,9 @@
                                                                         {% else %}
                                                                          <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
 																		{% endif %}
+																	{% else %}
+																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
+																	{% endif %}			
 																	</select>
 
 												        </div>

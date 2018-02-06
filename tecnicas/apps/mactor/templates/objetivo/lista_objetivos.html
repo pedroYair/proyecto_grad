@@ -46,7 +46,7 @@
                                                 <a id="ver{{objetivo.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal4">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
-                                                {% if usuario == 'COORDINADOR' %}
+                                                {% if estudio.estado is True and usuario != 'EXPERTO' %}
                                                     <a id="obj{{objetivo.id}}" class="btn btn-warning" title="Editar" data-toggle="modal" href="#myModal3">
                                                         <i class="fa fa-pencil"></i>
                                                     </a>
@@ -103,7 +103,7 @@
 <script src="{% static 'js_mactor_modals/consultar/consultar_objetivo.js'%}"></script>
 {% endblock %}
 
-{% if cantidad_registrados == 15 %}
+{% if estudio.estado is False or cantidad_registrados == 15 %}
     <script type="text/javascript">
         document.getElementById("boton_agregar").disabled = true;
     </script>
