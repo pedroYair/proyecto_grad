@@ -6,7 +6,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import JsonResponse, HttpResponse, request, Http404
 from django.views.generic import CreateView, UpdateView
-from .models import Estudio_Mactor, Actor, Ficha_actor, Objetivo, Relacion_MID, Relacion_MAO, Informe_Final
+from .models import Estudio_Mactor, Actor, Ficha, Objetivo, Relacion_MID, Relacion_MAO, Informe_Final
 from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao, Form_Informe
 
 
@@ -65,7 +65,7 @@ def Editar_estudio(request, idEstudio):
     flag = False
 
     for i in informes:
-        if i.idEstudio.id == int(idEstudio) and i.estado == True:
+        if i.idEstudio.id == int(idEstudio) and i.estado is True:
             flag = True
            
     if request.method == 'GET':
@@ -92,8 +92,8 @@ def Crear_actor(request):
     flag = False
 
     for i in actores:
-       if i.nombreCorto == nombreCorto:
-           flag = True
+        if i.nombreCorto == nombreCorto:
+            flag = True
 
     if flag is False:
         try:
@@ -191,10 +191,10 @@ def Consultar_actor(request):
 
 def Listar_actores(request, idEstudio):
 
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    contexto = {'estudio': estudio_mactor,
+    contexto = {'estudio': estudio,
                 'usuario': tipo_usuario,
                 'lista_actores': actores,
                 'cantidad_registrados': len(actores)}
@@ -220,18 +220,18 @@ def Eliminar_actor(request):
 
 def Crear_ficha(request, idEstudio):
 
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     if request.method == 'POST':
         form = Form_Ficha(request.POST)
         if form.is_valid():
             form.save()
-        return redirect('mactor:lista_fichas', estudio_mactor.id)
+        return redirect('mactor:lista_fichas', estudio.id)
     else:
-        actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         form = Form_Ficha()
     return render(request, 'ficha/crear_ficha.html', {'form': form,
-                                                      'estudio': estudio_mactor,
+                                                      'estudio': estudio,
                                                       'usuario': tipo_usuario,
                                                       'actores': actores})
 
@@ -239,11 +239,13 @@ def Crear_ficha(request, idEstudio):
 def Lista_fichas(request, idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    fichas_estudio = Ficha_actor.objects.filter(idEstudio=estudio.id).order_by('idActorY', 'idActorX')
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    fichas = Ficha.objects.filter(idActorY__idEstudio=estudio.id).order_by('idActorY', 'idActorX')
+
+    # lista = fichas_estudio.filter(idActorY=estudio.id)
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
     page = request.GET.get('page', 1)
-    paginator = Paginator(fichas_estudio, 15)
+    paginator = Paginator(fichas, 15)
     try:
         fichas_contexto = paginator.page(page)
     except PageNotAnInteger:
@@ -257,7 +259,7 @@ def Lista_fichas(request, idEstudio):
 
 def Editar_ficha(request, idFicha):
 
-    ficha = get_object_or_404(Ficha_actor, id=int(idFicha))
+    ficha = get_object_or_404(Ficha, id=int(idFicha))
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=ficha.idEstudio.id)
     tipo_usuario = obtener_tipo_usuario(request, ficha.idEstudio.id)
 
@@ -279,7 +281,7 @@ def Consultar_ficha(request):
         if id.count("ver"):
             id = id.lstrip("ver")
 
-        ficha = get_object_or_404(Ficha_actor, id=int(id))
+        ficha = get_object_or_404(Ficha, id=int(id))
         actorY = ficha.idActorY.nombreLargo
         actorX = ficha.idActorX.nombreLargo
         response = JsonResponse({'actorY': actorY, 'actorX': actorX, 'estrategia': ficha.estrategia})
@@ -290,7 +292,7 @@ def Consultar_ficha(request):
 
 def Eliminar_ficha(request):
     if request.is_ajax():
-        ficha = Ficha_actor.objects.get(id=request.GET['id'])
+        ficha = Ficha.objects.get(id=request.GET['id'])
         mensaje = "Registro de estrategias eliminado con exito"
         try:
             ficha.delete()
@@ -316,7 +318,7 @@ def Consultar_ficha_mid(request):
             actorX = int(request.GET['id'])
             actorY = int(request.GET['id2'])
             idEstudio = int(request.GET['idEstudio'])
-            ficha = get_object_or_404(Ficha_actor, idActorX=actorX, idActorY=actorY, idEstudio=idEstudio)
+            ficha = get_object_or_404(Ficha, idActorX=actorX, idActorY=actorY, idEstudio=idEstudio)
             response = JsonResponse({'actorY': ficha.idActorY.nombreLargo,
                                      'actorX': ficha.idActorX.nombreLargo,
                                      'estrategia': ficha.estrategia})
@@ -669,19 +671,19 @@ def Generar_indicador_estabilidad(request, idEstudio):
 # Agrega la relacion 1mao
 def Crear_1mao(request, idEstudio):
 
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     if request.method == 'POST':
         form = Form_1mao(request.POST)
         if form.is_valid():
             form.save()
-        return redirect('mactor:1mao', estudio_mactor.id)
+        return redirect('mactor:1mao', estudio.id)
     else:
-        actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
-        objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
+        objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         form = Form_1mao()
     return render(request, 'mao/crear_1mao.html', {'form': form,
-                                                   'estudio': estudio_mactor,
+                                                   'estudio': estudio,
                                                    'usuario': tipo_usuario,
                                                    'actores': actores,
                                                    'objetivos': objetivos})
@@ -690,19 +692,19 @@ def Crear_1mao(request, idEstudio):
 # Agrega la relacion 2mao
 def Crear_2mao(request, idEstudio):
 
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     if request.method == 'POST':
         form = Form_2mao(request.POST)
         if form.is_valid():
             form.save()
-        return redirect('mactor:2mao', estudio_mactor.id)
+        return redirect('mactor:2mao', estudio.id)
     else:
-        actores = Actor.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
-        objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
+        objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         form = Form_2mao()
     return render(request, 'mao/crear_2mao.html', {'form': form,
-                                                   'estudio': estudio_mactor,
+                                                   'estudio': estudio,
                                                    'usuario': tipo_usuario,
                                                    'actores': actores,
                                                    'objetivos': objetivos})
@@ -807,9 +809,9 @@ class Valor_xy:
 
 def Crear_auto_influencia(request, idEstudio):
 
-        estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-        actor = Actor.objects.filter(idEstudio=int(idEstudio)).order_by('id')
-        inf = Relacion_MID.objects.filter(idEstudio=int(idEstudio), idExperto=request.user.id).order_by('idActorY',
+        estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+        actor = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+        inf = Relacion_MID.objects.filter(idEstudio=estudio.id, idExperto=request.user.id).order_by('idActorY',
                                                                                                         'idActorX')
         lista_registrados = []
 
@@ -828,7 +830,7 @@ def Crear_auto_influencia(request, idEstudio):
                 a.valor = 0
                 a.justificacion = "auto_influencia"
                 a.idExperto = request.user
-                a.idEstudio = estudio_mactor
+                a.idEstudio = estudio
                 a.save()
 
 
@@ -1456,9 +1458,9 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
     # Devuelve una lista con los valores que poseen la posicion pasada como parametro
     def filtrar_posicion(pos):
         sublista_aux = []
-        for i in valores_mao:
-            if i.posicion == pos:
-                sublista_aux.append(i.valor)
+        for x in valores_mao:
+            if x.posicion == pos:
+                sublista_aux.append(x.valor)
 
         # a la sublista se ingresan los mismos n valores que contiene, hasta que tenga...
         # la misma longitud de la lista que contiene los otros valores con que se ha de comparar
@@ -1473,9 +1475,9 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
     # devuelve una lista con los valores con que se ha de comparar la lista retornada por filtrar_posicion
     def filtrar_comparacion(pos):
         sublista_aux = []
-        for i in valores_mao:
-            if i.posicion != pos:
-                sublista_aux.append(i.valor)
+        for q in valores_mao:
+            if q.posicion != pos:
+                sublista_aux.append(q.valor)
         return sublista_aux
 
     # Se lleva a cabo el calculo de las convergencias o divergencias de acuerdo al tipo de matriz
@@ -1853,7 +1855,7 @@ def Consultar_actores_faltantes(request):
 
         # si se esta registrando una ficha de estrategias
         if tipo == "form_ficha":
-            fichas = Ficha_actor.objects.filter(idEstudio=idEstudio).order_by('idActorY', 'idActorX')
+            fichas = Ficha.objects.filter(idActorY__idEstudio=idEstudio).order_by('idActorY', 'idActorX')
             for i in fichas:
                 if i.idActorY.id == int(id):
                     lista_registrados.append(i.idActorX.id)
@@ -2042,7 +2044,7 @@ def obtener_datos_estudio(request, idEstudio):
     estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
     fila_estudio = Estudio_Mactor.objects.filter(id=estudio.id).values_list('titulo', 'descripcion', 'fecha_inicio', 'fecha_final')
     filas_actores = Actor.objects.filter(idEstudio=estudio.id).values_list('nombreLargo', 'nombreCorto', 'descripcion')
-    filas_fichas = Ficha_actor.objects.filter(idEstudio=estudio.id).values_list('idActorY__nombreLargo',
+    filas_fichas = Ficha.objects.filter(idEstudio=estudio.id).values_list('idActorY__nombreLargo',
                                                                                'idActorX__nombreLargo',
                                                                                'estrategia')
     filas_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).values_list('nombreLargo', 'nombreCorto',
@@ -2143,7 +2145,7 @@ def exportar_fichas_xls(request, idEstudio):
     # Sheet body, remaining rows
     font_style = xlwt.XFStyle()
 
-    rows = Ficha_actor.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
+    rows = Ficha.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
                                                                        'idActorX__nombreLargo',
                                                                        'estrategia')
     for row in rows:

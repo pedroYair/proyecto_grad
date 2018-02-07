@@ -1,5 +1,5 @@
 from django import forms
-from .models import Estudio_Mactor, Ficha_actor, Relacion_MID, Relacion_MAO, Informe_Final
+from .models import Estudio_Mactor, Ficha, Relacion_MID, Relacion_MAO, Informe_Final
 from .choices import VALORES, VALORES_1MAO, VALORES_2MAO
 
 
@@ -46,20 +46,18 @@ class Form_Estudio(forms.ModelForm):
 class Form_Ficha(forms.ModelForm):
 
     class Meta:
-        model = Ficha_actor
+        model = Ficha
 
         fields = [
             'idActorX',
             'idActorY',
             'estrategia',
-            'idEstudio',
         ]
 
         widgets = {
             'idActorX': forms.Select(attrs={'class': 'form-control'}),
             'idActorY': forms.Select(attrs={'class': 'form-control'}),
             'estrategia': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
-            'idEstudio': forms.TextInput(attrs={'class': 'form-control'}, ),
         }
 
 

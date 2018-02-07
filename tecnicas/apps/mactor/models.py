@@ -47,21 +47,20 @@ class Actor(models.Model):
 # MODELO FICHA DE ESTRATEGIAS--------------------------------------------------------------------------------->
 
 
-class Ficha_actor(models.Model):
+class Ficha(models.Model):
     idActorY = models.ForeignKey(Actor, null=True, blank=False, related_name='mactor_actorY_ficha', on_delete=models.CASCADE)
     idActorX = models.ForeignKey(Actor, null=True, blank=False, related_name='mactor_actorX_ficha', on_delete=models.CASCADE)
     estrategia = models.TextField(null=True, blank=True)
-    idEstudio = models.ForeignKey(Estudio_Mactor, null=True, blank=False, on_delete=models.CASCADE)
     # verificar si es necesario el id del estudio al final se obtiene del id de los actores
 
     class Meta:
-        verbose_name = 'Ficha_actor'
-        verbose_name_plural = 'Fichas_actores'
+        verbose_name = 'Ficha'
+        verbose_name_plural = 'Fichas'
         # para evitar que la pareja de registros se repita en ese mismo orden
-        unique_together = ('idActorY', 'idActorX', 'idEstudio')
+        unique_together = ('idActorY', 'idActorX')
 
     def __str__(self):
-        return u'{0} - {1} - {2} - {3}'.format(self.idActorX, self.idActorY, self.estrategia, self.idEstudio)
+        return u'{0} - {1} - {2}'.format(self.idActorX, self.idActorY, self.estrategia)
 
 
 # MODELO OBJETIVO --------------------------------------------------------------------------------------------->

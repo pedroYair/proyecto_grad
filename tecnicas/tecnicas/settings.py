@@ -83,7 +83,7 @@ WSGI_APPLICATION = 'tecnicas.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'prospectiv',
+        'NAME': 'prospectiva',
         'USER': 'postgres',
         'PASSWORD': 'pedro',
         'HOST': 'localhost',
