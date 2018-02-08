@@ -87,16 +87,15 @@ class Relacion_MID(models.Model):
     valor = models.IntegerField()
     justificacion = models.TextField()
     idExperto = models.ForeignKey(User, null=True)
-    idEstudio = models.ForeignKey(Estudio_Mactor)
 
     class Meta:
         verbose_name = 'Relacion_de_Influencia'
         verbose_name_plural = 'Relaciones_de_influencia'
         # para evitar que la pareja de registros se repita en ese mismo orden
-        unique_together = ('idActorX', 'idActorY', 'idExperto', 'idEstudio')
+        unique_together = ('idActorX', 'idActorY', 'idExperto')
 
     def __str__(self):
-        return u'{0} - {1} - {2} - {3}'.format(self.idActorY, self.idActorX, self.valor, self.idEstudio)
+        return u'{0} - {1} - {2}'.format(self.idActorY, self.idActorX, self.valor)
 
 
 # MODELO RELACION MAO ------------------------------------------------------------------------------------------->
@@ -108,15 +107,14 @@ class Relacion_MAO(models.Model):
     valor = models.IntegerField()
     justificacion = models.TextField()
     idExperto = models.ForeignKey(User, null=True)
-    idEstudio = models.ForeignKey(Estudio_Mactor)
 
     class Meta:
         verbose_name = 'Relacion_MAO'
         verbose_name_plural = 'Relaciones_MAO'
-        unique_together = ('tipo', 'idActorY', 'idObjetivoX', 'idExperto', 'idEstudio')
+        unique_together = ('tipo', 'idActorY', 'idObjetivoX', 'idExperto')
 
     def __str__(self):
-        return u'{0} - {1} - {2} - {3} - {4} - {5}'.format(self.tipo, self.idActorY, self.idObjetivoX, self.valor, self.idExperto, self.idEstudio)
+        return u'{0} - {1} - {2} - {3} - {4} - {5}'.format(self.tipo, self.idActorY, self.idObjetivoX, self.valor, self.idExperto)
 
 
 # MODELO INFORME FINAL ---------------------------------------------------------------------->

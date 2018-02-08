@@ -33,8 +33,8 @@ admin.site.register(Objetivo, ObjetivoAdmin)
 
 class Relacion_MIDAdmin(admin.ModelAdmin):
     list_display = ('idActorY', 'idActorX', 'valor')   # Nombre de las columnas de la tabla de actores
-    search_fields = ('idActorY',)                               # Campo de busqueda
-    ordering = ('idActorY', 'idActorX',)                                    # Campo de ordenamiento
+    search_fields = ('idActorY',)                      # Campo de busqueda
+    ordering = ('idActorY', 'idActorX',)               # Campo de ordenamiento
 
 admin.site.register(Relacion_MID, Relacion_MIDAdmin)
 
@@ -43,7 +43,7 @@ admin.site.register(Relacion_MID, Relacion_MIDAdmin)
 
 class Relacion_MAOAdmin(admin.ModelAdmin):
     list_display = ('idActorY', 'idObjetivoX', 'valor', 'tipo')   # Nombre de las columnas de la tabla de actores
-    search_fields = ('idActorY',)                               # Campo de busqueda
-    ordering = ('idActorY', 'idObjetivoX',)                                    # Campo de ordenamiento
+    search_fields = ('idActorY',)                                 # Campo de busqueda
+    ordering = ('idActorY', 'idObjetivoX',)                       # Campo de ordenamiento
 
 admin.site.register(Relacion_MAO, Relacion_MAOAdmin)

@@ -74,7 +74,6 @@ class Form_MID(forms.ModelForm):
             'valor',
             'justificacion',
             'idExperto',
-            'idEstudio',
         ]
 
         widgets = {
@@ -83,7 +82,6 @@ class Form_MID(forms.ModelForm):
             'valor': forms.Select(choices=VALORES, attrs={'class': 'regDropDown'}),
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
-            'idEstudio': forms.TextInput(attrs={'class': 'form-control'}, ),
         }
 
 
@@ -101,7 +99,6 @@ class Form_1mao(forms.ModelForm):
             'valor',
             'justificacion',
             'idExperto',
-            'idEstudio',
             ]
 
         widgets = {
@@ -111,7 +108,6 @@ class Form_1mao(forms.ModelForm):
             'valor': forms.Select(choices=VALORES_1MAO, attrs={'class': 'regDropDown'}),
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
-            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
             }
 
 
@@ -129,7 +125,6 @@ class Form_2mao(forms.ModelForm):
             'valor',
             'justificacion',
             'idExperto',
-            'idEstudio',
             ]
 
         widgets = {
@@ -139,7 +134,6 @@ class Form_2mao(forms.ModelForm):
             'valor': forms.Select(choices=VALORES_2MAO, attrs={'class': 'regDropDown'}),
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
-            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
             }
 
 
