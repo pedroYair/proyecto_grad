@@ -682,11 +682,9 @@ def Crear_1mao(request, idEstudio):
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         form = Form_1mao()
-    return render(request, 'mao/crear_1mao.html', {'form': form,
-                                                   'estudio': estudio,
-                                                   'usuario': tipo_usuario,
-                                                   'actores': actores,
-                                                   'objetivos': objetivos})
+    return render(request, 'mao/crear_1mao.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
+                                                    'actores': actores,
+                                                    'objetivos': objetivos})
 
 
 # Agrega la relacion 2mao
@@ -703,9 +701,7 @@ def Crear_2mao(request, idEstudio):
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         form = Form_2mao()
-    return render(request, 'mao/crear_2mao.html', {'form': form,
-                                                   'estudio': estudio,
-                                                   'usuario': tipo_usuario,
+    return render(request, 'mao/crear_2mao.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
                                                    'actores': actores,
                                                    'objetivos': objetivos})
 
@@ -1311,7 +1307,7 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
             num_expertos = lista_mao['expertos']
             lista_mao = lista_mao['concenso']
         else:
-            lista_mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=numero_matriz,
+            lista_mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=numero_matriz,
                                                 idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
     else:
         if concenso is True:
@@ -1639,7 +1635,7 @@ def verificar_mid_mao2(request, idEstudio):
     objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     mid = Relacion_MID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    mao2 = Relacion_MAO.objects.filter(tipo=2, idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
+    mao2 = Relacion_MAO.objects.filter(tipo=2, idActorY__idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
     tamano_mid = len(actores) * len(actores)
     tamano_2mao = len(actores) * len(objetivos)
     estado_3mao = False
@@ -1663,7 +1659,7 @@ def calcular_valores_3mao(request, idEstudio):
         mao = calcular_concenso_mao(request, estudio.id, 2)
         mao = mao['concenso']
     else:
-        mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=2, idExperto=request.user.id).order_by('idActorY',
+        mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2, idExperto=request.user.id).order_by('idActorY',
                                                                                                             'idObjetivoX')
     # Multiplicacion de los valores 2mao por los valores ri para hallar los valores 3mao
     cont = 0
@@ -1884,7 +1880,7 @@ def Consultar_objetivos_faltantes(request):
         if tipo == "form_1mao":
             # se obtiene la lista de relaciones  1mao registradas
             mao = Relacion_MAO.objects.filter(tipo=1,
-                                              idEstudio=idEstudio,
+                                              idActorY__idEstudio=idEstudio,
                                               idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
             # se obtienen los id de los objetivos ya registrados en la matriz mao con ese actor Y
             for i in mao:
@@ -1895,7 +1891,7 @@ def Consultar_objetivos_faltantes(request):
         # si se esta registrando una influencia 2mao
         elif tipo == "form_2mao":
             mao = Relacion_MAO.objects.all().filter(tipo=2,
-                                                    idEstudio=idEstudio,
+                                                    idActorY__idEstudio=idEstudio,
                                                     idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
             for i in mao:
                 if i.idActorY.id == int(id):
@@ -2038,11 +2034,11 @@ def exportar_estudio_xls(request, idEstudio):
 
 def obtener_datos_estudio(request, idEstudio):
 
-    usuario = obtener_tipo_usuario(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
+    usuario = obtener_tipo_usuario(request, estudio.id)
     fila_estudio = Estudio_Mactor.objects.filter(id=estudio.id).values_list('titulo', 'descripcion', 'fecha_inicio', 'fecha_final')
     filas_actores = Actor.objects.filter(idEstudio=estudio.id).values_list('nombreLargo', 'nombreCorto', 'descripcion')
-    filas_fichas = Ficha.objects.filter(idEstudio=estudio.id).values_list('idActorY__nombreLargo',
+    filas_fichas = Ficha.objects.filter(idActorY__idEstudio=estudio.id).values_list('idActorY__nombreLargo',
                                                                                'idActorX__nombreLargo',
                                                                                'estrategia')
     filas_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).values_list('nombreLargo', 'nombreCorto',
@@ -2053,12 +2049,12 @@ def obtener_datos_estudio(request, idEstudio):
                                                                                  'idActorX__nombreLargo',
                                                                                  'valor', 'justificacion').order_by(
             'idActorY', 'idActorX')
-        filas_1mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=1).values_list('idActorY__nombreLargo',
+        filas_1mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=1).values_list('idActorY__nombreLargo',
                                                                                           'idObjetivoX__nombreLargo',
                                                                                           'valor',
                                                                                           'justificacion').order_by(
             'idActorY', 'idObjetivoX')
-        filas_2mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=2).values_list('idActorY__nombreLargo',
+        filas_2mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2).values_list('idActorY__nombreLargo',
                                                                                           'idObjetivoX__nombreLargo',
                                                                                           'valor',
                                                                                           'justificacion').order_by(
@@ -2069,13 +2065,13 @@ def obtener_datos_estudio(request, idEstudio):
             'idActorX__nombreLargo',
             'valor', 'justificacion').order_by(
             'idActorY', 'idActorX')
-        filas_1mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=1, idExperto=request.user.id).values_list(
+        filas_1mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=1, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo',
             'idObjetivoX__nombreLargo',
             'valor',
             'justificacion').order_by(
             'idActorY', 'idObjetivoX')
-        filas_2mao = Relacion_MAO.objects.filter(idEstudio=estudio.id, tipo=2, idExperto=request.user.id).values_list(
+        filas_2mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo',
             'idObjetivoX__nombreLargo',
             'valor',
@@ -2086,106 +2082,6 @@ def obtener_datos_estudio(request, idEstudio):
              'mid': filas_mid, '1mao': filas_1mao, '2mao': filas_2mao}
 
     return filas
-
-
-def exportar_actores_xls(request, idEstudio):
-
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="tabla_actores.xls"'
-
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Actores')
-
-    # Sheet header, first row
-    row_num = 0
-
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True
-
-    columns = ['Nombre Largo', 'Nombre Corto', 'Descripción']
-
-    for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style)
-
-    # Sheet body, remaining rows
-    font_style = xlwt.XFStyle()
-
-    rows = Actor.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
-
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(row)):
-            ws.write(row_num, col_num, row[col_num], font_style)
-
-    wb.save(response)
-    return response
-
-
-def exportar_fichas_xls(request, idEstudio):
-
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="fichas_estrategias.xls"'
-
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Estrategias')
-
-    # Sheet header, first row
-    row_num = 0
-
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True
-
-    columns = ['Estrategias del actor', 'Sobre el actor', 'Estrategias']
-
-    for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style)
-
-    # Sheet body, remaining rows
-    font_style = xlwt.XFStyle()
-
-    rows = Ficha.objects.filter(idEstudio=idEstudio).values_list('idActorY__nombreLargo',
-                                                                       'idActorX__nombreLargo',
-                                                                       'estrategia')
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(row)):
-            ws.write(row_num, col_num, row[col_num], font_style)
-
-    wb.save(response)
-    return response
-
-
-def exportar_objetivos_xls(request, idEstudio):
-
-    response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="tabla_objetivos.xls"'
-
-    wb = xlwt.Workbook(encoding='utf-8')
-    ws = wb.add_sheet('Objetivos')
-
-    # Sheet header, first row
-    row_num = 0
-
-    font_style = xlwt.XFStyle()
-    font_style.font.bold = True
-
-    columns = ['Nombre Largo', 'Nombre Corto', 'Descripción']
-
-    for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style)
-
-    # Sheet body, remaining rows
-    font_style = xlwt.XFStyle()
-
-    rows = Objetivo.objects.filter(idEstudio=idEstudio).values_list('nombreLargo', 'nombreCorto', 'descripcion')
-
-    for row in rows:
-        row_num += 1
-        for col_num in range(len(row)):
-            ws.write(row_num, col_num, row[col_num], font_style)
-
-    wb.save(response)
-    return response
 
 
 # ----------------------------------------HISTOGRAMAS--------------------------------------------------------->
@@ -2814,7 +2710,7 @@ def calcular_concenso_mao(request, idEstudio, num_matriz):
     consulta_base = []
     if num_matriz < 3:
         for experto in lista_expertos:
-            consulta = Relacion_MAO.objects.filter(idEstudio=estudio.id, idExperto=experto.id,
+            consulta = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, idExperto=experto.id,
                                                                 tipo=num_matriz).order_by('idActorY', 'idObjetivoX')
 
             if len(consulta) == tamano_matriz_completa and len(consulta) > 0:

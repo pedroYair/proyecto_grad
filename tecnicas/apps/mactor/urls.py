@@ -8,7 +8,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     Crear_relacion_mid, Generar_matriz_mid, Generar_matriz_midi, Generar_matriz_maxima, Generar_matriz_ri, \
     Generar_matriz_balance, Generar_indicador_estabilidad, Crear_1mao, Crear_2mao, Generar_matriz_mao,\
     Generar_matrices_caa_daa, Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
-    Crear_informe, exportar_estudio_xls, exportar_actores_xls, exportar_fichas_xls, exportar_objetivos_xls, \
+    Crear_informe, exportar_estudio_xls, \
     histograma_mid, datos_histograma_mid, histograma_ri, datos_histograma_ri, \
     histograma_implicacion, histograma_movilizacion, datos_histogramas_mao,  \
     datos_histograma_caa_daa, histograma_caa_daa, \
