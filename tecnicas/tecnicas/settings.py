@@ -142,7 +142,5 @@ LOGIN_REDIRECT_URL = reverse_lazy('mactor:lista_estudios')
 
 SITE_ID = 1
 
-#LOGOUT_REDIRECT_URL = reverse_lazy('login')
-
 # variable para la configuracion de crispy forms
 CRISPY_TEMPLATE_PACK = 'bootstrap3'

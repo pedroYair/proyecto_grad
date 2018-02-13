@@ -43,9 +43,9 @@ Bienvenido: {{user.username}}
                                             <td>{{estudio.fecha_final}}</td>
                                             <td>
                                                 {%if estudio.estado is True %}
-                                                <a class="btn btn-sm btn-success"><i class="fa fa-check"></i></a>
+                                                <a class="btn btn-sm btn-success" title="Abierto"><i class="fa fa-check"></i></a>
                                                 {%else%}
-                                                <a class="btn btn-sm btn-danger"><i class="fa fa-times"></i></a>
+                                                <a class="btn btn-sm btn-danger" title="Cerrado"><i class="fa fa-times"></i></a>
                                                 {% endif %}
                                             </td>
                                             <td>

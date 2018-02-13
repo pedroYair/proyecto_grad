@@ -70,7 +70,9 @@
                                                         <div class="form-group">
                                                           <label style="text-align: left" class="control-label">Fecha Inicio</label>
                                                             <br>
-                                                            <input type="date" name="fecha_inicio">
+                                                            {{form.fecha_inicio}}
+                                                            <br>
+                                                            <!--<input type="date" name="fecha_inicio">-->
                                                         </div>
                                                     </div>
 
@@ -81,7 +83,9 @@
                                                         <div class="form-group">
                                                           <label style="text-align: left"  class="control-label">Fecha Final</label>
                                                             <br>
-                                                            <input  type="date" name="fecha_final">
+                                                            {{form.fecha_final}}
+                                                            <br>
+                                                            <!--<input  type="date" name="fecha_final">-->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -96,7 +100,7 @@
                                                             {% endif %} 
                                                             <label style="text-align: left"  class="control-label">Estado</label>
                                                             <br>
-                                                            <input type="checkbox" checked name="estado">
+                                                            {{form.estado}}
                                                         </div>
                                                     </div>
 

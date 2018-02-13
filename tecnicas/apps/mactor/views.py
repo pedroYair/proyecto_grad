@@ -478,37 +478,35 @@ def Generar_matriz_mid(request, idEstudio):
 
     concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    tamano_matriz_completa = len(lista_actores) * len(lista_actores)
-    posicion_salto_linea = lista_actores.count() + 1
-    lista_influencias = []
+    tamano_matriz_completa = len(actores) ** 2
+    posicion_salto_linea = actores.count() + 1
+    influencias = []
     cantidad_expertos = 0  # cantidad de expertos que han finalizado la matriz y por tanto estan en el concenso
 
-    # muestra la matriz grupal
+    # se carga el concenso del estudio
     if concenso is True:
-        lista_influencias = calcular_concenso_mid(estudio.id)
-        cantidad_expertos = lista_influencias['num_expertos']
-        lista_influencias = lista_influencias['concenso']
-    # muestra la matriz diligenciada por el usuario en sesion
+        influencias = calcular_concenso_mid(estudio.id)
+        cantidad_expertos = influencias['num_expertos']
+        influencias = influencias['concenso']
+    # se carga la matriz diligenciada por el usuario en sesion
     elif tipo_usuario != "COORDINADOR":
-        lista_influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
+        influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                         idExperto=request.user.id).order_by('idActorY', 'idActorX')
-
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
-        valores_mid = establecer_valores_mid(estudio.id, lista_influencias)
-
-        contexto = {'actores': lista_actores,
+    # si la matriz esta completamente diligenciada
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+        valores_mid = establecer_valores_mid(estudio.id, influencias)
+        contexto = {'actores': actores,
                     'posicion_salto': posicion_salto_linea,
                     'valores': valores_mid,
                     'expertos': cantidad_expertos,
                     'estudio': estudio,
                     'usuario': tipo_usuario}
-
-    elif len(lista_influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
+    # si la matriz esta incompleta
+    elif len(influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
         valores_mid = generar_mid_incompleta(request, estudio.id)
-
-        contexto = {'actores': lista_actores, 'posicion_salto': posicion_salto_linea,
+        contexto = {'actores': actores, 'posicion_salto': posicion_salto_linea,
                     'valores': valores_mid, 'estudio': estudio, 'usuario': tipo_usuario}
     # si no se han registrado actores
     else:
@@ -525,21 +523,22 @@ def Generar_matriz_midi(request, idEstudio):
 
     concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-    lista_influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                     idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    tamano_matriz_completa = len(lista_actores) * len(lista_actores)
-    posicion_salto_linea = lista_actores.count() + 1
+    tamano_matriz_completa = len(actores) ** 2
+    posicion_salto_linea = actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+    # si la matriz esta completa o el consenso esta activo
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
         valores_midi = calcular_midi(request, idEstudio)
         cantidad_expertos = 0
         if concenso is True:
-            influencias_mid = calcular_concenso_mid(estudio.id)
-            cantidad_expertos = influencias_mid['num_expertos']
+            influencias_consenso = calcular_concenso_mid(estudio.id)
+            cantidad_expertos = influencias_consenso['num_expertos']
 
-        contexto = {'actores': lista_actores,
+        contexto = {'actores': actores,
                     'posicion_salto': posicion_salto_linea,
                     'valores_midi': valores_midi,
                     'expertos': cantidad_expertos,
@@ -559,21 +558,21 @@ def Generar_matriz_maxima(request, idEstudio):
 
     concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-    lista_influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                     idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    tamano_matriz_completa = len(lista_actores) * len(lista_actores)
-    posicion_salto_linea = lista_actores.count() + 1
-    tipo_usuario = obtener_tipo_usuario(request, idEstudio)
+    tamano_matriz_completa = len(actores) ** 2
+    posicion_salto_linea = actores.count() + 1
+    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
         valores_maximos = calcular_maxima_influencia(request, idEstudio)
         cantidad_expertos = 0
         if concenso is True:
-            influencias_mid = calcular_concenso_mid(estudio.id)
-            cantidad_expertos = influencias_mid['num_expertos']
+            influencias_consenso = calcular_concenso_mid(estudio.id)
+            cantidad_expertos = influencias_consenso['num_expertos']
 
-        contexto = {'actores': lista_actores,
+        contexto = {'actores': actores,
                     'posicion_salto': posicion_salto_linea,
                     'valores_maximos': valores_maximos,
                     'expertos': cantidad_expertos,
@@ -601,15 +600,15 @@ def Generar_matriz_ri(request, idEstudio):
     for i in range(len(actores)):
         lista_contexto.append(Valor_posicion(posicion=0, valor=actores[i].nombreCorto, descripcion=actores[i].nombreLargo))
         lista_contexto.append(Valor_posicion(posicion=1, valor=round(valores_ri[i], 2), descripcion=round(valores_ri[i], 2)))
-
+    # para evitar el salto de linea despues de la ultima fila
     lista_contexto[len(lista_contexto)-1].posicion = ""
 
     cantidad_expertos = 0
     if concenso is True:
         influencias_mid = calcular_concenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
-    contexto = {'lista_contexto': lista_contexto, 'expertos': cantidad_expertos,
-                'estudio': estudio, 'usuario': tipo_usuario}
+    contexto = {'lista_contexto': lista_contexto, 'expertos': cantidad_expertos, 'estudio': estudio,
+                'usuario': tipo_usuario}
 
     if concenso is False:
         return render(request, 'influencia/matriz_ri.html', contexto)
@@ -623,12 +622,12 @@ def Generar_matriz_balance(request, idEstudio):
     concenso = verificar_concenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-    lista_influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
+    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                     idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    tamano_matriz_completa = len(actores) * len(actores)
+    tamano_matriz_completa = len(actores) ** 2
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if len(lista_influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
         valores_balance = calcular_balance_liquido(request, idEstudio)
         cantidad_expertos = 0
         if concenso is True:
@@ -761,7 +760,7 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
                 'expertos': num_expertos}
         else:
             if int(numero_matriz) in [1, 2]:
-                mensaje = "Finalice el registro de las posiciones " + numero_matriz + "MAO para visualizar esta matriz."
+                mensaje = "Finalice el registro de las posiciones " + str(numero_matriz) + "MAO para visualizar esta matriz."
             else:
                 mensaje = "Finalice el registro de las posiciones MID y 2MAO para visualizar esta matriz."
 
@@ -803,22 +802,23 @@ class Valor_xy:
 # <<<<FUNCIONES RELACIONES MID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
+# Crea los registros de la diagonal de la matriz mid
 def Crear_auto_influencia(request, idEstudio):
 
         estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-        actor = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+        actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
         inf = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id, idExperto=request.user.id).order_by('idActorY',
                                                                                                         'idActorX')
         lista_registrados = []
 
         # se verifica si estas influencias ya existen
-        for i in actor:
+        for i in actores:
             for j in inf:
                 if len(inf) > 0 and j.idActorX.id == i.id and j.idActorY.id == i.id:
                     lista_registrados.append(i.id)
 
         # se agregan las autoinfluencias restantes
-        for i in actor:
+        for i in actores:
             if i.id not in lista_registrados:
                 a = Relacion_MID()
                 a.idActorY = i
@@ -833,43 +833,40 @@ def Crear_auto_influencia(request, idEstudio):
 def establecer_valores_mid(idEstudio, influencias):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    lista_valores_mid = []
+    valores_mid = []
     posicion = 0               # controla y asignar la posicion de acuerdo al numero de actores e influencias
     indice = 0                 # representa el indice del nombreCorto que se ha de colocar en valores
-    suma_fila_influencias = 0
+    suma_fila_influencia = 0
     suma_columna_dependencia = 0
 
     for i in range(len(influencias)):
-
         posicion += 1
         # se asigna a las influencias registradas una posicion para facilitar su visualizacion y manejo
-        lista_valores_mid.append(Valor_posicion(posicion=posicion, valor=influencias[i].valor, descripcion=""))
+        valores_mid.append(Valor_posicion(posicion=posicion, valor=influencias[i].valor, descripcion=""))
 
         # Se calcula el valor de influencia directa I.D
         if influencias[i].valor != VALOR_RELACION_NO_REGISTRADA:
-            suma_fila_influencias += influencias[i].valor
+            suma_fila_influencia += influencias[i].valor
 
-        # Si posicion (representa el numero de la columna) es igual a la cantidad de actores agrega total de influencias
+        # Si posicion ( el numero de la columna) es igual a la cantidad de actores agrega total de influencias
         if posicion == actores.count():
-            lista_valores_mid.append(Valor_posicion(posicion=posicion + 1,
-                                                    valor=suma_fila_influencias,
-                                                    descripcion=suma_fila_influencias))
+            valores_mid.append(Valor_posicion(posicion=posicion + 1, valor=suma_fila_influencia,
+                                                descripcion=suma_fila_influencia))
             # Se determina la posicion donde se va a colocar el nombre corto de la nueva fila
             pos_nombre = (actores.count() + 2) * indice
-            lista_valores_mid.insert(pos_nombre, Valor_posicion(posicion=0,
-                                                                valor=actores[indice].nombreCorto,
-                                                                descripcion=actores[indice].nombreLargo))
+            valores_mid.insert(pos_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto,
+                                                            descripcion=actores[indice].nombreLargo))
             posicion = 0               # reinicio de la posicion (nueva fila)
             indice += 1                # indice hace referencia al siguiente actor
-            suma_fila_influencias = 0  # reinicio del valor de suma_fila_influencias
+            suma_fila_influencia = 0   # reinicio para el calculo de la siguiente fila
 
     # Se calculan las dependencias directas D.D (suma de columnas)
-    lista_valores_mid.append(Valor_posicion(posicion=0, valor="D.D", descripcion="DEPENDENCIA DIRECTA"))
+    valores_mid.append(Valor_posicion(posicion=0, valor="D.D", descripcion="DEPENDENCIA DIRECTA"))
     posicion = 1
     suma_dependencia_total = 0
 
     while posicion <= actores.count():
-        for i in lista_valores_mid:
+        for i in valores_mid:
             # si posicion es igual al numero de la columna que se esta sumando
             if i.posicion == posicion:
                 # si se trata de un valor no valido (matriz incompleta)
@@ -877,16 +874,13 @@ def establecer_valores_mid(idEstudio, influencias):
                     suma_columna_dependencia += i.valor
                     suma_dependencia_total += i.valor
         # Se ingresa a la lista de valores_mid la sumatoria de la columna
-        lista_valores_mid.append(Valor_posicion(posicion="",
-                                                valor=suma_columna_dependencia,
-                                                descripcion=suma_columna_dependencia))
+        valores_mid.append(Valor_posicion(posicion="", valor=suma_columna_dependencia, descripcion=suma_columna_dependencia))
         posicion += 1                 # iteracion de las posiciones
         suma_columna_dependencia = 0  # reinicio a o del valor movilizacion
-    lista_valores_mid.append(Valor_posicion(posicion="", valor=suma_dependencia_total, descripcion=suma_dependencia_total))
+    valores_mid.append(Valor_posicion(posicion="", valor=suma_dependencia_total, descripcion=suma_dependencia_total))
+    valores_mid = agregar_descripcion_mid(idEstudio, valores_mid)
 
-    lista_valores_mid = agregar_descripcion_mid(idEstudio, lista_valores_mid)
-
-    return lista_valores_mid
+    return valores_mid
 
 
 # Establece como se mostrara la matriz mid en caso de que no este completamente diligenciada

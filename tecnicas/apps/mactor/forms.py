@@ -34,7 +34,7 @@ class Form_Estudio(forms.ModelForm):
             'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idExpertos': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'fecha_inicio': forms.DateInput(attrs={'class': 'datepicker'}),
-            'fecha_final': forms.TextInput(attrs={'class': 'form-control'}, ),
+            'fecha_final': forms.DateInput(attrs={'class': 'datepicker'}, ),
             'estado': forms.CheckboxInput(attrs={'class': 'form-control'}, ),
             'id_Proyecto': forms.TextInput(attrs={'class': 'form-control'}),
         }
