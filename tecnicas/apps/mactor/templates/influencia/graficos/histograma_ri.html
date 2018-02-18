@@ -108,6 +108,32 @@
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
             </div>
         </div>
+
+         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Ayuda - Coeficiente de fuerza Ri</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: justify">
+                        <p>El coeficiente Ri, representa las relaciones de fuerza existentes entre los
+                            actores y permite diferenciar a los actores según su mayor o menor capacidad
+                            para condicionar las actuaciones de los demás, al igual que su mayor o menor
+                            dependencia respecto a ellos (Perestrelo y Castro, 2000).</p><br>
+                        <p>
+                            Los actores con coeficiente ri mayor poseen una débil o nula dependencia respecto
+                            a los otros actores y por lo tanto corresponden a los actores clave
+                            del estudio, ya que ejercen mayor influencia por su poder o liderazgo.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>

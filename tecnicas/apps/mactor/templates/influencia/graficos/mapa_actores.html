@@ -112,12 +112,39 @@
 <br>
 <br>
         <div class="form-group">
-                        <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
-                        </div>
+            <div class="col-md-offset-2 col-md-8">
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+            </div>
         </div>
+
+         <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
+
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 class="modal-title">Ayuda - Mapa de influencia - dependencia</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: justify">
+                        <p>El mapa de influencias y dependencias, permite analizar de forma rápida la competencia entre
+                            los actores estudiados.
+                        </p>
+                        <br>
+                        <p>De acuerdo a este se tiene que:<br>
+                            <i class="fa fa-check"></i> El cuadrante superior izquierdo, corresponde a actores dependientes.<br>
+                            <i class="fa fa-check"></i> El cuadrante superior derecho, abarca a actores muy influyentes y muy dependientes.<br>
+                            <i class="fa fa-check"></i> El cuadrante inferior derecho, cobija a los actores muy influyentes del estudio.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
