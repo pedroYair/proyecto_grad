@@ -14,7 +14,7 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     datos_histograma_caa_daa, histograma_caa_daa, \
     generar_mapa_midi, datos_mapa_midi, generar_mapa_caa_daa, datos_mapa_caa_daa, \
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
-    activar_concenso_influencias, activar_concenso_mao, activar_concenso_caa_daa
+    activar_consenso_influencias, activar_consenso_mao, activar_consenso_caa_daa
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -97,10 +97,10 @@ urlpatterns = [
     # Urls exportar a excel
     url(r'exportar_estudios/xls/(?P<idEstudio>\d+)/$', login_required(exportar_estudio_xls), name='estudios_xls'),
 
-    # Urls concensos
-    url(r'^concenso_influencias/(?P<idEstudio>\d+)/(?P<tipo>\d)/', login_required(activar_concenso_influencias), name='concenso_influencias'),
-    url(r'^concenso_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)', login_required(activar_concenso_mao), name='concenso_mao'),
-    url(r'^concenso_caa_daa/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)/', login_required(activar_concenso_caa_daa), name='concenso_caa_daa'),
+    # Urls consensos
+    url(r'^consenso_influencias/(?P<idEstudio>\d+)/(?P<tipo>\d)/', login_required(activar_consenso_influencias), name='consenso_influencias'),
+    url(r'^consenso_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)', login_required(activar_consenso_mao), name='consenso_mao'),
+    url(r'^consenso_caa_daa/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)/', login_required(activar_consenso_caa_daa), name='consenso_caa_daa'),
 
     # Urls modelo Estudio_mactor
     url(r'^informe_final/(?P<idEstudio>\d+)/$', login_required(Crear_informe), name='informe_final'),

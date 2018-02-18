@@ -25,7 +25,7 @@
                                         <option value="{% url 'mactor:matriz_ri' estudio.id %}">Coeficiente de fuerza Ri</option>
                                         <option value="{% url 'mactor:estabilidad' estudio.id %}">Coeficiente de estabilidad H</option>
                                          {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 2 %}">Concenso MIDI</option>
+                                        <option value="{% url 'mactor:consenso_influencias' estudio.id 2 %}">Consenso MIDI</option>
                                          {% endif %}
                                      </select>
                                     {% endif %}

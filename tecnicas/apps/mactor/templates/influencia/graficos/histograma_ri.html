@@ -93,7 +93,7 @@
 
             </script>
     {% if usuario != 'EXPERTO' and expertos %}
-        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
     {% endif %}
 
 <br>
@@ -101,7 +101,7 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if expertos %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:concenso_influencias' estudio.id 5 %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:consenso_influencias' estudio.id 5 %}"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% else %}
                 <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_ri' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% endif %}

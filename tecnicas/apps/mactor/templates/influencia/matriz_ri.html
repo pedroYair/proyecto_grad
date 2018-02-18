@@ -22,7 +22,7 @@
                                         <option value="">Análisis Ri</option>
                                         <option value="{% url 'mactor:histograma_ri' estudio.id %}">Histograma Ri</option>
                                          {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                         <option value="{% url 'mactor:concenso_influencias' estudio.id 5 %}">Concenso Ri</option>
+                                         <option value="{% url 'mactor:consenso_influencias' estudio.id 5 %}">Consenso Ri</option>
                                          {% endif %}
                                      </select>
                                     {% endif %}
@@ -97,7 +97,7 @@
                         <p>El coeficiente Ri, representa las relaciones de fuerza existentes entre los
                             actores y permite diferenciar a los actores según su mayor o menor capacidad
                             para condicionar las actuaciones de los demás, al igual que su mayor o menor
-                            dependencia respecto a ellos (Perestrelo y Castro, 2000).</p><br>
+                            dependencia respecto a ellos (Castro y Perestrelo, 2000).</p><br>
                         <p>
                             Los actores con coeficiente ri mayor poseen una débil o nula dependencia respecto
                             a los otros actores y por lo tanto corresponden a los actores clave

@@ -109,6 +109,10 @@
                     });
 			};
      </script>
+
+         {% if usuario != 'EXPERTO' and expertos %}
+        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
+        {% endif %}
 <br>
 <br>
         <div class="form-group">

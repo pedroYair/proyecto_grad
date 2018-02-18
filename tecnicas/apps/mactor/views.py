@@ -476,26 +476,26 @@ def Crear_relacion_mid(request, idEstudio):
 # View generadora de la matriz MID
 def Generar_matriz_mid(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     tamano_matriz_completa = len(actores) ** 2
     posicion_salto_linea = actores.count() + 1
     influencias = []
-    cantidad_expertos = 0  # cantidad de expertos que han finalizado la matriz y por tanto estan en el concenso
+    cantidad_expertos = 0  # cantidad de expertos que han finalizado la matriz y por tanto estan en el consenso
 
-    # se carga el concenso del estudio
-    if concenso is True:
-        influencias = calcular_concenso_mid(estudio.id)
+    # se carga el consenso del estudio
+    if consenso is True:
+        influencias = calcular_consenso_mid(estudio.id)
         cantidad_expertos = influencias['num_expertos']
-        influencias = influencias['concenso']
+        influencias = influencias['consenso']
     # se carga la matriz diligenciada por el usuario en sesion
     elif tipo_usuario != "COORDINADOR":
         influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                         idExperto=request.user.id).order_by('idActorY', 'idActorX')
     # si la matriz esta completamente diligenciada
-    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_mid = establecer_valores_mid(estudio.id, influencias)
         contexto = {'actores': actores,
                     'posicion_salto': posicion_salto_linea,
@@ -512,16 +512,16 @@ def Generar_matriz_mid(request, idEstudio):
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
-    if concenso is False:
+    if consenso is False:
         return render(request, 'influencia/matriz_mid.html', contexto)
     else:
-        return render(request, 'influencia/concenso/mid_concenso.html', contexto)
+        return render(request, 'influencia/consenso/mid_consenso.html', contexto)
 
 
 # View generadora de la matriz MIDI
 def Generar_matriz_midi(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
@@ -531,11 +531,11 @@ def Generar_matriz_midi(request, idEstudio):
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
     # si la matriz esta completa o el consenso esta activo
-    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_midi = calcular_midi(request, idEstudio)
         cantidad_expertos = 0
-        if concenso is True:
-            influencias_consenso = calcular_concenso_mid(estudio.id)
+        if consenso is True:
+            influencias_consenso = calcular_consenso_mid(estudio.id)
             cantidad_expertos = influencias_consenso['num_expertos']
 
         contexto = {'actores': actores,
@@ -547,16 +547,16 @@ def Generar_matriz_midi(request, idEstudio):
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
-    if concenso is False:
+    if consenso is False:
         return render(request, 'influencia/matriz_midi.html', contexto)
     else:
-        return render(request, 'influencia/concenso/midi_concenso.html', contexto)
+        return render(request, 'influencia/consenso/midi_consenso.html', contexto)
 
 
 # View generadora de la matriz MIDI
 def Generar_matriz_maxima(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
@@ -565,11 +565,11 @@ def Generar_matriz_maxima(request, idEstudio):
     posicion_salto_linea = actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_maximos = calcular_maxima_influencia(request, idEstudio)
         cantidad_expertos = 0
-        if concenso is True:
-            influencias_consenso = calcular_concenso_mid(estudio.id)
+        if consenso is True:
+            influencias_consenso = calcular_consenso_mid(estudio.id)
             cantidad_expertos = influencias_consenso['num_expertos']
 
         contexto = {'actores': actores,
@@ -581,16 +581,16 @@ def Generar_matriz_maxima(request, idEstudio):
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
-    if concenso is False:
+    if consenso is False:
         return render(request, 'influencia/matriz_maxima.html', contexto)
     else:
-        return render(request, 'influencia/concenso/maxima_concenso.html', contexto)
+        return render(request, 'influencia/consenso/maxima_consenso.html', contexto)
 
 
 # Genera la matriz de coeficientes de fuerza ri de cada actor
 def Generar_matriz_ri(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     valores_ri = calcular_ri(request, idEstudio)
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
@@ -604,22 +604,22 @@ def Generar_matriz_ri(request, idEstudio):
     lista_contexto[len(lista_contexto)-1].posicion = ""
 
     cantidad_expertos = 0
-    if concenso is True:
-        influencias_mid = calcular_concenso_mid(estudio.id)
+    if consenso is True:
+        influencias_mid = calcular_consenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
     contexto = {'lista_contexto': lista_contexto, 'expertos': cantidad_expertos, 'estudio': estudio,
                 'usuario': tipo_usuario}
 
-    if concenso is False:
+    if consenso is False:
         return render(request, 'influencia/matriz_ri.html', contexto)
     else:
-        return render(request, 'influencia/concenso/ri_concenso.html', contexto)
+        return render(request, 'influencia/consenso/ri_consenso.html', contexto)
 
 
 # Genera la matriz de balance liquido
 def Generar_matriz_balance(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
@@ -627,42 +627,42 @@ def Generar_matriz_balance(request, idEstudio):
     tamano_matriz_completa = len(actores) ** 2
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or concenso is True:
+    if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_balance = calcular_balance_liquido(request, idEstudio)
         cantidad_expertos = 0
-        if concenso is True:
-            influencias_mid = calcular_concenso_mid(estudio.id)
+        if consenso is True:
+            influencias_mid = calcular_consenso_mid(estudio.id)
             cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'actores': actores, 'valores_balance': valores_balance, 'posicion_salto': actores.count()+1,
                     'expertos': cantidad_expertos, 'estudio': estudio, 'usuario': tipo_usuario}
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
-    if concenso is False:
+    if consenso is False:
         return render(request, 'influencia/matriz_balance.html', contexto)
     else:
-        return render(request, 'influencia/concenso/balance_concenso.html', contexto)
+        return render(request, 'influencia/consenso/balance_consenso.html', contexto)
 
 
 # Genera la matriz de balance liquido
 def Generar_indicador_estabilidad(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     indicador = calcular_estabilidad(request, idEstudio)
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
     cantidad_expertos = 0
-    if concenso is True:
-        influencias_mid = calcular_concenso_mid(estudio.id)
+    if consenso is True:
+        influencias_mid = calcular_consenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
 
     contexto = {'indicador': indicador, 'expertos': cantidad_expertos, 'estudio': estudio, 'usuario': tipo_usuario}
 
-    if concenso is False:
+    if consenso is False:
         return render(request, 'influencia/indicador_estabilidad.html', contexto)
     else:
-        return render(request, 'influencia/concenso/indicador_estabilidad_concenso.html', contexto)
+        return render(request, 'influencia/consenso/indicador_estabilidad_consenso.html', contexto)
 
 
 # -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
@@ -708,22 +708,22 @@ def Crear_2mao(request, idEstudio):
 # Genera las matrices mao
 def Generar_matriz_mao(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     contexto = crear_contexto_mao(request, idEstudio, int(numero_matriz))
 
     if int(numero_matriz) == 1:
-        if concenso is True:
-            return render(request, 'mao/concenso/concenso_1mao.html', contexto)
+        if consenso is True:
+            return render(request, 'mao/consenso/consenso_1mao.html', contexto)
         else:
             return render(request, 'mao/matriz_1mao.html', contexto)
     elif int(numero_matriz) == 2:
-        if concenso is True:
-            return render(request, 'mao/concenso/concenso_2mao.html', contexto)
+        if consenso is True:
+            return render(request, 'mao/consenso/consenso_2mao.html', contexto)
         else:
             return render(request, 'mao/matriz_2mao.html', contexto)
     elif int(numero_matriz) == 3:
-        if concenso is True:
-            return render(request, 'mao/concenso/concenso_3mao.html', contexto)
+        if consenso is True:
+            return render(request, 'mao/consenso/consenso_3mao.html', contexto)
         else:
             return render(request, 'mao/matriz_3mao.html', contexto)
     else:
@@ -733,7 +733,7 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
 # Genera las matrices de convergencia y divergencia
 def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     numero_matriz = int(numero_matriz)
     if numero_matriz in [1, 2, 3]:
         estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -742,10 +742,10 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         contexto_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
 
         num_expertos = 0
-        if concenso is True:
+        if consenso is True:
             if numero_matriz == 3:
                 numero_matriz = 2  # porque 3mao se calcula apartir de 2mao
-            num_expertos = calcular_concenso_mao(request, estudio.id, numero_matriz)
+            num_expertos = calcular_consenso_mao(request, estudio.id, numero_matriz)
             num_expertos = num_expertos['expertos']
 
         if contexto_mao['estado_matriz'] == MATRIZ_COMPLETA:
@@ -770,8 +770,8 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
                 'mensaje': mensaje,
                 'usuario': tipo_usuario}
 
-        if concenso is True:
-            return render(request, 'mao/concenso/concenso_caa_daa.html', contexto)
+        if consenso is True:
+            return render(request, 'mao/consenso/consenso_caa_daa.html', contexto)
         else:
             return render(request, 'mao/matrices_caa_daa.html', contexto)
     else:
@@ -952,9 +952,9 @@ def calcular_midi(request, idEstudio):
     lista_total = []                # contiene lista_comparacion_minimo concatenado
     valores_midi = []               # contiene los valores correspondientes a MIDI
 
-    if verificar_concenso(request, idEstudio):
-        influencias_mid = calcular_concenso_mid(estudio)
-        influencias_mid = influencias_mid['concenso']
+    if verificar_consenso(request, idEstudio):
+        influencias_mid = calcular_consenso_mid(estudio)
+        influencias_mid = influencias_mid['consenso']
     else:
         influencias_mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by(
             'idActorY', 'idActorX')
@@ -1011,10 +1011,10 @@ def sumar_valores_minimos(request, actorY, idEstudio):
     lista_suma = []  # contiene la suma de los valores minimos establecidos al comparar
 
     # mayor_valores_minimos(request, actorY, idEstudio)
-    # si se accede al concenso midi (en este caso idEstudio = str)
-    if verificar_concenso(request, idEstudio):
-        mid = calcular_concenso_mid(estudio)
-        mid = mid['concenso']
+    # si se accede al consenso midi (en este caso idEstudio = str)
+    if verificar_consenso(request, idEstudio):
+        mid = calcular_consenso_mid(estudio)
+        mid = mid['consenso']
     else:
         mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
@@ -1039,7 +1039,7 @@ def sumar_valores_minimos(request, actorY, idEstudio):
 # Calcula la maxima influencia directa e indirecta idEstudio = str
 def calcular_maxima_influencia(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = int(idEstudio)
     actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
     lista_comparacion_minimo = []  # contiene las sublistas de valores minimos por cada actores Y
@@ -1047,9 +1047,9 @@ def calcular_maxima_influencia(request, idEstudio):
     valores_maximos = []  # contiene los valores que se muestran a la matriz luego de comparar
 
     # muestra la matriz grupal
-    if concenso is True:
-        influencias_mid = calcular_concenso_mid(estudio)
-        influencias_mid = influencias_mid['concenso']
+    if consenso is True:
+        influencias_mid = calcular_consenso_mid(estudio)
+        influencias_mid = influencias_mid['consenso']
     # muestra la matriz diligenciada por el usuario en sesion
     else:
         influencias_mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio,
@@ -1140,9 +1140,9 @@ def obtener_valores_minimos(request, idEstudio, actorY):
     valores_derechos = []  # contiene los valores derechos a comparar
     valores_minimos = []  # contiene los valores minimos establecidos al comparar valores_izquierdos vs derechos
 
-    if verificar_concenso(request, idEstudio):
-        mid = calcular_concenso_mid(estudio)
-        mid = mid['concenso']
+    if verificar_consenso(request, idEstudio):
+        mid = calcular_consenso_mid(estudio)
+        mid = mid['consenso']
     else:
         mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by('idActorY',
                                                                                                    'idActorX')
@@ -1286,7 +1286,7 @@ def calcular_estabilidad(request, idEstudio):
 # Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
 def crear_contexto_mao(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     lista_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
@@ -1296,19 +1296,19 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
     num_expertos = []
 
     if numero_matriz < 3:
-        if concenso is True:
-            lista_mao = calcular_concenso_mao(request, estudio.id, numero_matriz)
+        if consenso is True:
+            lista_mao = calcular_consenso_mao(request, estudio.id, numero_matriz)
             num_expertos = lista_mao['expertos']
-            lista_mao = lista_mao['concenso']
+            lista_mao = lista_mao['consenso']
         else:
             lista_mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=numero_matriz,
                                                 idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
     else:
-        if concenso is True:
-            lista_mao = calcular_concenso_mao(request, estudio.id, numero_matriz)
-            num_expertos = calcular_concenso_mao(request, estudio.id, 2)
+        if consenso is True:
+            lista_mao = calcular_consenso_mao(request, estudio.id, numero_matriz)
+            num_expertos = calcular_consenso_mao(request, estudio.id, 2)
             num_expertos = num_expertos['expertos']
-            lista_mao = lista_mao['concenso']
+            lista_mao = lista_mao['consenso']
         else:
             estado_mao3 = verificar_mid_mao2(request, estudio.id)
             if estado_mao3:
@@ -1643,15 +1643,15 @@ def verificar_mid_mao2(request, idEstudio):
 # Calculo de los valores 3mao = 2mao * ri
 def calcular_valores_3mao(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     cant_objetivos = len(Objetivo.objects.filter(idEstudio=estudio.id).order_by('id'))
     valores_ri = calcular_ri(request, idEstudio)
     valores_3mao = []
 
-    if concenso is True:
-        mao = calcular_concenso_mao(request, estudio.id, 2)
-        mao = mao['concenso']
+    if consenso is True:
+        mao = calcular_consenso_mao(request, estudio.id, 2)
+        mao = mao['consenso']
     else:
         mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2, idExperto=request.user.id).order_by('idActorY',
                                                                                                             'idObjetivoX')
@@ -2082,12 +2082,12 @@ def obtener_datos_estudio(request, idEstudio):
 
 def histograma_mid(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if concenso is True:
-        influencias_mid = calcular_concenso_mid(estudio.id)
+    if consenso is True:
+        influencias_mid = calcular_consenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
     else:
@@ -2106,11 +2106,11 @@ def datos_histograma_mid(request):
         lista_influencias = []
         lista_dependencias = []
 
-        concenso = verificar_concenso(request, request.GET['estudio'])
+        consenso = verificar_consenso(request, request.GET['estudio'])
         valores_mid = []
-        if concenso is True:
-            valores_mid = calcular_concenso_mid(estudio.id)
-            valores_mid = valores_mid['concenso']
+        if consenso is True:
+            valores_mid = calcular_consenso_mid(estudio.id)
+            valores_mid = valores_mid['consenso']
         elif usuario != "COORDINADOR":
             valores_mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                             idExperto=request.user.id).order_by('idActorY', 'idActorX')
@@ -2136,12 +2136,12 @@ def datos_histograma_mid(request):
 
 
 def histograma_ri(request, idEstudio):
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if concenso is True:
-        influencias_mid = calcular_concenso_mid(estudio.id)
+    if consenso is True:
+        influencias_mid = calcular_consenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
     else:
@@ -2152,7 +2152,7 @@ def histograma_ri(request, idEstudio):
 
 def datos_histograma_ri(request):
     if request.is_ajax():
-        valores_ri = calcular_ri(request, request.GET['estudio'])  # str para que verifique si es concenso
+        valores_ri = calcular_ri(request, request.GET['estudio'])  # str para que verifique si es consenso
         estudio = int(request.GET['estudio'])
         actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
         lista_nombres = []
@@ -2172,17 +2172,17 @@ def datos_histograma_ri(request):
 
 def histograma_implicacion(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
     matriz = int(numero_matriz)
 
-    if concenso is True:
-        concenso_mao = calcular_concenso_mao(request, estudio.id, matriz)
+    if consenso is True:
+        consenso_mao = calcular_consenso_mao(request, estudio.id, matriz)
         if matriz != 3:
-            cantidad_expertos = concenso_mao['expertos']
+            cantidad_expertos = consenso_mao['expertos']
         else:
-            cantidad_expertos = calcular_concenso_mao(request, estudio.id, 2)
+            cantidad_expertos = calcular_consenso_mao(request, estudio.id, 2)
             cantidad_expertos = cantidad_expertos['expertos']
 
         contexto = {'estudio': estudio,  'numero_matriz': matriz,
@@ -2195,17 +2195,17 @@ def histograma_implicacion(request, idEstudio, numero_matriz):
 
 def histograma_movilizacion(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
     matriz = int(numero_matriz)
 
-    if concenso is True:
-        concenso_mao = calcular_concenso_mao(request, estudio.id, matriz)
+    if consenso is True:
+        consenso_mao = calcular_consenso_mao(request, estudio.id, matriz)
         if matriz != 3:
-            cantidad_expertos = concenso_mao['expertos']
+            cantidad_expertos = consenso_mao['expertos']
         else:
-            cantidad_expertos = calcular_concenso_mao(request, estudio.id, 2)
+            cantidad_expertos = calcular_consenso_mao(request, estudio.id, 2)
             cantidad_expertos = cantidad_expertos['expertos']
 
         contexto = {'estudio': estudio,  'numero_matriz': matriz,
@@ -2266,10 +2266,10 @@ def datos_histogramas_mao(request):
 
 def histograma_caa_daa(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
-    if concenso is True:
+    if consenso is True:
         num_expertos = valores_mao = crear_contexto_mao(request, idEstudio, int(numero_matriz))
         num_expertos = num_expertos['expertos']
         contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
@@ -2314,12 +2314,12 @@ def datos_histograma_caa_daa(request):
 
 def generar_mapa_midi(request, idEstudio):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
-    if concenso is True:
-        influencias_mid = calcular_concenso_mid(estudio.id)
+    if consenso is True:
+        influencias_mid = calcular_consenso_mid(estudio.id)
         cantidad_expertos = influencias_mid['num_expertos']
         contexto = {'estudio': estudio, 'usuario': usuario, 'expertos': cantidad_expertos}
     else:
@@ -2370,11 +2370,11 @@ def datos_mapa_midi(request):
 
 def generar_mapa_caa_daa(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
-    if concenso is True:
-        influencias_mao = calcular_concenso_mao(request, estudio.id, int(numero_matriz))
+    if consenso is True:
+        influencias_mao = calcular_consenso_mao(request, estudio.id, int(numero_matriz))
         cantidad_expertos = influencias_mao['expertos']
         contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
                     'usuario': usuario, 'expertos': cantidad_expertos}
@@ -2426,11 +2426,11 @@ def datos_mapa_caa_daa(request):
 
 def generar_grafo_caa(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
-    if concenso is True:
-        influencias_mao = calcular_concenso_mao(request, estudio.id, int(numero_matriz))
+    if consenso is True:
+        influencias_mao = calcular_consenso_mao(request, estudio.id, int(numero_matriz))
         cantidad_expertos = influencias_mao['expertos']
         contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
                     'usuario': usuario, 'expertos': cantidad_expertos}
@@ -2492,11 +2492,11 @@ def datos_grafo_caa(request):
 
 def generar_grafo_daa(request, idEstudio, numero_matriz):
 
-    concenso = verificar_concenso(request, idEstudio)
+    consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
-    if concenso is True:
-        influencias_mao = calcular_concenso_mao(request, estudio.id, int(numero_matriz))
+    if consenso is True:
+        influencias_mao = calcular_consenso_mao(request, estudio.id, int(numero_matriz))
         cantidad_expertos = influencias_mao['expertos']
         contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
                     'usuario': usuario, 'expertos': cantidad_expertos}
@@ -2575,18 +2575,17 @@ def limpiar_matriz(lista_valores, actores):
 
 # -------------------------------------------CONSENSO----------------------------------------------------------
 
-# Verifica si el usuario desea visuaizar un concenso
-def verificar_concenso(request, idEstudio):
+# Verifica si el usuario desea visuaizar un consenso
+def verificar_consenso(request, idEstudio):
 
-    concenso = False
+    consenso = False
     tipo_usuario = obtener_tipo_usuario(request, int(idEstudio))
     if tipo_usuario == "COORDINADOR" or type(idEstudio) == str and idEstudio[0] == '0':
-        concenso = True
-    print(concenso)
-    return concenso
+        consenso = True
+    return consenso
 
 
-def activar_concenso_influencias(request, idEstudio, tipo):
+def activar_consenso_influencias(request, idEstudio, tipo):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
@@ -2614,39 +2613,39 @@ def activar_concenso_influencias(request, idEstudio, tipo):
         raise Http404("Error: Esta vista no existe")
 
 
-# Calcula el concenso de la matriz mid
-def calcular_concenso_mid(idEstudio):
+# Calcula el consenso de la matriz mid
+def calcular_consenso_mid(idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tamano_matriz_completa = len(actores)*len(actores)
-    lista_concenso = []
+    lista_consenso = []
     contador = 0
 
     for experto in lista_expertos:
         consulta = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                         idExperto=experto.id).order_by('idActorY', 'idActorX')
-        if len(consulta) == tamano_matriz_completa and len(lista_concenso) == 0:
-            lista_concenso = consulta
+        if len(consulta) == tamano_matriz_completa and len(lista_consenso) == 0:
+            lista_consenso = consulta
             contador += 1
         elif len(consulta) == tamano_matriz_completa:
             contador += 1
-            for i in range(len(lista_concenso)):
-                lista_concenso[i].valor += consulta[i].valor
+            for i in range(len(lista_consenso)):
+                lista_consenso[i].valor += consulta[i].valor
 
-    if len(lista_concenso) > 0:
-        for i in lista_concenso:
+    if len(lista_consenso) > 0:
+        for i in lista_consenso:
             i.valor = round(i.valor / contador)
 
     cantidad = str(contador) + "/" + str(len(lista_expertos))
-    calculo = {'concenso': lista_concenso, 'num_expertos': cantidad}
+    calculo = {'consenso': lista_consenso, 'num_expertos': cantidad}
 
     return calculo
 
 
-# Agrega un cero al inicio del idEstudio para activar el concenso mao
-def activar_concenso_mao(request, idEstudio, matriz, tipo):
+# Agrega un cero al inicio del idEstudio para activar el consenso mao
+def activar_consenso_mao(request, idEstudio, matriz, tipo):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
@@ -2663,8 +2662,8 @@ def activar_concenso_mao(request, idEstudio, matriz, tipo):
         raise Http404("Error: Esta vista no existe")
 
 
-# Agrega un cero al inicio del idEstudio para activar el concenso de matrices de convergencia y divergencia
-def activar_concenso_caa_daa(request, idEstudio, matriz, tipo):
+# Agrega un cero al inicio del idEstudio para activar el consenso de matrices de convergencia y divergencia
+def activar_consenso_caa_daa(request, idEstudio, matriz, tipo):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     idEstudio = "0" + str(estudio.id)
@@ -2685,8 +2684,8 @@ def activar_concenso_caa_daa(request, idEstudio, matriz, tipo):
         raise Http404("Error: Esta vista no existe")
 
 
-# Calcula el concenso de las matrices 1mao y 2mao
-def calcular_concenso_mao(request, idEstudio, num_matriz):
+# Calcula el consenso de las matrices 1mao y 2mao
+def calcular_consenso_mao(request, idEstudio, num_matriz):
 
     estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
@@ -2763,7 +2762,7 @@ def calcular_concenso_mao(request, idEstudio, num_matriz):
                 consulta_base[i].valor = 4
 
     cantidad = str(contador) + "/" + str(len(lista_expertos))
-    resultado = {'concenso': consulta_base, 'expertos': cantidad}
+    resultado = {'consenso': consulta_base, 'expertos': cantidad}
 
     return resultado
 

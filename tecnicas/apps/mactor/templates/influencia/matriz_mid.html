@@ -23,7 +23,7 @@
                                         <option value="">Análisis MID</option>
                                         <option value="{% url 'mactor:histograma_mid' estudio.id %}">Histograma Influencia - Dependencia</option>
                                          {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                            <option value="{% url 'mactor:concenso_influencias' estudio.id 1 %}">Concenso MID</option>
+                                            <option value="{% url 'mactor:consenso_influencias' estudio.id 1 %}">Consenso MID</option>
                                          {% endif %}
                                      </select>
                                     {% endif %}

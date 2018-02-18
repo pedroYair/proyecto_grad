@@ -23,7 +23,7 @@
                                     {% if valores_balance and usuario == 'COORDINADOR_EXPERTO' %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis Balance Líquido</option>
-                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 4 %}">Concenso Balance</option>
+                                        <option value="{% url 'mactor:consenso_influencias' estudio.id 4 %}">Consenso Balance</option>
                                      </select>
                                     {% endif %}
                                 </div>
@@ -92,33 +92,29 @@
         <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                             <div class="modal-content">
-                                             <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                            <h4 class="modal-title">Ayuda</h4>
-                                             </div>
-                                             <div class="modal-body" style="text-align: justify">
-                                            <p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
-                                                que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
-                                                influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
-                                                procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
-                                                de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
-                                                de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
-                                                existencia o permanencia de otro (4).
-                                            </p>
-                                                 <br>
-                                            <p>La columna Influencia Directa (Inf. D), representa la influencia total que determinado
-                                                actor ejerce en el grupo de actores estudiado. Mientras que la columna Dependencia Directa
-                                                (Dep. D), la influencia total que el resto de actores ejerce sobre ese actor.
-                                            </p>
-                                             </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-                                          </div>
-                                            </div>
-                                        </div>
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 class="modal-title">Ayuda - Matriz de Balance Líquido</h4>
+                                </div>
+                                <div class="modal-body" style="text-align: justify">
+                                    <p>
+                                        El balance neto permite conocer si un actor, en términos netos, influye más de lo
+                                        que es influenciado. Corresponde a la diferencia entre la influencia directa e
+                                        indirecta del actor i sobre el actor j y la influencia directa e indirecta de j
+                                        sobre i. Si el valor es positivo, significa que el actor i influye directa e
+                                        indirectamente en el actor j más, de lo que es influenciado por ese actor; si la
+                                        sumatoria del actor i es negativa, indica que su dependencia es mayor a su
+                                        influencia(Castro y Perestrelo, 2000).
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                </div>
                             </div>
+                        </div>
+                    </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>

@@ -16,7 +16,7 @@
                     <div class="col-md-10">
                         <div class="widget wblue">
                             <div class="widget-head">
-                                 <div class="pull-left">Concenso - Matriz de Máxima Influencia Directa e Indirecta</div>
+                                 <div class="pull-left">Consenso - Matriz de Máxima Influencia Directa e Indirecta</div>
                                 <div class="widget-icons pull-right"></div>
                                 <div class="clearfix"></div>
                             </div>
@@ -73,13 +73,13 @@
                 </div>
             </div>
 
-        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
         <br>
 
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
-                <a class="btn btn-sm btn-success" href="{%url 'mactor:concenso_influencias' estudio.id 2%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:consenso_influencias' estudio.id 2%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
             </div>
         </div>
@@ -91,33 +91,24 @@
         <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                             <div class="modal-content">
-                                             <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                            <h4 class="modal-title">Ayuda</h4>
-                                             </div>
-                                             <div class="modal-body" style="text-align: justify">
-                                            <p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
-                                                que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
-                                                influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
-                                                procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
-                                                de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
-                                                de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
-                                                existencia o permanencia de otro (4).
-                                            </p>
-                                                 <br>
-                                            <p>La columna Influencia Directa (Inf. D), representa la influencia total que determinado
-                                                actor ejerce en el grupo de actores estudiado. Mientras que la columna Dependencia Directa
-                                                (Dep. D), la influencia total que el resto de actores ejerce sobre ese actor.
-                                            </p>
-                                             </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-                                          </div>
-                                            </div>
-                                        </div>
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                                    <h4 class="modal-title">Ayuda - Matriz de de Máxima Influencia Directa e Indirecta</h4>
+                                </div>
+                                <div class="modal-body" style="text-align: justify">
+                                    <p>La Matriz de de Máxima Influencia Directa e Indirecta permite identificar el nivel
+                                        máximo de influencia que un actor puede ejercer sobre otro, ya sea de forma directa,
+                                        o indirecta (Perestrelo y Castro, 2000).
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                </div>
                             </div>
+                        </div>
+                    </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>

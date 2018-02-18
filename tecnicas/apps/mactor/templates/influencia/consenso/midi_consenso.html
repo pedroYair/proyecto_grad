@@ -18,14 +18,14 @@
                     <div class="col-md-10">
                         <div class="widget wblue">
                             <div class="widget-head">
-                                <div class="pull-left">Concenso - Matriz de Influencias Directas e Indirectas</div>
+                                <div class="pull-left">Consenso - Matriz de Influencias Directas e Indirectas</div>
                                 <div class="widget-icons pull-right">
                                     {% if valores_midi %}
                                      <select name="graficos_midi" class="form-control" onchange="location = this.value;">
-                                        <option value="">Análisis Concenso MIDI</option>
-                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 8 %}">Mapa de actores</option>
-                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 5 %}">Coeficiente de fuerza Ri</option>
-                                        <option value="{% url 'mactor:concenso_influencias' estudio.id 6 %}">Coeficiente de estabilidad H</option>
+                                        <option value="">Análisis Consenso MIDI</option>
+                                        <option value="{% url 'mactor:consenso_influencias' estudio.id 8 %}">Mapa de actores</option>
+                                        <option value="{% url 'mactor:consenso_influencias' estudio.id 5 %}">Coeficiente de fuerza Ri</option>
+                                        <option value="{% url 'mactor:consenso_influencias' estudio.id 6 %}">Coeficiente de estabilidad H</option>
                                      </select>
                                     {% endif %}
                                 </div>
@@ -84,7 +84,7 @@
                 </div>
             </div>
 
-        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
         <br>
 
         <!--BOTONES---------------------------------------------------------------------------------------------------->
@@ -96,8 +96,8 @@
                 <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="MID"><i class="fa fa-arrow-left"></i> Matriz MID</a>
                 {% endif %}
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" href="{%url 'mactor:concenso_influencias' estudio.id 3%}"><i class="fa fa-table"></i> MAX</a>
-                <a class="btn btn-primary" href="{%url 'mactor:concenso_influencias' estudio.id 4%}"><i class="fa fa-table"></i> BL</a>
+                <a class="btn btn-primary" href="{%url 'mactor:consenso_influencias' estudio.id 3%}"><i class="fa fa-table"></i> MAX</a>
+                <a class="btn btn-primary" href="{%url 'mactor:consenso_influencias' estudio.id 4%}"><i class="fa fa-table"></i> BL</a>
             </div>
         </div>
 
