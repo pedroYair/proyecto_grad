@@ -24,7 +24,7 @@
                                         <option value="{% url 'mactor:grafo_caa' estudio.id numero_matriz %}">Grafo de Convergencias</option>
                                         <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                        <option value="{%url 'mactor:concenso_caa_daa' estudio.id numero_matriz 1%}">Concenso CAA - DAA</option>
+                                        <option value="{%url 'mactor:consenso_caa_daa' estudio.id numero_matriz 1%}">Consenso CAA - DAA</option>
                                         {% endif %}
                                     </select>
                                 </div>
@@ -102,7 +102,7 @@
                                         <option value="{% url 'mactor:grafo_daa' estudio.id numero_matriz %}">Grafo de Divergencias</option>
                                         <option value="{% url 'mactor:hist_caa_daa' estudio.id numero_matriz %}">Histograma CAA - DAA</option>
                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                        <option value="{%url 'mactor:concenso_caa_daa' estudio.id numero_matriz 1%}">Concenso CAA - DAA</option>
+                                        <option value="{%url 'mactor:consenso_caa_daa' estudio.id numero_matriz 1%}">Consenso CAA - DAA</option>
                                         {% endif %}
                                     </select>
                                 </div>
@@ -167,9 +167,9 @@
         <!--BOTONES----------------------------------------------------------------------------------------------------->
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:mapa_caa_daa' estudio.id numero_matriz%}"><i class="fa fa-area-chart"></i> Mapa</a>
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id numero_matriz%}" title="Atrás"><i class="fa fa-arrow-left"></i> {{numero_matriz}}MAO</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book" title="Ayuda"></i> Ayuda</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:mapa_caa_daa' estudio.id numero_matriz%}" title="Mapa de convergencias y divergencias"><i class="fa fa-area-chart"></i> Mapa</a>
                         </div>
                     </div>
 
@@ -180,32 +180,29 @@
         <!--MODAL AYUDA------------------------------------------------------------------------------------------>
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                             <div class="modal-content">
-                                             <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                            <h4 class="modal-title">Ayuda</h4>
-                                             </div>
-                                             <div class="modal-body" style="text-align: justify">
-                                            <p>La matriz 1MAO describe la actitud actual de cada actor
-                                                en relación a cada objetivo, indicando su posición a favor (+1), en contra (-1) o
-                                                neutra (0) hacia el alcance de cada objetivo. </p><br>
-                                                 <p>Mediante la información contenida en ella, se obtiene la primera matriz de
-                                                 convergencias (1CAA) y divergencias (1DAA). La primera se obtiene por el
-                                                 producto de la matriz que contiene sólo productos escalares positivos, lo que
-                                                 representa el número de objetivos respecto a los cuales un par de actores tiene
-                                                 una actitud convergente, ya sea favorable o desfavorable. Por otro lado, 1DAA
-                                                 se obtiene por el producto de la matriz que contiene sólo productos escalares
-                                                 negativos, lo que representa el número de objetivos respecto de los cuales el
-                                                 par de actores tiene una actitud divergente.
-          </p>
-                                             </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-                                          </div>
-                                            </div>
-                                        </div>
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title">Ayuda - Matrices de convergencia y divergencia</h4>
+                                </div>
+                                <div class="modal-body" style="text-align: justify">
+                                    <p>A partir de cada  matriz MAO se calculan las siguientes matrices:<br>
+                                        <i class="fa fa-check"></i> CAA, que se obtiene por el producto de la matriz que
+                                        contiene sólo productos escalares positivos, y representa el número de objetivos
+                                        respecto a los cuales un par de actores tiene una actitud convergente, ya sea
+                                        favorable o desfavorable.<br>
+                                        <i class="fa fa-check"></i>DAA, que se obtiene por el producto de la matriz que
+                                        contiene sólo productos escalares negativos, lo que representa el número de
+                                        objetivos respecto de los cuales el par de actores tiene una actitud divergente.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                </div>
                             </div>
+                        </div>
+                    </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>

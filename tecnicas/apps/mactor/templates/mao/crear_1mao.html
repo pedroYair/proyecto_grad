@@ -20,7 +20,6 @@
 									</div>
 									<div class="widget-content">
 									  <div class="padd">
-
 										<hr/>
 					<!-- Form starts. ----- ------------------------------------>
 											<form class="form-horizontal" role="form" method="post" id="form_1mao">
@@ -42,14 +41,14 @@
 												  			<label class="control-label" style="text-align: left">Relación del actor</label>
                                                     		<select name="idActorY" class="form-control" required id="id_idActorY">
                                                     			{% if estudio.estado is True %}
-																			{% if actores %}
-																				<option value="" selected>----Seleccionar----</option>
-																				{% for actor in actores %}
-																				<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
-																				{% endfor %}
-																			{% else %}
-																			 <option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
-																			{% endif %}
+																	{% if actores %}
+																		<option value="" selected>----Seleccionar----</option>
+																		{% for actor in actores %}
+																			<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
+																		{% endfor %}
+																	{% else %}
+																		<option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
+																	{% endif %}
 																{% else %}
 																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
 																{% endif %}				
@@ -71,21 +70,20 @@
 												  			<label class="control-label" style="text-align: left">Sobre el objetivo</label>
                                                     		<select name="idObjetivoX" class="form-control" required id="id_idObjetivoX">
                                                     			{% if estudio.estado is True %}
-																			{% if objetivos %}
-																				<option value="" selected>----Seleccionar----</option>
-																				{% for objetivo in objetivos %}
-																				<option value="{{objetivo.id}}">{{objetivo.nombreCorto}} - {{objetivo.nombreLargo}}</option>
-																				{% endfor %}
-																			{% else %}
-																			 <option value="" selected>----NO SE HAN REGISTRADO OBJETIVOS EN ESTE ESTUDIO----</option>
-																			{% endif %}
+																	{% if objetivos %}
+																		<option value="" selected>----Seleccionar----</option>
+																		{% for objetivo in objetivos %}
+																		<option value="{{objetivo.id}}">{{objetivo.nombreCorto}} - {{objetivo.nombreLargo}}</option>
+																		{% endfor %}
+																	{% else %}
+																		<option value="" selected>----NO SE HAN REGISTRADO OBJETIVOS EN ESTE ESTUDIO----</option>
+																	{% endif %}
 																{% else %}
 																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
 																{% endif %}			
 															</select>
 														</div>
 													</div>
-
 
                                                 	<div class="col-md-2 col-md-offset-1">
 														<div class="form-group">
@@ -123,36 +121,41 @@
 
 												<div class="form-group">
 												  <div class="col-md-offset-2 col-md-8">
-													   <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mid' estudio.id %}"><i class="fa fa-arrow-left"></i> Matriz MID</a>
-                                                     	<button type="submit" class="btn btn-sm btn-primary"><i class="fa fa-plus"></i> Guardar</button>
-													  	<a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                                                      	<a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}">Matriz 1MAO <i class="fa fa-arrow-right"></i></a>
+													   <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mid' estudio.id %}" title="Matriz de Influencias Directas"><i class="fa fa-arrow-left"></i> Matriz MID</a>
+                                                     	<button type="submit" class="btn btn-sm btn-primary" title="Guardar influencia 1MAO"><i class="fa fa-plus"></i> Guardar</button>
+													  	<a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                                                      	<a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}" title="Matriz de posiciones simples 1MAO">Matriz 1MAO <i class="fa fa-arrow-right"></i></a>
 												  </div>
-
-
 												</div>
 											</form>
 
 <! INICIO MODAL AYUDA--------------------------->
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     <div class="modal-header">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-									<h4 class="modal-title">Ayuda</h4>
-								     </div>
-								     <div class="modal-body" style="text-align: justify">
-									<p>Teniendo en cuenta que las estrategias de convergencia y divergencia entre los actores
-                                        varían de un objetivo a otro, se describe la actitud actual de cada actor
-                                        en relación a cada objetivo, indicando su posición a favor (+1), en contra (-1) o
-                                        neutra (0) hacia el alcance de cada objetivo. </p>
-								     </div>
-								  <div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-								  </div>
-								    </div>
+									<h4 class="modal-title">Ayuda - Influencias 1MAO</h4>
 								</div>
+								<div class="modal-body" style="text-align: justify">
+									<p>Teniendo en cuenta que las estrategias de convergencia y divergencia entre los
+										actores varían de un objetivo a otro, se evalua mediante las posiciones simples
+										1MAO la actitud actual de cada actor respecto a cada objetivo, indicando para ello
+										su posición de acuerdo a los siguientes valores:<br>
+                                        <i class="fa fa-check"></i>(1): el actor es favorable al alcance del objetivo.<br>
+                                        <i class="fa fa-check"></i>(-1): el actor está en contra o es
+                                        desfavorable al alcance del objetivo.<br>
+                                        <i class="fa fa-check"></i>(0): el actor posee una posición neutra hacia el
+                                        alcance del objetivo.<br><br>
+                                        (Arcade, Godet, Meunier, & Roubelat, 2004)
+									</p>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+								</div>
+							</div>
+						</div>
                     </div>
 
 									  </div>

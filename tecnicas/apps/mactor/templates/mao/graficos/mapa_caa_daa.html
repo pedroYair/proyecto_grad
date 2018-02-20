@@ -121,7 +121,7 @@
 
 <br>
 {% if expertos %}
-    <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+    <p><h5>Expertos en consenso = {{expertos}}</h5></p>
 {% endif %}
 <h6>Mapa de Convergencias y Divergencias entre Actores {{numero_matriz}}CAA - {{numero_matriz}}DAA.</h6>
 <br>
@@ -129,14 +129,41 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if expertos %}
-                <a class="btn btn-sm btn-success" href="{%url 'mactor:concenso_caa_daa' estudio.id numero_matriz 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:consenso_caa_daa' estudio.id numero_matriz 1%}" title="Matrices CAA-DAA"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% else %}
-                <a class="btn btn-sm btn-success" href="{%url 'mactor:caa_daa' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:caa_daa' estudio.id numero_matriz%}" title="Matrices CCA-DAA"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% endif %}
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
             </div>
         </div>
+
+        <!--MODAL AYUDA------------->
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Ayuda - Mapa de convergencias y divergencias</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: justify">
+                        <p>
+                          El presente diagrama visualiza, mediante un plano cartesiano el nivel de convergencia y
+                            divergencia de los actores. De acuerdo a Godet(1993), el analisis de favorabilidad y
+                            desacuerdo de los actores permite identificar posibles:<br>
+                            <i class="fa fa-check"></i> Alianzas: relaciónes establecidas entre dos o más actores, que
+                            presentan posiciones semejantes respecto a una o más variables del sistema.<br>
+                            <i class="fa fa-check"></i> Conflictos: resultado de la confrontación de estrategias
+                            antagónicas entre actores frente a una misma variable, cuya resolución determina la
+                            evolución de las relaciones de fuerza entre los mismos.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">

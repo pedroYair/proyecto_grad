@@ -104,18 +104,42 @@
             </script>
 <br>
 {% if expertos %}
-    <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+    <p><h5>Expertos en consenso = {{expertos}}</h5></p>
 {% endif %}
 <h6>Matriz {{numero_matriz}}MAO.</h6>
 <br>
 <br>
         <div class="form-group">
-                        <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
-                        </div>
+            <div class="col-md-offset-2 col-md-8">
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mao' estudio.id numero_matriz%}" title="Atrás"><i class="fa fa-arrow-left"></i> {{numero_matriz}}MAO</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+            </div>
         </div>
+
+        <!--MODAL AYUDA------------->
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Ayuda - Histograma de Implicación</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: justify">
+                        <p>De acuerdo a Castro y Perestrelo (2000), el grado de implicación corresponde al número de
+                            objetivos para los que cada actor tiene una posición activa, concordante o discordante.
+                            <br>
+                            <br>
+                          El presente diagrama visualiza, el grado de favorabilidad(implicación positiva) y el grado
+                            de desacuerdo (implicación negativa) que cada actor presenta ante los objetivos del estudio.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>

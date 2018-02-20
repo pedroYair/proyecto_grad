@@ -16,13 +16,13 @@
                     <div class="col-md-10">
                         <div class="widget wblue">
                             <div class="widget-head">
-                                 <div class="pull-left">Concenso - Matriz de Convergencias {{numero_matriz}}CAA</div>
+                                 <div class="pull-left">Consenso - Matriz de Convergencias {{numero_matriz}}CAA</div>
                                 {% if actores %}
                                 <div class="widget-icons pull-right">
                                     <select name="caa" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis CAA</option>
-                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 4%}">Grafo de Convergencias</option>
-                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 3%}">Histograma CAA - DAA</option>
+                                        <option value="{% url 'mactor:consenso_caa_daa' estudio.id numero_matriz 4%}">Grafo de Convergencias</option>
+                                        <option value="{% url 'mactor:consenso_caa_daa' estudio.id numero_matriz 3%}">Histograma CAA - DAA</option>
                                     </select>
                                 </div>
                                 {% endif %}
@@ -82,7 +82,7 @@
             </div>
 
         {% if expertos %}
-        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
         {% else %}
         <p><h5>Ningún experto ha finalizado la matriz {{numero_matriz}}MAO.</h5></p>
         {% endif %}
@@ -96,13 +96,13 @@
                     <div class="col-md-10">
                         <div class="widget wblue">
                             <div class="widget-head">
-                                 <div class="pull-left">Concenso - Matriz de Divergencias - {{numero_matriz}}DAA</div>
+                                 <div class="pull-left">Consenso - Matriz de Divergencias - {{numero_matriz}}DAA</div>
                                 {% if actores %}
                                 <div class="widget-icons pull-right">
                                     <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
                                         <option value="">Análisis DAA</option>
-                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 5%}">Grafo de Divergencias</option>
-                                        <option value="{% url 'mactor:concenso_caa_daa' estudio.id numero_matriz 3%}">Histograma CAA - DAA</option>
+                                        <option value="{% url 'mactor:consenso_caa_daa' estudio.id numero_matriz 5%}">Grafo de Divergencias</option>
+                                        <option value="{% url 'mactor:consenso_caa_daa' estudio.id numero_matriz 3%}">Histograma CAA - DAA</option>
                                     </select>
                                 </div>
                                 {% endif %}
@@ -163,7 +163,7 @@
         </div>
 
         {% if expertos %}
-        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
         {% else %}
         <p><h5>Ningún experto ha finalizado la matriz {{numero_matriz}}MAO.</h5></p>
         {% endif %}
@@ -177,7 +177,7 @@
                 <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Matriz {{numero_matriz}}MAO</a>
                 {% endif %}
                 <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:concenso_caa_daa' estudio.id numero_matriz 2%}"><i class="fa fa-area-chart"></i> Mapa</a>
+                <a class="btn btn-primary" data-toggle="modal" href="{%url 'mactor:consenso_caa_daa' estudio.id numero_matriz 2%}"><i class="fa fa-area-chart"></i> Mapa</a>
             </div>
         </div>
 
@@ -186,34 +186,31 @@
         {% include 'actor/modal_detalle_actor.html' %}
 
         <!--MODAL AYUDA------------------------------------------------------------------------------------------>
+         <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+             <div class="modal-dialog">
+                 <div class="modal-content">
+                     <div class="modal-header">
+                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                         <h4 class="modal-title">Ayuda - Matrices de convergencia y divergencia</h4>
+                     </div>
+                     <div class="modal-body" style="text-align: justify">
+                         <p>A partir de cada  matriz MAO se calculan las siguientes matrices:<br>
+                             <i class="fa fa-check"></i> CAA, que se obtiene por el producto de la matriz que
+                             contiene sólo productos escalares positivos, y representa el número de objetivos
+                             respecto a los cuales un par de actores tiene una actitud convergente, ya sea
+                             favorable o desfavorable.<br>
+                             <i class="fa fa-check"></i>DAA, que se obtiene por el producto de la matriz que
+                             contiene sólo productos escalares negativos, lo que representa el número de
+                             objetivos respecto de los cuales el par de actores tiene una actitud divergente.
+                         </p>
+                     </div>
+                     <div class="modal-footer">
+                         <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                     </div>
+                 </div>
+             </div>
+         </div>
 
-                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                             <div class="modal-content">
-                                             <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                            <h4 class="modal-title">Ayuda</h4>
-                                             </div>
-                                             <div class="modal-body" style="text-align: justify">
-                                            <p>La matriz 1MAO describe la actitud actual de cada actor
-                                                en relación a cada objetivo, indicando su posición a favor (+1), en contra (-1) o
-                                                neutra (0) hacia el alcance de cada objetivo. </p><br>
-                                                 <p>Mediante la información contenida en ella, se obtiene la primera matriz de
-                                                 convergencias (1CAA) y divergencias (1DAA). La primera se obtiene por el
-                                                 producto de la matriz que contiene sólo productos escalares positivos, lo que
-                                                 representa el número de objetivos respecto a los cuales un par de actores tiene
-                                                 una actitud convergente, ya sea favorable o desfavorable. Por otro lado, 1DAA
-                                                 se obtiene por el producto de la matriz que contiene sólo productos escalares
-                                                 negativos, lo que representa el número de objetivos respecto de los cuales el
-                                                 par de actores tiene una actitud divergente.
-                                                 </p>
-                                             </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-                                          </div>
-                                            </div>
-                                        </div>
-                            </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>

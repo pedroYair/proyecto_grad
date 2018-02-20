@@ -22,7 +22,7 @@
                                         <option value="{% url 'mactor:implicacion' estudio.id 1 %}">Histograma de Implicaciones</option>
                                         <option value="{% url 'mactor:movilizacion' estudio.id 1 %}">Histograma de Movilizaciones</option>
                                         {% if usuario == 'COORDINADOR_EXPERTO' %}
-                                        <option value="{% url 'mactor:concenso_mao' estudio.id 1 0 %}">Concenso 1MAO</option>
+                                        <option value="{% url 'mactor:consenso_mao' estudio.id 1 0 %}">Consenso 1MAO</option>
                                         {% endif %}
                                     </select>
                                 </div>
@@ -40,10 +40,10 @@
         <!--BOTONES----------------------------------------------------------------------------------------------------->
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:1mao' estudio.id%}"><i class="fa fa-arrow-left"></i> Inf. 1MAO</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:caa_daa' estudio.id 1%}"><i class="fa fa-table"></i> CAA-DAA</a>
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao' estudio.id%}">Inf. 2MAO<i class="fa fa-arrow-right"></i></a>
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:1mao' estudio.id%}" title="Formulario 1MAO"><i class="fa fa-arrow-left"></i> Inf. 1MAO</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                            <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:caa_daa' estudio.id 1%}" title="Matrices de convergencias y divergencias 1MAO"><i class="fa fa-table"></i> CAA-DAA</a>
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao' estudio.id%}" title="Formulario 2MAO">Inf. 2MAO<i class="fa fa-arrow-right"></i></a>
                         </div>
                     </div>
 
@@ -53,29 +53,29 @@
 
                     {% include 'objetivo/modal_detalle_objetivo.html' %}
 
-
         <!--MODAL AYUDA------------------------------------------------------------------------------------------>
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                             <div class="modal-content">
-                                             <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                                            <h4 class="modal-title">Ayuda</h4>
-                                             </div>
-                                             <div class="modal-body" style="text-align: justify">
-                                            <p>La matriz 1MAO describe la actitud actual de cada actor
-                                                en relación a cada objetivo, indicando su posición a favor (+1), en contra (-1) o
-                                                neutra (0) hacia el alcance de cada objetivo. </p><br>
-                                                 <p>Mediante la información contenida en ella, se obtiene la primera matriz de
-                                                 convergencias (1CAA) y divergencias (1DAA). La primera se obtiene por el
-                                                 producto de la matriz que contiene sólo productos escalares positivos, lo que
-                                                 representa el número de objetivos respecto a los cuales un par de actores tiene
-                                                 una actitud convergente, ya sea favorable o desfavorable. Por otro lado, 1DAA
-                                                 se obtiene por el producto de la matriz que contiene sólo productos escalares
-                                                 negativos, lo que representa el número de objetivos respecto de los cuales el
-                                                 par de actores tiene una actitud divergente.
-          </p>
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title">Ayuda - Matriz de Posiciones Simples (1MAO)</h4>
+                                </div>
+                                <div class="modal-body" style="text-align: justify">
+                                    <p>La matriz 1MAO describe la actitud actual de cada actor
+                                        en relación a cada objetivo, indicando su posición a favor (+1), en contra (-1) o
+                                        neutra (0) hacia el alcance de cada objetivo (Arcade, Godet, Meunier, & Roubelat, 2004).</p><br>
+
+                                    <p>De acuerdo a Castro y Perestrelo (2000):<br>
+                                        <i class="fa fa-check"></i> La suma en fila, indica el grado de implicación de cada actor en los objetivos
+                                        estudiados, es decir, el número de objetivos para los que cada actor tiene una
+                                        posición activa, concordante o discordante.<br>
+
+                                        <i class="fa fa-check"></i> La suma en columna indica el grado de movilización de los objetivos, es decir,
+                                        el número de actores que tienen una posición activa, de acuerdo o desacuerdo,
+                                        para cada objetivo.
+                                    </p>
                                              </div>
                                           <div class="modal-footer">
                                             <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>

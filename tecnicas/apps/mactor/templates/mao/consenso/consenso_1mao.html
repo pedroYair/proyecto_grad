@@ -15,12 +15,12 @@
                     <div class="col-md-10">
                         <div class="widget wblue">
                             <div class="widget-head">
-                                 <div class="pull-left">Concenso - Matriz de Posiciones Simples 1MAO</div>
+                                 <div class="pull-left">Consenso - Matriz de Posiciones Simples 1MAO</div>
                                 <div class="widget-icons pull-right">
                                     <select name="idObjetivoX" class="form-control" onchange="location = this.value;">
-                                        <option value="">Análisis concenso</option>
-                                        <option value="{% url 'mactor:concenso_mao' estudio.id 1 4%}">Histograma de Implicaciones</option>
-                                        <option value="{% url 'mactor:concenso_mao' estudio.id 1 5%}">Histograma de Movilizaciones</option>
+                                        <option value="">Análisis consenso</option>
+                                        <option value="{% url 'mactor:consenso_mao' estudio.id 1 4%}">Histograma de Implicaciones</option>
+                                        <option value="{% url 'mactor:consenso_mao' estudio.id 1 5%}">Histograma de Movilizaciones</option>
                                     </select>
                                 </div>
                                 <div class="clearfix"></div>
@@ -33,7 +33,7 @@
                 </div>
         </div>
         {% if expertos %}
-        <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
         {% else %}
         <p><h5>Ningún experto ha finalizado la matriz 1MAO</h5></p>
         {% endif %}
@@ -44,13 +44,13 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if usuario == 'COORDINADOR_EXPERTO' %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}" title="Atrás"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% else %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="MID"><i class="fa fa-arrow-left"></i> Matriz MID</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="Matriz de Influencias Directas"><i class="fa fa-arrow-left"></i> Matriz MID</a>
                 {% endif %}
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:concenso_caa_daa' estudio.id 1 1%}"><i class="fa fa-table"></i> CAA-DAA</a>
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 2%}">Matriz 2MAO <i class="fa fa-arrow-right"></i></a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:consenso_caa_daa' estudio.id 1 1%}" title="Matrices de convergencia y divergencia"><i class="fa fa-table"></i> CAA-DAA</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 2%}" title="Matriz Valorada de Posiciones">Matriz 2MAO <i class="fa fa-arrow-right"></i></a>
             </div>
         </div>
 
