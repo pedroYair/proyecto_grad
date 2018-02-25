@@ -77,20 +77,47 @@
 </script>
 
 {% if expertos %}
-    <p><h5>Expertos en concenso = {{expertos}}</h5></p>
+    <p><h5>Expertos en consenso = {{expertos}}</h5></p>
 {% endif %}
 <br>
+
+        <!--BOTONES-------->
+
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if expertos %}
-                <a class="btn btn-sm btn-success" href="{%url 'mactor:concenso_caa_daa' estudio.id numero_matriz 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:consenso_caa_daa' estudio.id numero_matriz 1%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% else %}
                 <a class="btn btn-sm btn-success" href="{%url 'mactor:caa_daa' estudio.id numero_matriz%}"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% endif %}
-                <a class="btn btn-primary" data-toggle="modal" href="#"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" data-toggle="modal" href=""><i class="fa fa-download"></i> Descargar</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
             </div>
         </div>
+
+         <!--MODAL AYUDA----------->
+
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h4 class="modal-title">Ayuda - Grafo de Divergencias</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: justify">
+                        <p>Mediante este grafo se representan las relaciones binarias de divergencia entre los
+                            elementos del conjunto de actores estudiado, donde los vertices o nodos representan a los
+                            actores y las aristas o arcos que los unen el valor de divergencia entre determinado par de
+                            actores, es decir el número de objetivos respecto de los cuales el par de actores tiene una
+                            actitud contraria.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
 {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
