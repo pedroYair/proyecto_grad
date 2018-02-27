@@ -734,6 +734,7 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
 def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
 
     consenso = verificar_consenso(request, idEstudio)
+    print(numero_matriz, "------------")
     numero_matriz = int(numero_matriz)
     if numero_matriz in [1, 2, 3]:
         estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -744,9 +745,9 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         num_expertos = 0
         if consenso is True:
             if numero_matriz == 3:
-                numero_matriz = 2  # porque 3mao se calcula apartir de 2mao
-            num_expertos = calcular_consenso_mao(request, estudio.id, numero_matriz)
-            num_expertos = num_expertos['expertos']
+                # porque 3mao se calcula apartir de 2mao
+                num_expertos = calcular_consenso_mao(request, estudio.id, numero_matriz - 1)
+                num_expertos = num_expertos['expertos']
 
         if contexto_mao['estado_matriz'] == MATRIZ_COMPLETA:
             contexto = {
