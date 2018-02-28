@@ -19,14 +19,6 @@
 									  <div class="pull-left">Formulario - Informe Final</div>
                                       <div class="widget-icons pull-right">
                                           <div class="btn-group">
-                                            <button class="btn btn-warning btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i> Exportar</button>
-                                            <ul class="dropdown-menu " role="menu">
-                                                <li><a href="#" onClick ="$('#id_informe').tableExport({type:'doc', escape:'false'});" style="color: #0e0e0e">
-                                                    <img src="{% static 'img/icons_exportar/word.png'%}" width='24px'> Word</a></li>
-                                                <li class="divider"></li>
-                                                <li><a id="pdf" onClick ="$('#id_informe').tableExport({type:'pdf',escape:'false'});" style="color: red">
-                                                    <img src="{% static 'img/icons_exportar/pdf.png'%}" width='24px'> PDF</a></li>
-                                            </ul>
                                           </div>
                                       </div>
 									  <div class="clearfix"></div>
@@ -85,35 +77,62 @@
                                                     </div>
                                                  </div>
 
-												<div class="form-group">
-												  <div class="col-md-8 col-md-offset-3">
-													<button type="submit" class="btn btn-primary pull-right">Guardar
+                                                <div class="form-group">
+                                                    <div class="col-md-offset-2 col-md-8">
+                                                        <button id="boton_guardar" type="submit" class="btn btn-primary">Guardar
 														<i class="fa fa-check"></i>
-													</button>
-												  </div>
-												</div>
+													    </button>
+                                                        <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                                                    </div>
+                                                </div>
 											</form>
-
 									  </div>
 									</div>
 								</div>
-
-
 							</div>
 						</div>
 					</div>
+
+             <!--MODAL AYUDA------------------------------------------------------------------------------------------>
+
+                    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                                    <h4 class="modal-title">Ayuda - Informe Final</h4>
+                                </div>
+                                <div class="modal-body" style="text-align: justify">
+                                    <p>Esta fase final del estudio MACTOR, tiene como objetivo la formulación de
+                                        preguntas clave y la redacción de recomendaciones estratégicas, tomando como
+                                        base el análisis de las posibles alianzas y conflictos entre los actores
+                                        evidenciados a través de las matrices anteriormente vistas; ayudando esto a
+                                        preguntarse cómo se verían afectadas las relaciones entre los actores y por
+                                        tanto el alcance de los objetivos ante aspectos como: el surgimiento y
+                                        desaparición de actores, los cambios de roles, etc.
+                                        (Arcade, Godet, Meunier, & Roubelat, 2004).
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
 </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
     {% endif %}
 
-{% block extrajs %}
-<script src="{% static 'jquery/jquery.min.js' %}"></script>
-<script src="{% static 'js/tableExport.js'%}"></script>
-<script src="{% static 'js/jquery.base64.js'%}"></script>
-<script src="{% static 'js/html2canvas.js'%}"></script>
-{% endblock %}
+
+
+{% if estudio.estado is False %}
+    <script type="text/javascript">
+        document.getElementById("boton_guardar").disabled = true;
+    </script>
+{% endif %}
 
 {% endblock %}
 

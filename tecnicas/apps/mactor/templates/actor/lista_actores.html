@@ -70,9 +70,7 @@
                     <div class="col-md-offset-2 col-md-8">
                         <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Estudios</a>
                         {% if usuario != 'EXPERTO' %}
-                            {% if cantidad_registrados < 15 %}
                             <button class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</button>
-                            {% endif %}
                         {% endif %}
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
                         <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas' estudio.id%}">Estrategias <i class="fa fa-arrow-right"></i></a>
