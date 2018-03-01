@@ -7,8 +7,6 @@
             //Si se pulsa el tr de un estudio
             if(id!=undefined)
             {
-              if(id.indexOf("est")!= -1)
-              {
                     $.ajax(
                         {
                             data: {'id': id},
@@ -21,7 +19,7 @@
                                 $('#mod_body').html(html);
                             }
                         });
-                }
+
             }
 
         });

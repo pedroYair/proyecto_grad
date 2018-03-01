@@ -5,14 +5,15 @@ from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO,
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import JsonResponse, HttpResponse, request, Http404
-from django.views.generic import CreateView, UpdateView
-from .models import Estudio_Mactor, Actor, Ficha, Objetivo, Relacion_MID, Relacion_MAO, Informe_Final
-from .forms import Form_Estudio, Form_Ficha, Form_MID, Form_1mao, Form_2mao, Form_Informe
+from django.views.generic import CreateView
+from .models import *
+from .forms import *
 
 
-# ----------------------------------------VIEWS MODELO ESTUDIO MACTOR--------------------------------->
+""" ----------------------------------------VIEWS MODELO ESTUDIO MACTOR---------------------------------"""
 
 
+# Permite la creación de un nuevo estudio MACTOR
 class Crear_estudio(CreateView):
     model = Estudio_Mactor
     form_class = Form_Estudio
@@ -20,6 +21,7 @@ class Crear_estudio(CreateView):
     success_url = reverse_lazy('mactor:lista_estudios')
 
 
+# Lista los estudios MACTOR registrados
 def Listar_estudios(request):
 
     estudios = Estudio_Mactor.objects.all().order_by('-estado', 'titulo')
@@ -44,13 +46,11 @@ def Listar_estudios(request):
     return render(request, 'estudio/lista_estudios.html', contexto)
 
 
+# Consultar un estudio seleccionado
 def Consultar_estudio(request):
 
     if request.is_ajax():
-        id = request.GET['id']
-        if id.count("est"):
-            id = id.lstrip("est")
-        estudio = get_object_or_404(Estudio_Mactor, id=id)
+        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['id']))
         response = JsonResponse({'titulo': estudio.titulo, 'descripcion': estudio.descripcion})
         return HttpResponse(response.content)
     else:
@@ -64,8 +64,8 @@ def Editar_estudio(request, idEstudio):
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     flag = False
 
-    for i in informes:
-        if i.idEstudio.id == int(idEstudio) and i.estado is True:
+    for informe in informes:
+        if informe.idEstudio.id == int(idEstudio) and informe.estado is True:
             flag = True
            
     if request.method == 'GET':
@@ -76,23 +76,23 @@ def Editar_estudio(request, idEstudio):
             form.save()
             return redirect('mactor:lista_estudios')
     return render(request, 'estudio/editar_estudio.html', {'form': form, 'informe': flag,
-                                                             'estudio': estudio, 'usuario':tipo_usuario})
+                                                             'estudio': estudio, 'usuario': tipo_usuario})
 
-# -------------------------------------------VIEWS MODELO ACTOR--------------------------------------->
+"""-------------------------------------------VIEWS MODELO ACTOR---------------------------------------"""
 
 
+# Permite el registro de un nuevo actor
 def Crear_actor(request):
 
     nombreLargo = request.GET['nombreLargo']
     nombreCorto = request.GET['nombreCorto']
     descripcion = request.GET['descripcion']
     estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
-    mensaje = "El actor " + nombreLargo + " se ha registrado con exito"
     actores = Actor.objects.filter(idEstudio=estudio.id)
     flag = False
 
-    for i in actores:
-        if i.nombreCorto == nombreCorto:
+    for actor in actores:
+        if actor.nombreCorto == nombreCorto:
             flag = True
 
     if flag is False:
@@ -102,22 +102,19 @@ def Crear_actor(request):
                           descripcion=descripcion,
                           idEstudio=estudio)
             actor.save()
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "El actor " + nombreLargo + " se ha registrado con exito"})
             return HttpResponse(response.content)
         except:
-            mensaje = "ERROR"
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "ERROR - El actor no pudo ser agregado."})
             return HttpResponse(response.content)
     else:
-       mensaje = "Ya existe un actor con el nombre corto " + nombreCorto
-       response = JsonResponse({'info': mensaje})
-       return HttpResponse(response.content)
+        response = JsonResponse({'info': "Ya existe un actor con el nombre corto " + nombreCorto})
+        return HttpResponse(response.content)
 
 
 def Editar_actor(request):
 
     if request.is_ajax():
-        # se obtienen los datos modificados
         id = request.GET.get('id')
         nombreLargo = request.GET.get('nombreLargo')
         nombreCorto = request.GET.get('nombreCorto')
@@ -260,7 +257,7 @@ def Lista_fichas(request, idEstudio):
 def Editar_ficha(request, idFicha):
 
     ficha = get_object_or_404(Ficha, id=int(idFicha))
-    estudio = get_object_or_404(Estudio_Mactor, id=ficha.idEstudio.id)
+    estudio = get_object_or_404(Estudio_Mactor, id=ficha.idActorY.idEstudio.id)
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
     if request.method == 'GET':
@@ -304,7 +301,7 @@ def Eliminar_ficha(request):
             return HttpResponse(response.content)
 
 
-            # VIEWS MODELO OBJETIVO------------------------------------------------------------------------------------->
+# VIEWS MODELO OBJETIVO------------------------------------------------------------------------------------->
 
 
 # Obtiene la ficha de influencias del par de actores seleccionado en el formulario de influencias mid

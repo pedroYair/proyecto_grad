@@ -49,7 +49,7 @@ Bienvenido: {{user.username}}
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                <a id="est{{estudio.id}}" class="btn btn-primary" title="Ver"
+                                                <a id="{{estudio.id}}" class="btn btn-primary" title="Ver"
                                                    data-toggle="modal" href="#modal_Consultar"><i class="fa fa-eye"></i>
                                                 </a>
                                                 {% if request.user.is_superuser %}
