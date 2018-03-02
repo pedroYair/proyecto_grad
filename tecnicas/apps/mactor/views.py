@@ -13,7 +13,6 @@ from .forms import *
 """ ----------------------------------------VIEWS MODELO ESTUDIO MACTOR---------------------------------"""
 
 
-# Permite la creación de un nuevo estudio MACTOR
 class Crear_estudio(CreateView):
     model = Estudio_Mactor
     form_class = Form_Estudio
@@ -21,7 +20,6 @@ class Crear_estudio(CreateView):
     success_url = reverse_lazy('mactor:lista_estudios')
 
 
-# Lista los estudios MACTOR registrados
 def Listar_estudios(request):
 
     estudios = Estudio_Mactor.objects.all().order_by('-estado', 'titulo')
@@ -46,7 +44,6 @@ def Listar_estudios(request):
     return render(request, 'estudio/lista_estudios.html', contexto)
 
 
-# Consultar un estudio seleccionado
 def Consultar_estudio(request):
 
     if request.is_ajax():
@@ -81,7 +78,6 @@ def Editar_estudio(request, idEstudio):
 """-------------------------------------------VIEWS MODELO ACTOR---------------------------------------"""
 
 
-# Permite el registro de un nuevo actor
 def Crear_actor(request):
 
     nombreLargo = request.GET['nombreLargo']
@@ -126,12 +122,12 @@ def Editar_actor(request):
             id = id.lstrip("act")
 
         # se obtiene de los actores exceptuando el que se va a modificar para comparar
-        lista_actor = Actor.objects.all().exclude(id=id)
+        actores = Actor.objects.all().exclude(id=id)
         flag = False
 
         # se verifica que el nombre corto modificado no coincida con el de otros actores
-        for i in lista_actor:
-            if i.nombreCorto == nombreCorto:
+        for actor in actores:
+            if actor.nombreCorto == nombreCorto:
                 flag = True
 
         # se realiza la modificacion de los datos y se envia la respuesta
@@ -202,18 +198,17 @@ def Eliminar_actor(request):
 
     if request.is_ajax():
         actor = Actor.objects.get(id=request.GET.get('id'))
-        mensaje = "Actor "+actor.nombreLargo + " eliminado con exito"
         try:
             actor.delete()
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "Actor "+actor.nombreLargo + " eliminado con exito"})
             return HttpResponse(response.content)
         except:
-            mensaje = "El actor "+actor.nombreLargo + "no pudo ser eliminado"
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "El actor "+actor.nombreLargo + "no pudo ser eliminado"})
             return HttpResponse(response.content)
 
 
-# -------------------------------------------VIEWS MODELO FICHA ACTOR----------------------------------->
+""" -------------------------------------------VIEWS MODELO FICHA ACTOR-----------------------------------"""
+
 
 def Crear_ficha(request, idEstudio):
 
@@ -227,9 +222,7 @@ def Crear_ficha(request, idEstudio):
     else:
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         form = Form_Ficha()
-    return render(request, 'ficha/crear_ficha.html', {'form': form,
-                                                      'estudio': estudio,
-                                                      'usuario': tipo_usuario,
+    return render(request, 'ficha/crear_ficha.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
                                                       'actores': actores})
 
 
@@ -237,8 +230,6 @@ def Lista_fichas(request, idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     fichas = Ficha.objects.filter(idActorY__idEstudio=estudio.id).order_by('idActorY', 'idActorX')
-
-    # lista = fichas_estudio.filter(idActorY=estudio.id)
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
     page = request.GET.get('page', 1)
@@ -290,21 +281,16 @@ def Consultar_ficha(request):
 def Eliminar_ficha(request):
     if request.is_ajax():
         ficha = Ficha.objects.get(id=request.GET['id'])
-        mensaje = "Registro de estrategias eliminado con exito"
         try:
             ficha.delete()
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "Registro de estrategias eliminado con exito"})
             return HttpResponse(response.content)
         except:
-            mensaje = "El registro no pudo ser eliminado"
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "El registro no pudo ser eliminado"})
             return HttpResponse(response.content)
 
 
-# VIEWS MODELO OBJETIVO------------------------------------------------------------------------------------->
-
-
-# Obtiene la ficha de influencias del par de actores seleccionado en el formulario de influencias mid
+# Obtiene la ficha de estrategias del par de actores seleccionado en el formulario de influencias mid
 def Consultar_ficha_mid(request):
 
     if request.is_ajax():
@@ -324,7 +310,8 @@ def Consultar_ficha_mid(request):
         return redirect('/')
 
 
-# ------------------------------------------VIEWS MODELO OBJETIVO------------------------------------>
+"""--------------------------------------------------------VIEWS MODELO OBJETIVO------------------------------"""
+
 
 def Crear_objetivo(request):
 
@@ -332,30 +319,24 @@ def Crear_objetivo(request):
     nombreCorto = request.GET['nombreCorto']
     descripcion = request.GET['descripcion']
     estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
-    mensaje = "El objetivo " + nombreLargo + " se ha registrado con exito"
-    lista_objetivo = Objetivo.objects.filter(idEstudio=estudio.id)
+    objetivos = Objetivo.objects.filter(idEstudio=estudio.id)
     flag = False
 
-    for i in lista_objetivo:
-        if i.nombreCorto == nombreCorto:
+    for obj in objetivos:
+        if obj.nombreCorto == nombreCorto:
             flag = True
 
     if flag is False:
         try:
-            objetivo = Objetivo(nombreLargo=nombreLargo,
-                                nombreCorto=nombreCorto,
-                                descripcion=descripcion,
-                                idEstudio=estudio)
+            objetivo = Objetivo(nombreLargo=nombreLargo, nombreCorto=nombreCorto, descripcion=descripcion, idEstudio=estudio)
             objetivo.save()
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "El objetivo " + nombreLargo + " se ha registrado con exito"})
             return HttpResponse(response.content)
         except:
-            mensaje = "ERROR"
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "ERROR: el objetivo no pudo ser agregado"})
             return HttpResponse(response.content)
     else:
-        mensaje = "Ya existe un objetivo con el nombre corto " + nombreCorto
-        response = JsonResponse({'info': mensaje})
+        response = JsonResponse({'info': "Ya existe un objetivo con el nombre corto " + nombreCorto})
         return HttpResponse(response.content)
 
 
@@ -364,11 +345,8 @@ def Listar_objetivos(request, idEstudio):
     estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
-    contexto = {'estudio': estudio_mactor,
-                'usuario': tipo_usuario,
-                'lista_objetivos': objetivos,
+    contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_objetivos': objetivos,
                 'cantidad_registrados': len(objetivos)}
-
     return render(request, 'objetivo/lista_objetivos.html', contexto)
 
 
@@ -384,15 +362,15 @@ def Editar_objetivo(request):
         if id.count("obj"):
             id = id.lstrip("obj")
 
-        # se obtiene el registro del actor a modificar
-        lista_objetivo = Objetivo.objects.all().exclude(id=id)
+        # se obtiene el los objetivos excluyendo el que se va a modificar
+        objetivos = Objetivo.objects.all().exclude(id=id)
         flag = False
 
         # se verifica que el nombre corto modificado no coincida con el de otros actores
-        for i in lista_objetivo:
-            if i.nombreCorto == nombreCorto:
+        for objetivo in objetivos:
+            print(objetivo)
+            if objetivo.nombreCorto == nombreCorto:
                 flag = True
-
         # se realiza la modificacion de los datos y se envia la respuesta
         if flag is False:
             try:
@@ -425,10 +403,8 @@ def Consultar_objetivo(request):
             id = id.lstrip("ver")
 
         objetivo = get_object_or_404(Objetivo, id=int(id))
-        response = JsonResponse(
-            {'nombreCorto': objetivo.nombreCorto,
-             'nombreLargo': objetivo.nombreLargo,
-             'descripcion': objetivo.descripcion})
+        response = JsonResponse( {'nombreCorto': objetivo.nombreCorto, 'nombreLargo': objetivo.nombreLargo,
+                                    'descripcion': objetivo.descripcion})
         return HttpResponse(response.content)
     else:
         return redirect('/')
@@ -438,18 +414,17 @@ def Eliminar_objetivo(request):
 
     if request.is_ajax():
         objetivo = Objetivo.objects.get(id=request.GET['id'])
-        mensaje = "Objetivo " + objetivo.nombreLargo + " eliminado con exito"
         try:
             objetivo.delete()
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "Objetivo " + objetivo.nombreLargo + " eliminado con exito"})
             return HttpResponse(response.content)
         except:
-            mensaje = "El objetivo " + objetivo.nombreLargo + "no pudo ser eliminado"
-            response = JsonResponse({'info': mensaje})
+            response = JsonResponse({'info': "El objetivo " + objetivo.nombreLargo + "no pudo ser eliminado"})
             return HttpResponse(response.content)
 
 
-# -----------------------------------------VIEWS MODELO RELACION_MID--------------------------------->
+"""-----------------------------------------VIEWS MODELO RELACION_MID---------------------------------"""
+
 
 def Crear_relacion_mid(request, idEstudio):
 
@@ -458,15 +433,13 @@ def Crear_relacion_mid(request, idEstudio):
         form = Form_MID(request.POST)
         if form.is_valid():
             form.save()
-            Crear_auto_influencia(request, idEstudio)
+            Crear_auto_influencia(request, idEstudio) # Se crea la linea de ceros de la diagonal
         return redirect('mactor:influencia', estudio.id)
     else:
         tipo_usuario = obtener_tipo_usuario(request, idEstudio)
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         form = Form_MID()
-    return render(request, 'influencia/crear_influencia.html', {'form': form,
-                                                                'estudio': estudio,
-                                                                'usuario': tipo_usuario,
+    return render(request, 'influencia/crear_influencia.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
                                                                 'actores': actores})
 
 
@@ -478,28 +451,23 @@ def Generar_matriz_mid(request, idEstudio):
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     tamano_matriz_completa = len(actores) ** 2
-    posicion_salto_linea = actores.count() + 1
+    posicion_salto_linea = actores.count() + 1  # numero de celdas por fila en la matriz
     influencias = []
-    cantidad_expertos = 0  # cantidad de expertos que han finalizado la matriz y por tanto estan en el consenso
+    cantidad_expertos = 0                       # expertos que han finalizado la matriz y por tanto estan en el consenso
 
-    # se carga el consenso del estudio
     if consenso is True:
         influencias = calcular_consenso_mid(estudio.id)
         cantidad_expertos = influencias['num_expertos']
         influencias = influencias['consenso']
-    # se carga la matriz diligenciada por el usuario en sesion
+    # se carga la matriz diligenciada por el usuario en sesion sino no se esta accediendo al consenso
     elif tipo_usuario != "COORDINADOR":
         influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                         idExperto=request.user.id).order_by('idActorY', 'idActorX')
-    # si la matriz esta completamente diligenciada
+    # si la matriz esta completamente diligenciada o se esta accediendo al consenso
     if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_mid = establecer_valores_mid(estudio.id, influencias)
-        contexto = {'actores': actores,
-                    'posicion_salto': posicion_salto_linea,
-                    'valores': valores_mid,
-                    'expertos': cantidad_expertos,
-                    'estudio': estudio,
-                    'usuario': tipo_usuario}
+        contexto = {'actores': actores, 'posicion_salto': posicion_salto_linea, 'valores': valores_mid,
+                    'expertos': cantidad_expertos, 'estudio': estudio, 'usuario': tipo_usuario}
     # si la matriz esta incompleta
     elif len(influencias) != tamano_matriz_completa and tamano_matriz_completa != 0:
         valores_mid = generar_mid_incompleta(request, estudio.id)
@@ -535,12 +503,8 @@ def Generar_matriz_midi(request, idEstudio):
             influencias_consenso = calcular_consenso_mid(estudio.id)
             cantidad_expertos = influencias_consenso['num_expertos']
 
-        contexto = {'actores': actores,
-                    'posicion_salto': posicion_salto_linea,
-                    'valores_midi': valores_midi,
-                    'expertos': cantidad_expertos,
-                    'estudio': estudio,
-                    'usuario': tipo_usuario}
+        contexto = {'actores': actores, 'posicion_salto': posicion_salto_linea, 'valores_midi': valores_midi,
+                    'expertos': cantidad_expertos, 'estudio': estudio, 'usuario': tipo_usuario}
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
@@ -569,12 +533,8 @@ def Generar_matriz_maxima(request, idEstudio):
             influencias_consenso = calcular_consenso_mid(estudio.id)
             cantidad_expertos = influencias_consenso['num_expertos']
 
-        contexto = {'actores': actores,
-                    'posicion_salto': posicion_salto_linea,
-                    'valores_maximos': valores_maximos,
-                    'expertos': cantidad_expertos,
-                    'estudio': estudio,
-                    'usuario': tipo_usuario}
+        contexto = {'actores': actores, 'posicion_salto': posicion_salto_linea, 'valores_maximos': valores_maximos,
+                    'expertos': cantidad_expertos, 'estudio': estudio, 'usuario': tipo_usuario}
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario}
 
@@ -2806,11 +2766,8 @@ def Editar_informe(request, idEstudio):
         if form.is_valid():
             form.save()
             return redirect('mactor:lista_actores', estudio.id)
-    return render(request, 'informe/crear_informe.html', {'form': form,
-                                                        'estudio': estudio,
-                                                        'usuario': tipo_usuario,
-                                                        'datos': informe_estudio,
-                                                            })
+    return render(request, 'informe/crear_informe.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
+                                                          'datos': informe_estudio})
 
 
 
