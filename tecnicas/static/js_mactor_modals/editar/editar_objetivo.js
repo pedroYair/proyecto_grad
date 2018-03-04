@@ -33,6 +33,7 @@ function actualizar() {
         var nombreLargo = $('input[name="nombreLargo2"]').val();
         var nombreCorto = $('input[name="nombreCorto2"]').val();
         var descripcion = $('textarea[name="descripcion2"]').val();
+        var estudio = $('input[name="idEstudio"]').val();
 
         if(nombreCorto=="" || nombreLargo=="")
         {
@@ -46,7 +47,8 @@ function actualizar() {
                     'id': id,
                     'nombreLargo': nombreLargo,
                     'nombreCorto': nombreCorto,
-                    'descripcion': descripcion
+                    'descripcion': descripcion,
+                    'idEstudio': estudio
                 },
                 url: 'editar_objetivo',
                 type: 'get',

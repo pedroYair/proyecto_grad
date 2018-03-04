@@ -108,6 +108,7 @@ def Crear_actor(request):
         return HttpResponse(response.content)
 
 
+# ELIMINAR NECESIDAD DE LA SUBCADENA ACT
 def Editar_actor(request):
 
     if request.is_ajax():
@@ -122,7 +123,7 @@ def Editar_actor(request):
             id = id.lstrip("act")
 
         # se obtiene de los actores exceptuando el que se va a modificar para comparar
-        actores = Actor.objects.all().exclude(id=id)
+        actores = Actor.objects.all().filter(idEstudio=idEstudio).exclude(id=id)
         flag = False
 
         # se verifica que el nombre corto modificado no coincida con el de otros actores
@@ -151,6 +152,7 @@ def Editar_actor(request):
             return HttpResponse(response.content)
 
 
+# ELIMINAR SUBCADENAS
 def Consultar_actor(request):
 
     if request.is_ajax():
@@ -261,6 +263,7 @@ def Editar_ficha(request, idFicha):
     return render(request, 'ficha/editar_ficha.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario})
 
 
+# ELIMINAR SUBCADENA
 def Consultar_ficha(request):
 
     if request.is_ajax():
@@ -357,13 +360,14 @@ def Editar_objetivo(request):
         nombreLargo = request.GET['nombreLargo']
         nombreCorto = request.GET['nombreCorto']
         descripcion = request.GET['descripcion']
+        idEstudio = int(request.GET.get('idEstudio'))
 
         # se elimina del id obtenido la subcadena "id"
         if id.count("obj"):
             id = id.lstrip("obj")
 
         # se obtiene el los objetivos excluyendo el que se va a modificar
-        objetivos = Objetivo.objects.all().exclude(id=id)
+        objetivos = Objetivo.objects.all().filter(idEstudio=idEstudio).exclude(id=id)
         flag = False
 
         # se verifica que el nombre corto modificado no coincida con el de otros actores
