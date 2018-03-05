@@ -48,8 +48,7 @@
                                                 <td>
                                                     <a id="ver{{actor.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal5"><i class="fa fa-eye"></i></a>
                                                     {% if estudio.estado is True and usuario != 'EXPERTO' %}
-                                                    <a id="act{{actor.id}}" name="{{actor.id}}" class="btn btn-warning .edit" title="Editar" data-toggle="modal"
-                                                               href="#myModal3"><i class="fa fa-pencil"></i></a>
+                                                    <a id="edi{{actor.id}}" class="btn btn-warning .edit" title="Editar" data-toggle="modal" href="#myModal3"><i class="fa fa-pencil"></i></a>
                                                     <a href="#myModal2" role="button" class="btn btn-danger delete" title="Eliminar" data-toggle="modal"
                                                        id="{{actor.id}}" data-name="{{actor.nombreLargo}}"><i class="fa fa-times"></i></a>
                                                     {% endif %}

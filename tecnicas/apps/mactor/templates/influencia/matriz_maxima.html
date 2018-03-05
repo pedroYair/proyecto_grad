@@ -35,7 +35,7 @@
                                             {% if actores and valores_maximos %}
                                                 <input style='text-align: center;'  type="text" size="4" readonly value="">
                                                     {% for actor in actores %}
-                                                        <input id="ver{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
+                                                        <input id="act{{actor.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text"
                                                                title="{{actor.nombreLargo|upper}}" size="4"
                                                                value="{{actor.nombreCorto}}" data-toggle="modal"
                                                                href="#modal_Consultar_actor">
@@ -53,16 +53,18 @@
                                             {% if i.posicion == posicion_salto %}
                                                 <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
                                                 <br>
+
                                             <!--Inserta los nombres cortos en el eje Y-->
                                             {% elif i.posicion == 0 %}
                                                         {% if i.valor != 'D.DI' %}
-                                                               <input id="daa{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               <input id="mid{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
                                                                size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}"
                                                                     data-toggle="modal" href="#modal_Consultar_actor">
                                                         {% else %}
                                                                 <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
                                                                size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
                                                         {% endif %}
+
                                             <!--Inserta los valores midi posteriores al nombre corto en Y y previos a la ultima celda-->
                                             {% else %}
                                                 <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">

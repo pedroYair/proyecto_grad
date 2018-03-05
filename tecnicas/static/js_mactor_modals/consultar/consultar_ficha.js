@@ -7,10 +7,9 @@
     $(document).ready(function () {
         $("a").click(function () {
             var id = $(this).attr("id");
-            if(id!=undefined)
+            if(id!=undefined && id.indexOf("ver")!= -1)
             {
-                if(id.indexOf("ver")!= -1)
-                {
+                id = id.substring(3);
                     $.ajax(
                         {
                             data: {'id': id},
@@ -24,7 +23,7 @@
                             $('#mod_body5').html(html);
                             }
                         });
-                }
+
             }
         });
     });

@@ -2,19 +2,19 @@
 // se cargan los datos en las cajas de texto respectivas
     $(document).ready(function () {
         $("a").click(function () {
-            // se obtiene el id del actor, el cual fue asignado a la etiquera <a>
-            var id = $(this).attr("id")
-            // se asigna como id del boton actualizar el id del actor
-            $('#modal_actualizar').val(id);
-            // se valida que el id contenga la subcadena obj, asignada como parte del id para editar
-            if(id.indexOf("obj")!= -1){
+            // se obtiene el id del objetivo, el cual fue asignado a la etiquera <a>
+            var id = $(this).attr("id");
+            if(id != undefined && id.indexOf("edi")!= -1)
+            {
+                id = id.substring(3);
+                // se asigna como id del boton actualizar el id del actor
+                $('#modal_actualizar').val(id);
                 // se envia el id del actor mediante ajax para obtener los datos
                 $.ajax(
                     {
                         data: {'id': id},
                         url: 'consultar_objetivo',
                         type: 'get',
-                        // los datos retornados son asignados en el formulario
                         success: function (data) {
                             var object = JSON.parse(data);
                             document.getElementById("nombreLargo2").value = object.nombreLargo;

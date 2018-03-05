@@ -43,11 +43,11 @@
                                             <td>{{objetivo.nombreCorto|upper}}</td>
                                             <td style="text-align: justify">{{objetivo.descripcion}}</td>
                                             <td>
-                                                <a id="ver{{objetivo.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal4">
+                                                <a id="obj{{objetivo.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal4">
                                                     <i class="fa fa-eye"></i>
                                                 </a>
                                                 {% if estudio.estado is True and usuario != 'EXPERTO' %}
-                                                    <a id="obj{{objetivo.id}}" class="btn btn-warning" title="Editar" data-toggle="modal" href="#myModal3">
+                                                    <a id="edi{{objetivo.id}}" class="btn btn-warning" title="Editar" data-toggle="modal" href="#myModal3">
                                                         <i class="fa fa-pencil"></i>
                                                     </a>
                                                     <a id="{{objetivo.id}}" class="btn btn-danger delete" title="Eliminar" data-toggle="modal" href="#myModal2"

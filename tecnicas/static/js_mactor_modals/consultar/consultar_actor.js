@@ -7,25 +7,23 @@
     $(document).ready(function () {
         $("a").click(function () {
             var id = $(this).attr("id");
-            //Si se pulsa el tr de un estudio
-            if(id!=undefined)
+            if(id != undefined && id.indexOf("ver")!= -1)
             {
-                if (id.indexOf("ver") != -1)
-                {
-                    $.ajax(
+                id = id.substring(3);
+                $.ajax(
+                    {
+                        data: {'id': id, 'idEstudio': 0},
+                        url: 'consultar_actor',
+                        type: 'get',
+                        success: function (data)
                         {
-                            data: {'id': id, 'idEstudio': 0},
-                            url: 'consultar_actor',
-                            type: 'get',
-                            success: function (data) {
-                                var object = JSON.parse(data);
-                                var html = "<p>" + 'Nombre Corto:' + "</p><p>" + object.nombreCorto +
-                                    "</p><br><p>" + 'Nombre Largo:' + "</p><p>" + object.nombreLargo +
-                                    "</p><br><p>" + 'Descripción:' + "</p><p>" + object.descripcion + "</p><p>";
-                                $('#mod_body5').html(html);
-                            }
-                        });
-                }
+                            var object = JSON.parse(data);
+                            var html = "<p>" + 'Nombre Corto:' + "</p><p>" + object.nombreCorto +
+                                "</p><br><p>" + 'Nombre Largo:' + "</p><p>" + object.nombreLargo +
+                                "</p><br><p>" + 'Descripción:' + "</p><p>" + object.descripcion + "</p><p>";
+                            $('#mod_body5').html(html);
+                        }
+                    });
             }
         });
     });

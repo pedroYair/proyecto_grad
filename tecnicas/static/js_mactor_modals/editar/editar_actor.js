@@ -4,28 +4,32 @@
         $("a").click(function () {
             // se obtiene el id del actor para realizar la consulta, el cual fue asignado a la etiquera <a>
             var id = $(this).attr("id");
-            // se asigna como id del boton actualizar el id del actor para cuando se pulse el boton actualizar
-            $('#modal_actualizar').val(id);
-            // se valida que el id contenga la subcadena act, asignada como parte del id para editar
-            if(id !=undefined && id.indexOf("act")!= -1)
+            if(id != undefined && id.indexOf("edi")!= -1)
             {
-                // se envia el id del actor mediante ajax para obtener los datos
-                //idEstudio = 0 para que cumpla la expresion de la url
-                $.ajax(
-                    {
-                        data: {'id': id, 'idEstudio': 0},
-                        url: 'consultar_actor',
-                        type: 'get',
-                        // los datos retornados son asignados en el formulario
-                        success: function (data) {
-                            var object = JSON.parse(data);
-                            document.getElementById("nombreLargo2").value = object.nombreLargo;
-                            document.getElementById("nombreCorto2").value = object.nombreCorto;
-                            document.getElementById("descripcion2").value = object.descripcion;
-                        }
-                    });
+                // se elimina la subcadena edi
+                id = id.substring(3);
+                // se asigna como id del boton actualizar el id del actor para cuando se pulse el boton actualizar
+                $('#modal_actualizar').val(id);
+                    //idEstudio = 0 para que cumpla la expresion de la url
+                    $.ajax(
+                        {
+                            data: {'id': id, 'idEstudio': 0},
+                            url: 'consultar_actor',
+                            type: 'get',
+                            // los datos retornados son asignados en el formulario
+                            success: function (data) {
+                                var object = JSON.parse(data);
+                                document.getElementById("nombreLargo2").value = object.nombreLargo;
+                                document.getElementById("nombreCorto2").value = object.nombreCorto;
+                                document.getElementById("descripcion2").value = object.descripcion;
+                            }
+                        });
+
             }
+
         });
+
+
     });
 
 // funcion que actualiza el registro del actor al presionar el boton actualizar

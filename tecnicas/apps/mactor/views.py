@@ -108,7 +108,7 @@ def Crear_actor(request):
         return HttpResponse(response.content)
 
 
-# ELIMINAR NECESIDAD DE LA SUBCADENA ACT
+
 def Editar_actor(request):
 
     if request.is_ajax():
@@ -117,10 +117,6 @@ def Editar_actor(request):
         nombreCorto = request.GET.get('nombreCorto')
         descripcion = request.GET.get('descripcion')
         idEstudio = int(request.GET.get('idEstudio'))
-
-        # se elimina del id obtenido la subcadena "act"
-        if id.count("act"):
-            id = id.lstrip("act")
 
         # se obtiene de los actores exceptuando el que se va a modificar para comparar
         actores = Actor.objects.all().filter(idEstudio=idEstudio).exclude(id=id)
@@ -159,21 +155,18 @@ def Consultar_actor(request):
         id = request.GET.get('id')
         idEstudio = request.GET['idEstudio']
 
-        if id.count("str"):
-            id = id.lstrip("str")
-        elif id.count("daa"):
-            id = id.lstrip("daa")
-        elif id.count("ver"):
-            id = int(id.lstrip("ver"))
-        elif id.count("act"):
-            id = int(id.lstrip("act"))
+        # busqueda por nombre corto
+        if id.count("mid") or id.count("caa") or id.count("daa"):
+            id = id[3:]
+            actor = get_object_or_404(Actor, nombreCorto=id, idEstudio=int(idEstudio))
+        # busqueda por id con subcadena
+        elif id.count("act") or id.count("ver"):
+            id = id[3:]
+            actor = get_object_or_404(Actor, id=id)
+        # busqueda por id
         else:
             id = int(id)
-
-        if type(id) == int:
             actor = get_object_or_404(Actor, id=id)
-        else:
-            actor = get_object_or_404(Actor, nombreCorto=id, idEstudio=int(idEstudio))
 
         response = JsonResponse(
             {'nombreCorto': actor.nombreCorto,
@@ -263,15 +256,10 @@ def Editar_ficha(request, idFicha):
     return render(request, 'ficha/editar_ficha.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario})
 
 
-# ELIMINAR SUBCADENA
 def Consultar_ficha(request):
 
     if request.is_ajax():
         id = request.GET['id']
-
-        if id.count("ver"):
-            id = id.lstrip("ver")
-
         ficha = get_object_or_404(Ficha, id=int(id))
         actorY = ficha.idActorY.nombreLargo
         actorX = ficha.idActorX.nombreLargo
@@ -362,20 +350,15 @@ def Editar_objetivo(request):
         descripcion = request.GET['descripcion']
         idEstudio = int(request.GET.get('idEstudio'))
 
-        # se elimina del id obtenido la subcadena "id"
-        if id.count("obj"):
-            id = id.lstrip("obj")
-
         # se obtiene el los objetivos excluyendo el que se va a modificar
         objetivos = Objetivo.objects.all().filter(idEstudio=idEstudio).exclude(id=id)
         flag = False
 
         # se verifica que el nombre corto modificado no coincida con el de otros actores
         for objetivo in objetivos:
-            print(objetivo)
             if objetivo.nombreCorto == nombreCorto:
                 flag = True
-        # se realiza la modificacion de los datos y se envia la respuesta
+
         if flag is False:
             try:
                 objetivo = get_object_or_404(Objetivo, id=id)
@@ -400,14 +383,8 @@ def Consultar_objetivo(request):
 
     if request.is_ajax():
         id = request.GET.get('id')
-
-        if id.count("obj"):
-            id = id.lstrip("obj")
-        elif id.count("ver"):
-            id = id.lstrip("ver")
-
         objetivo = get_object_or_404(Objetivo, id=int(id))
-        response = JsonResponse( {'nombreCorto': objetivo.nombreCorto, 'nombreLargo': objetivo.nombreLargo,
+        response = JsonResponse({'nombreCorto': objetivo.nombreCorto, 'nombreLargo': objetivo.nombreLargo,
                                     'descripcion': objetivo.descripcion})
         return HttpResponse(response.content)
     else:
@@ -437,7 +414,7 @@ def Crear_relacion_mid(request, idEstudio):
         form = Form_MID(request.POST)
         if form.is_valid():
             form.save()
-            Crear_auto_influencia(request, idEstudio) # Se crea la linea de ceros de la diagonal
+            Crear_auto_influencia(request, idEstudio)  # crea la linea de ceros de la diagonal
         return redirect('mactor:influencia', estudio.id)
     else:
         tipo_usuario = obtener_tipo_usuario(request, idEstudio)
@@ -448,7 +425,7 @@ def Crear_relacion_mid(request, idEstudio):
 
 
 # View generadora de la matriz MID
-def Generar_matriz_mid(request, idEstudio):
+def Generar_matriz_mid(request, idEstudio):  # idEstudio tipo str() para verificar consenso
 
     consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -488,16 +465,16 @@ def Generar_matriz_mid(request, idEstudio):
 
 
 # View generadora de la matriz MIDI
-def Generar_matriz_midi(request, idEstudio):
+def Generar_matriz_midi(request, idEstudio):  # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                    idExperto=request.user.id).order_by('idActorY', 'idActorX')
     tamano_matriz_completa = len(actores) ** 2
     posicion_salto_linea = actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
+                                              idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     # si la matriz esta completa o el consenso esta activo
     if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
@@ -519,16 +496,16 @@ def Generar_matriz_midi(request, idEstudio):
 
 
 # View generadora de la matriz MIDI
-def Generar_matriz_maxima(request, idEstudio):
+def Generar_matriz_maxima(request, idEstudio):  # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                    idExperto=request.user.id).order_by('idActorY', 'idActorX')
     tamano_matriz_completa = len(actores) ** 2
     posicion_salto_linea = actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
+                                              idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_maximos = calcular_maxima_influencia(request, idEstudio)
@@ -561,8 +538,7 @@ def Generar_matriz_ri(request, idEstudio):
     for i in range(len(actores)):
         lista_contexto.append(Valor_posicion(posicion=0, valor=actores[i].nombreCorto, descripcion=actores[i].nombreLargo))
         lista_contexto.append(Valor_posicion(posicion=1, valor=round(valores_ri[i], 2), descripcion=round(valores_ri[i], 2)))
-    # para evitar el salto de linea despues de la ultima fila
-    lista_contexto[len(lista_contexto)-1].posicion = ""
+    lista_contexto[len(lista_contexto)-1].posicion = ""  # para evitar el salto de linea despues de la ultima fila
 
     cantidad_expertos = 0
     if consenso is True:
@@ -578,7 +554,7 @@ def Generar_matriz_ri(request, idEstudio):
 
 
 # Genera la matriz de balance liquido
-def Generar_matriz_balance(request, idEstudio):
+def Generar_matriz_balance(request, idEstudio): # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -606,7 +582,7 @@ def Generar_matriz_balance(request, idEstudio):
 
 
 # Genera la matriz de balance liquido
-def Generar_indicador_estabilidad(request, idEstudio):
+def Generar_indicador_estabilidad(request, idEstudio): # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -626,9 +602,9 @@ def Generar_indicador_estabilidad(request, idEstudio):
         return render(request, 'influencia/consenso/indicador_estabilidad_consenso.html', contexto)
 
 
-# -----------------------------------------VIEWS MODELO RELACION_MAO---------------------------------->
+"""-----------------------------------------VIEWS MODELO RELACION_MAO----------------------------------"""
 
-# Agrega la relacion 1mao
+
 def Crear_1mao(request, idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
