@@ -623,7 +623,6 @@ def Crear_1mao(request, idEstudio):
                                                     'objetivos': objetivos})
 
 
-# Agrega la relacion 2mao
 def Crear_2mao(request, idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -642,27 +641,17 @@ def Crear_2mao(request, idEstudio):
                                                    'objetivos': objetivos})
 
 
-# Genera las matrices mao
-def Generar_matriz_mao(request, idEstudio, numero_matriz):
+# Genera las matrices actores x objetivos
+def Generar_matriz_mao(request, idEstudio, numero_matriz):  # idEstudio tipo str
 
     consenso = verificar_consenso(request, idEstudio)
     contexto = crear_contexto_mao(request, idEstudio, int(numero_matriz))
 
-    if int(numero_matriz) == 1:
+    if int(numero_matriz) in [1, 2, 3]:
         if consenso is True:
-            return render(request, 'mao/consenso/consenso_1mao.html', contexto)
+            return render(request, 'mao/consenso/consenso_'+str(numero_matriz)+'mao.html', contexto)
         else:
-            return render(request, 'mao/matriz_1mao.html', contexto)
-    elif int(numero_matriz) == 2:
-        if consenso is True:
-            return render(request, 'mao/consenso/consenso_2mao.html', contexto)
-        else:
-            return render(request, 'mao/matriz_2mao.html', contexto)
-    elif int(numero_matriz) == 3:
-        if consenso is True:
-            return render(request, 'mao/consenso/consenso_3mao.html', contexto)
-        else:
-            return render(request, 'mao/matriz_3mao.html', contexto)
+            return render(request, 'mao/matriz_'+str(numero_matriz)+'mao.html', contexto)
     else:
         raise Http404("Error: Esta vista no existe")
 
@@ -671,7 +660,6 @@ def Generar_matriz_mao(request, idEstudio, numero_matriz):
 def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
 
     consenso = verificar_consenso(request, idEstudio)
-    print(numero_matriz, "------------")
     numero_matriz = int(numero_matriz)
     if numero_matriz in [1, 2, 3]:
         estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
@@ -682,31 +670,23 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         num_expertos = 0
         if consenso is True:
             if numero_matriz == 3:
-                # porque 3mao se calcula apartir de 2mao
-                num_expertos = calcular_consenso_mao(request, estudio.id, numero_matriz - 1)
-                num_expertos = num_expertos['expertos']
+                num_expertos = calcular_consenso_mao(request, estudio.id, numero_matriz - 1)  # porque 3mao se calcula apartir de 2mao
+            else:
+                num_expertos = calcular_consenso_mao(request, estudio.id, numero_matriz)
+            num_expertos = num_expertos['expertos']
 
         if contexto_mao['estado_matriz'] == MATRIZ_COMPLETA:
-            contexto = {
-                'actores': actores,
-                'valores_caa': contexto_mao['valores_caa'],
-                'posicion_salto_caa_daa': actores.count(),
-                'valores_daa': contexto_mao['valores_daa'],
-                'estudio': estudio,
-                'numero_matriz': numero_matriz,
-                'usuario': tipo_usuario,
-                'expertos': num_expertos}
+            contexto = {'actores': actores, 'valores_caa': contexto_mao['valores_caa'],
+                         'posicion_salto_caa_daa': actores.count(), 'valores_daa': contexto_mao['valores_daa'],
+                         'estudio': estudio, 'numero_matriz': numero_matriz,
+                         'usuario': tipo_usuario, 'expertos': num_expertos}
         else:
             if int(numero_matriz) in [1, 2]:
                 mensaje = "Finalice el registro de las posiciones " + str(numero_matriz) + "MAO para visualizar esta matriz."
             else:
                 mensaje = "Finalice el registro de las posiciones MID y 2MAO para visualizar esta matriz."
 
-            contexto = {
-                'estudio': estudio,
-                'numero_matriz': numero_matriz,
-                'mensaje': mensaje,
-                'usuario': tipo_usuario}
+            contexto = {'estudio': estudio, 'numero_matriz': numero_matriz, 'mensaje': mensaje, 'usuario': tipo_usuario}
 
         if consenso is True:
             return render(request, 'mao/consenso/consenso_caa_daa.html', contexto)
@@ -716,7 +696,7 @@ def Generar_matrices_caa_daa(request, idEstudio, numero_matriz):
         raise Http404("Error: Esta vista no existe")
 
 
-# ---------------------------------------------CLASES AUXILIARES-------------------------------------->
+"""-------------------------------------------------CLASES AUXILIARES------------------------------------------------"""
 
 
 # Clase auxiliar para la generacion de matrices, se asigna una posicion a un respectivo valor
@@ -734,40 +714,40 @@ class Valor_xy:
         self.y = y
         self.valor = valor
 
-# -------------------------------------FUNCIONES AUXILIARES------------------------------------------------------------>
+"""-------------------------------------------------FUNCIONES AUXILIARES--------------------------------------------"""
 
 
 # <<<<FUNCIONES RELACIONES MID>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
 
-# Crea los registros de la diagonal de la matriz mid
+# Crea los 0 de la diagonal de la matriz mid
 def Crear_auto_influencia(request, idEstudio):
 
         estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-        inf = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id, idExperto=request.user.id).order_by('idActorY',
-                                                                                                        'idActorX')
+        influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
+                                                  idExperto=request.user.id).order_by('idActorY', 'idActorX')
         lista_registrados = []
 
         # se verifica si estas influencias ya existen
-        for i in actores:
-            for j in inf:
-                if len(inf) > 0 and j.idActorX.id == i.id and j.idActorY.id == i.id:
-                    lista_registrados.append(i.id)
+        for actor in actores:
+            for inf in influencias:
+                if len(influencias) > 0 and inf.idActorX.id == actor.id and inf.idActorY.id == actor.id:
+                    lista_registrados.append(actor.id)
 
         # se agregan las autoinfluencias restantes
-        for i in actores:
-            if i.id not in lista_registrados:
+        for actor in actores:
+            if actor.id not in lista_registrados:
                 a = Relacion_MID()
-                a.idActorY = i
-                a.idActorX = i
+                a.idActorY = actor
+                a.idActorX = actor
                 a.valor = 0
                 a.justificacion = "auto_influencia"
                 a.idExperto = request.user
                 a.save()
 
 
-# Establece la lista de valores mid enviandos por contexto a la matriz
+# Establece la lista de valores que se visualizan en la matriz mid
 def establecer_valores_mid(idEstudio, influencias):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
@@ -821,17 +801,17 @@ def establecer_valores_mid(idEstudio, influencias):
     return valores_mid
 
 
-# Establece como se mostrara la matriz mid en caso de que no este completamente diligenciada
+# Genera la matriz mid con los valores actualmente registrados, destacando los que hacen falta
 def generar_mid_incompleta(request, idEstudio):
 
-    lista_actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
+    actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
     mid = Relacion_MID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
     lista_ejes_incompletos = []
     lista_ejes_ordenados = []
 
-    # se llena la lista de ejes ordenados con los orden en que deben ir los actores en la matriz (ejes Y y X)
-    for i in lista_actores:
-        for j in lista_actores:
+    # se obtiene el orden en que deben ir los actores en la matriz (ejes Y y X) estructura correcta de la matriz
+    for i in actores:
+        for j in actores:
             lista_ejes_ordenados.append(Valor_xy(y=i.id, x=j.id, valor=""))
 
     # se obtienen las parejas de ejes, actualmente registradas y su valor correspondiente
@@ -844,7 +824,7 @@ def generar_mid_incompleta(request, idEstudio):
         lista_ejes_incompletos.append(Valor_xy(y=0, x=0, valor=0))
         cont += 1
 
-    # se detectan los ejes faltantes y se ingresan en esas posiciones con valor 100 para indicar la falta del registro
+    # se detectan los ejes faltantes y se ingresan en esas posiciones el valor 100 para indicar la falta del registro
     for j in range(len(lista_ejes_ordenados)):
             eje_y = lista_ejes_ordenados[j].y
             eje_x = lista_ejes_ordenados[j].x
@@ -857,11 +837,10 @@ def generar_mid_incompleta(request, idEstudio):
         cont -= 1
 
     lista_contexto = establecer_valores_mid(idEstudio, lista_ejes_incompletos)
-
     return lista_contexto
 
 
-# Agrega a la lista de valores mid y midi la descripcion del valor
+# Agrega a la lista de valores mid la descripcion del valor
 def agregar_descripcion_mid(idEstudio, lista):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
