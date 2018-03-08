@@ -148,7 +148,6 @@ def Editar_actor(request):
             return HttpResponse(response.content)
 
 
-# ELIMINAR SUBCADENAS
 def Consultar_actor(request):
 
     if request.is_ajax():
@@ -1193,19 +1192,19 @@ def calcular_estabilidad(request, idEstudio):
 
 # <<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-# Establece el diccionario correspondiente al contexto a enviar al template de la matriz mao correspondiente
+# Establece el contexto a enviar al template de la matriz mao correspondiente
 def crear_contexto_mao(request, idEstudio, numero_matriz):
 
     consenso = verificar_consenso(request, idEstudio)
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    lista_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
-    lista_actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-    tamano_matriz_completa = (len(lista_actores)*len(lista_objetivos))
+    objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
+    actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
+    tamano_matriz_completa = len(actores) * len(objetivos)
     lista_mao = []
     num_expertos = []
 
-    if numero_matriz < 3:
+    if numero_matriz < 3:  # para la matriz 1mao y 2mao
         if consenso is True:
             lista_mao = calcular_consenso_mao(request, estudio.id, numero_matriz)
             num_expertos = lista_mao['expertos']
@@ -1213,7 +1212,7 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
         else:
             lista_mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=numero_matriz,
                                                 idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
-    else:
+    else:  # para la matriz 3mao por ser calculada
         if consenso is True:
             lista_mao = calcular_consenso_mao(request, estudio.id, numero_matriz)
             num_expertos = calcular_consenso_mao(request, estudio.id, 2)
@@ -1231,33 +1230,23 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
         valores_caa = agregar_descripcion_caa_daa(estudio.id, lista_contexto[1])
         valores_daa = agregar_descripcion_caa_daa(estudio.id, lista_contexto[2])
 
-        contexto = {'objetivos': lista_objetivos,
-                    'actores': lista_actores,
-                    'valores_mao': valores_mao,
-                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
-                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
-                    'valores_caa': valores_caa,
-                    'posicion_salto_caa_daa': lista_actores.count(),
-                    'valores_daa': valores_daa,
-                    'estado_matriz': MATRIZ_COMPLETA,
-                    'estudio': estudio,
-                    'usuario': tipo_usuario,
-                    'expertos': num_expertos}
+        contexto = {'objetivos': objetivos, 'actores': actores, 'valores_mao': valores_mao,
+                    'posicion_salto': objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
+                    'posicion_salto_movilizacion': (objetivos.count() * 2) + 4,
+                    'valores_caa': valores_caa, 'valores_daa': valores_daa,
+                    'posicion_salto_caa_daa': actores.count(), 'estado_matriz': MATRIZ_COMPLETA,
+                    'estudio': estudio, 'usuario': tipo_usuario, 'expertos': num_expertos}
     # Si la matriz es 1mao o 2mao y esta incompleta
-    elif len(lista_mao) != tamano_matriz_completa and numero_matriz != 3 or len(lista_mao) == 0 and numero_matriz != 3:
+    elif len(lista_mao) != tamano_matriz_completa or len(lista_mao) == 0 and numero_matriz != 3:
 
         valores_mao = generar_mao_incompleta(estudio.id, lista_mao)
         valores_mao = agregar_descripcion_mao(estudio.id, numero_matriz, valores_mao)
-        contexto = {'objetivos': lista_objetivos,
-                    'actores': lista_actores,
-                    'valores_mao': valores_mao,
-                    'valores_caa': [],
-                    'valores_daa': [],
-                    'posicion_salto': lista_objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
-                    'posicion_salto_movilizacion': (lista_objetivos.count() * 2) + 4,
-                    'estado_matriz': MATRIZ_INCOMPLETA,
-                    'estudio': estudio,
-                    'usuario': tipo_usuario}
+        contexto = {'objetivos': objetivos, 'actores': actores, 'valores_mao': valores_mao,
+                    'valores_caa': [], 'valores_daa': [],
+                    'posicion_salto': objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
+                    'posicion_salto_movilizacion': (objetivos.count() * 2) + 4,
+                    'estado_matriz': MATRIZ_INCOMPLETA, 'estudio': estudio, 'usuario': tipo_usuario}
+    # si no se han registrado actores u objetivos
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario, 'estado_matriz': MATRIZ_INCOMPLETA}
 
@@ -2180,10 +2169,9 @@ def histograma_caa_daa(request, idEstudio, numero_matriz):
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
     if consenso is True:
-        num_expertos = valores_mao = crear_contexto_mao(request, idEstudio, int(numero_matriz))
+        num_expertos = crear_contexto_mao(request, idEstudio, int(numero_matriz))
         num_expertos = num_expertos['expertos']
-        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz),
-                    'expertos': num_expertos, 'usuario': usuario}
+        contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz), 'expertos': num_expertos, 'usuario': usuario}
     else:
         contexto = {'estudio': estudio, 'numero_matriz': int(numero_matriz), 'usuario': usuario}
 

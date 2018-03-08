@@ -5,9 +5,9 @@
         $("input").click(function () {
             var id = $(this).attr("id")
             var idEstudio = $('input[name="idEstudio"]').val();
-            console.log(id);
-            if(id!=undefined) {
-                   if (id.indexOf("act")!= -1 || id.indexOf("mid")!= -1 || id.indexOf("caa")!= -1 || id.indexOf("daa")!= -1)
+            if(id!=undefined)
+            {
+                   if (id.indexOf("act")!= -1 || id.indexOf("ver")!= -1 || id.indexOf("mid")!= -1 || id.indexOf("caa")!= -1 || id.indexOf("daa")!= -1)
                     {
                         $.ajax
                         ({
@@ -26,8 +26,6 @@
                     // si se pulsa el input de un objetivo
                     else
                         {
-                            if (id.indexOf("obj") != -1)
-                            {
                                 $.ajax
                                 ({
                                     data: {'id': id},
@@ -44,7 +42,7 @@
                                         $('#mod_body_objetivo').html(html);
                                     }
                                 });
-                            }
+
                         }
             }
 

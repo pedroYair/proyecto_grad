@@ -11,7 +11,7 @@
                     {%if objetivos %}
                         <input style='text-align: center;' readonly type="text" size="4" value="">
                         {% for objetivo in objetivos %}
-                            <input  id="obj{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="{{objetivo.nombreLargo|upper}}"
+                            <input  id="{{objetivo.id}}" style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="{{objetivo.nombreLargo|upper}}"
                                     size="4" value="{{objetivo.nombreCorto}}" data-toggle="modal" href="#modal_Consultar_objetivo">
                         {% endfor %}
                         <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="4" title="IMPLICACIÓN POSITIVA (ACUERDOS)" value="+">
@@ -39,7 +39,7 @@
                                                     {% elif i.posicion == 0 %}
                                                         <!--Si la etiqueta corresponde a un actor-->
                                                         {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
-                                                               <input id="str{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
+                                                               <input id="mid{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
                                                                size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}"
                                                                     data-toggle="modal" href="#modal_Consultar_actor">
                                                         {% else %}
