@@ -413,7 +413,7 @@ def Crear_relacion_mid(request, idEstudio):
         form = Form_MID(request.POST)
         if form.is_valid():
             form.save()
-            Crear_auto_influencia(request, idEstudio)  # crea la linea de ceros de la diagonal
+            crear_auto_influencia(request, idEstudio)  # crea la linea de ceros de la diagonal
         return redirect('mactor:influencia', estudio.id)
     else:
         tipo_usuario = obtener_tipo_usuario(request, idEstudio)
@@ -720,7 +720,7 @@ class Valor_xy:
 
 
 # Crea los 0 de la diagonal de la matriz mid
-def Crear_auto_influencia(request, idEstudio):
+def crear_auto_influencia(request, idEstudio):
 
         estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
@@ -753,8 +753,8 @@ def establecer_valores_mid(idEstudio, influencias):
     valores_mid = []
     posicion = 0               # controla y asignar la posicion de acuerdo al numero de actores e influencias
     indice = 0                 # representa el indice del nombreCorto que se ha de colocar en valores
-    suma_fila_influencia = 0
-    suma_columna_dependencia = 0
+    suma_fila = 0
+    suma_columna = 0
 
     for i in range(len(influencias)):
         posicion += 1
@@ -763,19 +763,18 @@ def establecer_valores_mid(idEstudio, influencias):
 
         # Se calcula el valor de influencia directa I.D
         if influencias[i].valor != VALOR_RELACION_NO_REGISTRADA:
-            suma_fila_influencia += influencias[i].valor
+            suma_fila += influencias[i].valor
 
         # Si posicion ( el numero de la columna) es igual a la cantidad de actores agrega total de influencias
         if posicion == actores.count():
-            valores_mid.append(Valor_posicion(posicion=posicion + 1, valor=suma_fila_influencia,
-                                                descripcion=suma_fila_influencia))
+            valores_mid.append(Valor_posicion(posicion=posicion + 1, valor=suma_fila, descripcion=suma_fila))
             # Se determina la posicion donde se va a colocar el nombre corto de la nueva fila
             pos_nombre = (actores.count() + 2) * indice
             valores_mid.insert(pos_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto,
                                                             descripcion=actores[indice].nombreLargo))
             posicion = 0               # reinicio de la posicion (nueva fila)
             indice += 1                # indice hace referencia al siguiente actor
-            suma_fila_influencia = 0   # reinicio para el calculo de la siguiente fila
+            suma_fila = 0              # reinicio para el calculo de la siguiente fila
 
     # Se calculan las dependencias directas D.D (suma de columnas)
     valores_mid.append(Valor_posicion(posicion=0, valor="D.D", descripcion="DEPENDENCIA DIRECTA"))
@@ -784,16 +783,14 @@ def establecer_valores_mid(idEstudio, influencias):
 
     while posicion <= actores.count():
         for i in valores_mid:
-            # si posicion es igual al numero de la columna que se esta sumando
-            if i.posicion == posicion:
-                # si se trata de un valor no valido (matriz incompleta)
-                if i.valor != VALOR_RELACION_NO_REGISTRADA:
-                    suma_columna_dependencia += i.valor
+            if i.posicion == posicion:  # si posicion es igual al numero de la columna que se esta sumando
+                if i.valor != VALOR_RELACION_NO_REGISTRADA:  # si se trata de un valor no valido (matriz incompleta)
+                    suma_columna += i.valor
                     suma_dependencia_total += i.valor
         # Se ingresa a la lista de valores_mid la sumatoria de la columna
-        valores_mid.append(Valor_posicion(posicion="", valor=suma_columna_dependencia, descripcion=suma_columna_dependencia))
-        posicion += 1                 # iteracion de las posiciones
-        suma_columna_dependencia = 0  # reinicio a o del valor movilizacion
+        valores_mid.append(Valor_posicion(posicion="", valor=suma_columna, descripcion=suma_columna))
+        posicion += 1     # iteracion de las posiciones
+        suma_columna = 0  # reinicio a o del valor movilizacion
     valores_mid.append(Valor_posicion(posicion="", valor=suma_dependencia_total, descripcion=suma_dependencia_total))
     valores_mid = agregar_descripcion_mid(idEstudio, valores_mid)
 
@@ -814,8 +811,8 @@ def generar_mid_incompleta(request, idEstudio):
             lista_ejes_ordenados.append(Valor_xy(y=i.id, x=j.id, valor=""))
 
     # se obtienen las parejas de ejes, actualmente registradas y su valor correspondiente
-    for i in mid:
-        lista_ejes_incompletos.append(Valor_xy(y=i.idActorY.id, x=i.idActorX.id, valor=i.valor))
+    for inf in mid:
+        lista_ejes_incompletos.append(Valor_xy(y=inf.idActorY.id, x=inf.idActorX.id, valor=inf.valor))
 
     # se ingresan a la lista de ejes incompletos, valores relleno que facilitan la comparacion con la de ejes ordenados
     cont = 0
@@ -859,13 +856,13 @@ def agregar_descripcion_mid(idEstudio, lista):
     return lista
 
 
-# Calcula los valores de la matriz de MIDIij = MIDij + Sum(Minimo[(MID ik, MID ik])
-def calcular_midi(request, idEstudio):  # idEstudio tipo str
+# Calcula los valores de la matriz de MIDIij = MIDij + Sum(Minimo[(MID ik, MID ik]), idEstudio tipo str
+def calcular_midi(request, idEstudio):
 
     estudio = int(idEstudio)
     actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
     lista_comparacion_minimo = []   # contiene las sublistas de valores minimos por cada actor Y
-    lista_suma = []                # contiene lista_comparacion_minimo concatenado
+    lista_suma = []                 # contiene lista_comparacion_minimo concatenado
     valores_midi = []               # contiene los valores correspondientes a MIDI
 
     if verificar_consenso(request, idEstudio):  # se trabaja con la lista mid de consenso
@@ -879,11 +876,12 @@ def calcular_midi(request, idEstudio):  # idEstudio tipo str
     for actor in range(len(influencias_mid)):
         if influencias_mid[actor].idActorY == influencias_mid[actor].idActorX:
             # cada valor de actor permite el calculo de la suma de sus valores minimos
-            lista_comparacion_minimo.append(sumar_valores_minimos(request, actorY=actor, idEstudio=estudio))
+            lista_comparacion_minimo.append(sumar_valores_minimos(request, actorY=actor, idEstudio=idEstudio))
 
     # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
     for minimo in lista_comparacion_minimo:
         lista_suma += minimo
+
     # se realiza la suma MID ij + Sum(Minimo [(MID ik, MID ik])
     indice = 0
     posicion = 0
@@ -919,12 +917,11 @@ def calcular_midi(request, idEstudio):  # idEstudio tipo str
     return valores_midi
 
 
-# Suma de valores minimos (lado derecho formula midi)
-def sumar_valores_minimos(request, actorY, idEstudio):  # idEstudio tipo str
+# Suma de valores minimos (lado derecho formula midi), idEstudio tipo str
+def sumar_valores_minimos(request, actorY, idEstudio):
 
     estudio = int(idEstudio)
     actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
-    lista_suma = []  # contiene la suma de los valores minimos establecidos al comparar
 
     if verificar_consenso(request, idEstudio):
         mid = calcular_consenso_mid(estudio)
@@ -932,9 +929,7 @@ def sumar_valores_minimos(request, actorY, idEstudio):  # idEstudio tipo str
     else:
         mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
-    for i in range(len(mid)):  # para que tengan igual longitud
-        lista_suma.append(0)
-
+    lista_suma = [0] * len(mid)  # contiene la suma de los valores minimos establecidos al comparar
     valores_minimos = obtener_valores_minimos(request, idEstudio, actorY)
     inicio_sublista = 0             # indica el punto inicial de la sublista
     fin_sublista = actores.count()  # indica el punto final de la sublista
@@ -952,14 +947,13 @@ def sumar_valores_minimos(request, actorY, idEstudio):  # idEstudio tipo str
 # Calcula la maxima influencia directa e indirecta idEstudio = str
 def calcular_maxima_influencia(request, idEstudio):
 
-    consenso = verificar_consenso(request, idEstudio)
     estudio = int(idEstudio)
     actores = Actor.objects.filter(idEstudio=estudio).order_by('id')
     lista_comparacion_minimo = []  # contiene las sublistas de valores minimos por cada actores Y
     lista_maximos = []             # contiene lista_comparacion_minimo concatenado (sin sublista)
     valores_maximos = []           # contiene los valores que se muestran a la matriz luego de comparar
 
-    if consenso is True:
+    if verificar_consenso(request, idEstudio):
         influencias_mid = calcular_consenso_mid(estudio)
         influencias_mid = influencias_mid['consenso']
     else:
@@ -967,16 +961,16 @@ def calcular_maxima_influencia(request, idEstudio):
                                                         idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
-    for i in range(len(influencias_mid)):
-        if influencias_mid[i].idActorY == influencias_mid[i].idActorX:
+    for inf in range(len(influencias_mid)):
+        if influencias_mid[inf].idActorY == influencias_mid[inf].idActorX:
             # cada valor de actorY permite el calculo de una fila de la matriz
-            lista_comparacion_minimo.append(mayor_valores_minimos(request, actorY=i, idEstudio=idEstudio))
+            lista_comparacion_minimo.append(mayor_valores_minimos(request, actorY=inf, idEstudio=idEstudio))
 
     # concatenacion de lista_minimo para facilitar la suma con las influencias correspondientes (igual longitud)
     for i in lista_comparacion_minimo:
         lista_maximos += i
 
-    # se realiza la comparacion para determinar cual valor es mayor entre los mayores
+    # se realiza la comparacion para determinar cual es el valor mayor entre los mayores
     indice = 0
     posicion = 0
     influencia = 0  # valor de la ultima columna
@@ -1005,7 +999,7 @@ def calcular_maxima_influencia(request, idEstudio):
             influencia = 0
 
     valores_maximos.append(
-        Valor_posicion(posicion=0, valor="DDI.M", descripcion="DEPENDENCIA DIRECTA E INDIRECTA MAXIMA"))
+        Valor_posicion(posicion=0, valor="DDI.M", descripcion="MÁXIMA DEPENDENCIA DIRECTA E INDIRECTA"))
     valores_maximos = establecer_dependencias(valores_maximos, actores.count(), "MAXIMA")
 
     return valores_maximos
@@ -1022,7 +1016,7 @@ def mayor_valores_minimos(request, actorY, idEstudio):
     # Se asigna una posicion a los valores minimos para facilitar la comparacion y posterior visualizacion
     contador = 0
     for minimo in lista_minimos:
-        if contador <= actores.count():
+        if contador < actores.count():
             lista_comparar.append(Valor_posicion(posicion=contador, valor=minimo, descripcion=""))
             contador += 1
         if contador + 1 > actores.count():
@@ -1108,7 +1102,7 @@ def calcular_balance_liquido(request, idEstudio):
     for inf in range(len(valores_midi)):  # establece el punto donde se finalizan los registros ingresados
         if valores_midi[inf].valor == "D.DI":
             indice = inf
-
+    # se invierte el sentido de los registros para facilitar el calculo del balance neto
     columna = 0
     lista_inversa.append("nombre")
     while columna < actores.count():
@@ -1124,8 +1118,7 @@ def calcular_balance_liquido(request, idEstudio):
     for i in range(len(valores_midi[0:indice])):
         if valores_midi[i].posicion == 0:
             lista_balance.append(valores_midi[i])
-        #  elif valores_midi[i].posicion > 0 and valores_midi[i].posicion < actores.count()+1:
-        elif valores_midi[i].posicion in range(0 , actores.count() + 1):
+        elif valores_midi[i].posicion in range(0, actores.count() + 1):
             balance = valores_midi[i].valor - lista_inversa[i]
             suma_fila += balance
             lista_balance.append(Valor_posicion(posicion=valores_midi[i].posicion, valor=balance, descripcion=balance))
@@ -1278,8 +1271,7 @@ def calcular_valores_mao(idEstudio, mao, estado_matriz):
         elif mao[i].valor != abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
             suma_negativos += abs(mao[i].valor)
 
-        # cuando el numero de registros alcanza la cantidad de objetivos se tiene una fila de la matriz
-        # se agregan entonces las sumatorias de implicacion (ultimas 3 columnas)
+        # se agregan las sumatorias de implicacion cuando el numero de registros alcanza la cantidad de objetivos
         if posicion == objetivos.count():
             positivo = round(suma_positivos, 1)
             negativo = round(suma_negativos, 1)
@@ -1291,8 +1283,7 @@ def calcular_valores_mao(idEstudio, mao, estado_matriz):
 
             # Agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
             posicion_nombre = (objetivos.count() + 4) * indice
-            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0,
-                                                                     valor=actores[indice].nombreCorto,
+            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto,
                                                                      descripcion=actores[indice].nombreLargo))
             # se reinician los valores para crear la nueva fila
             posicion = 0
@@ -1311,7 +1302,7 @@ def calcular_valores_mao(idEstudio, mao, estado_matriz):
         valores_mao = establecer_valores_movilizacion(objetivos, lista_valores_mao)
 
     if estado_matriz == MATRIZ_COMPLETA:
-        lista= []
+        lista = []
         lista.append(valores_mao)
         lista.append(list_valores_caa)
         lista.append(lista_valores_daa)
@@ -1330,10 +1321,7 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
     valores_mao = []
     cont = 1
     cont2 = 0
-
-    # filtrado del contenido de la matriz 2mao (solo lo valores de relacion actor x objetivo)
-    # al conjunto de valores de una fila se le asigna el una misma posicion para facilitar
-    # los filtros y la posterior comparacion
+    # Se asigna a cada valor de la fila la misma posicion para facilitar la comparacion
     for i in lista_mao:
         if i.posicion > 0 and i.posicion <= cant_objetivos:
             valores_mao.append(Valor_posicion(posicion=cont, valor=i.valor, descripcion=""))
@@ -1342,15 +1330,15 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
                 cont += 1
                 cont2 = 0
 
-    # Devuelve una lista con los valores que poseen la posicion pasada como parametro
+    # Devuelve una sublista con los valores que poseen la posicion pasada como parametro
     def filtrar_posicion(pos):
         sublista_aux = []
-        for x in valores_mao:
-            if x.posicion == pos:
-                sublista_aux.append(x.valor)
+        for mao in valores_mao:
+            if mao.posicion == pos:
+                sublista_aux.append(mao.valor)
 
-        # a la sublista se ingresan los mismos n valores que contiene, hasta que tenga...
-        # la misma longitud de la lista que contiene los otros valores con que se ha de comparar
+        # a la sublista se ingresan los mismos n valores que contiene, hasta que tenga
+        # la misma longitud de la lista que posee los valores con que se ha de comparar
         b = 0
         while len(sublista_aux) < len(valores_mao) - cant_objetivos:
             sublista_aux.append(sublista_aux[b])
@@ -1359,7 +1347,7 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
                 b = 0
         return sublista_aux
 
-    # devuelve una lista con los valores con que se ha de comparar la lista retornada por filtrar_posicion
+    # devuelve una lista de los valores con que se ha de comparar la lista retornada por filtrar_posicion
     def filtrar_comparacion(pos):
         sublista_aux = []
         for q in valores_mao:
@@ -1368,12 +1356,9 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
         return sublista_aux
 
     # Se lleva a cabo el calculo de las convergencias o divergencias de acuerdo al tipo de matriz
-    # if tipo == 1 convergencias
-    # if tipo == 2 divergencias
     valores = []  # contiene los valores de las convergencias o divergencias calculadas
     pos = 1
-    if tipo == 1:
-        # Se realiza la comparacion para identificar las convergencias (Signos iguales)
+    if tipo == 1:  # tipo == 1 convergencias, identificacion de registros con signos iguales
         while pos <= actores.count():
             aux = filtrar_posicion(pos)
             aux2 = filtrar_comparacion(pos)
@@ -1398,8 +1383,7 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
                     suma = 0
             pos += 1
 
-    else:
-        # Se realiza la comparacion para identificar las divergencias (Signos diferentes)
+    else:  # tipo == 2 divergencias, identificacion de signos diferentes
         while pos <= actores.count():
             aux = filtrar_posicion(pos)
             aux2 = filtrar_comparacion(pos)

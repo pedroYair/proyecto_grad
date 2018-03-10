@@ -3,7 +3,7 @@
 
     $(document).ready(function () {
         $("input").click(function () {
-            var id = $(this).attr("id")
+            var id = $(this).attr("id");
             var idEstudio = $('input[name="idEstudio"]').val();
             if(id!=undefined)
             {
