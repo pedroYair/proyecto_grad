@@ -1,14 +1,13 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
-
-from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_estudio,\
-    Crear_actor, Listar_actores, Editar_actor, Consultar_actor, Eliminar_actor, \
-    Crear_ficha, Lista_fichas, Editar_ficha, Consultar_ficha, Eliminar_ficha, Consultar_ficha_mid, \
-    Crear_objetivo, Listar_objetivos, Editar_objetivo, Consultar_objetivo, Eliminar_objetivo, \
-    Crear_relacion_mid, Generar_matriz_mid, Generar_matriz_midi, Generar_matriz_maxima, Generar_matriz_ri, \
-    Generar_matriz_balance, Generar_indicador_estabilidad, Crear_1mao, Crear_2mao, Generar_matriz_mao,\
-    Generar_matrices_caa_daa, Consultar_actores_faltantes, Consultar_objetivos_faltantes, \
-    Crear_informe, exportar_estudio_xls, \
+from .views import listar_estudios, crear_estudio, editar_estudio, consultar_estudio,\
+    crear_actor, listar_actores, editar_actor, consultar_actor, eliminar_actor, \
+    crear_ficha, lista_fichas, editar_ficha, consultar_ficha, eliminar_ficha, consultar_ficha_mid, \
+    crear_objetivo, listar_objetivos, editar_objetivo, consultar_objetivo, eliminar_objetivo, \
+    crear_relacion_mid, generar_matriz_mid, generar_matriz_midi, generar_matriz_maxima, generar_matriz_ri, \
+    generar_matriz_balance, generar_indicador_estabilidad, crear_1mao, crear_2mao, generar_matriz_mao,\
+    generar_matrices_caa_daa, consultar_actores_faltantes, consultar_objetivos_faltantes, \
+    crear_informe, exportar_estudio_xls, \
     histograma_mid, datos_histograma_mid, histograma_ri, datos_histograma_ri, \
     histograma_implicacion, histograma_movilizacion, datos_histogramas_mao,  \
     datos_histograma_caa_daa, histograma_caa_daa, \
@@ -16,56 +15,55 @@ from .views import Listar_estudios, Crear_estudio, Editar_estudio, Consultar_est
     generar_grafo_caa, datos_grafo_caa, generar_grafo_daa, datos_grafo_daa, \
     activar_consenso_influencias, activar_consenso_mao, activar_consenso_caa_daa
 
-
 # nombre de la url, view que respondera y el parametro name
 urlpatterns = [
 
     # Urls modelo Estudio_mactor
-    url(r'^agregar_estudio/$', Crear_estudio.as_view(), name='estudio'),
-    url(r'^lista_estudios', login_required(Listar_estudios), name='lista_estudios'),
-    url(r'^editar_estudio/(?P<idEstudio>\d+)/$', login_required(Editar_estudio), name='editar_estudio'),
-    url(r'^consultar_estudio/$', login_required(Consultar_estudio)),
+    url(r'^agregar_estudio/$', crear_estudio.as_view(), name='estudio'),
+    url(r'^lista_estudios', login_required(listar_estudios), name='lista_estudios'),
+    url(r'^editar_estudio/(?P<idEstudio>\d+)/$', login_required(editar_estudio), name='editar_estudio'),
+    url(r'^consultar_estudio/$', login_required(consultar_estudio)),
 
     # Urls modelo Actor
-    url(r'agregar_actor/$', login_required(Crear_actor)),
-    url(r'eliminar_actor/$', login_required(Eliminar_actor)),
-    url(r'editar_actor/$', login_required(Editar_actor)),
-    url(r'^lista_actores/(?P<idEstudio>\d+)/$', login_required(Listar_actores), name='lista_actores'),
-    url(r'consultar_actor', login_required(Consultar_actor)),
+    url(r'agregar_actor/$', login_required(crear_actor)),
+    url(r'eliminar_actor/$', login_required(eliminar_actor)),
+    url(r'editar_actor/$', login_required(editar_actor)),
+    url(r'^lista_actores/(?P<idEstudio>\d+)/$', login_required(listar_actores), name='lista_actores'),
+    url(r'consultar_actor', login_required(consultar_actor)),
 
-    # Urls modelo Ficha_actor
-    url(r'^agregar_ficha/(?P<idEstudio>\d+)/$', login_required(Crear_ficha), name='ficha'),
-    url(r'eliminar_ficha/$', login_required(Eliminar_ficha)),
-    url(r'consultar_ficha/$', login_required(Consultar_ficha)),
-    url(r'^editar_ficha/(?P<idFicha>\d+)/$', login_required(Editar_ficha), name='editar_ficha'),
-    url(r'lista_fichas/(?P<idEstudio>\d+)/$', login_required(Lista_fichas), name='lista_fichas'),
-    url(r'consultar_ficha_mid/$', login_required(Consultar_ficha_mid)),
+    # Urls modelo Ficha
+    url(r'^agregar_ficha/(?P<idEstudio>\d+)/$', login_required(crear_ficha), name='ficha'),
+    url(r'eliminar_ficha/$', login_required(eliminar_ficha)),
+    url(r'consultar_ficha/$', login_required(consultar_ficha)),
+    url(r'^editar_ficha/(?P<idFicha>\d+)/$', login_required(editar_ficha), name='editar_ficha'),
+    url(r'lista_fichas/(?P<idEstudio>\d+)/$', login_required(lista_fichas), name='lista_fichas'),
+    url(r'consultar_ficha_mid/$', login_required(consultar_ficha_mid)),
 
     # Urls modelo Objetivo
-    url(r'agregar_objetivo/$', login_required(Crear_objetivo)),
-    url(r'^lista_objetivos/(?P<idEstudio>\d+)/$', login_required(Listar_objetivos), name='lista_objetivos'),
-    url(r'eliminar_objetivo/$', login_required(Eliminar_objetivo)),
-    url(r'editar_objetivo/$', login_required(Editar_objetivo)),
-    url(r'consultar_objetivo', login_required(Consultar_objetivo)),
+    url(r'agregar_objetivo/$', login_required(crear_objetivo)),
+    url(r'^lista_objetivos/(?P<idEstudio>\d+)/$', login_required(listar_objetivos), name='lista_objetivos'),
+    url(r'eliminar_objetivo/$', login_required(eliminar_objetivo)),
+    url(r'editar_objetivo/$', login_required(editar_objetivo)),
+    url(r'consultar_objetivo', login_required(consultar_objetivo)),
 
     # Urls modelo Relacion_MID y matrices
-    url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', login_required(Crear_relacion_mid), name='influencia'),
-    url(r'^matriz_mid/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_mid), name='matriz_mid'),
-    url(r'^matriz_midi/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_midi), name='matriz_midi'),
-    url(r'^matriz_maxima/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_maxima), name='matriz_maxima'),
-    url(r'^matriz_ri/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_ri), name='matriz_ri'),
-    url(r'^matriz_balance/(?P<idEstudio>\d+)/$', login_required(Generar_matriz_balance), name='matriz_balance'),
-    url(r'^estabilidad/(?P<idEstudio>\d+)/$', login_required(Generar_indicador_estabilidad), name='estabilidad'),
+    url(r'^agregar_influencia/(?P<idEstudio>\d+)/$', login_required(crear_relacion_mid), name='influencia'),
+    url(r'^matriz_mid/(?P<idEstudio>\d+)/$', login_required(generar_matriz_mid), name='matriz_mid'),
+    url(r'^matriz_midi/(?P<idEstudio>\d+)/$', login_required(generar_matriz_midi), name='matriz_midi'),
+    url(r'^matriz_maxima/(?P<idEstudio>\d+)/$', login_required(generar_matriz_maxima), name='matriz_maxima'),
+    url(r'^matriz_ri/(?P<idEstudio>\d+)/$', login_required(generar_matriz_ri), name='matriz_ri'),
+    url(r'^matriz_balance/(?P<idEstudio>\d+)/$', login_required(generar_matriz_balance), name='matriz_balance'),
+    url(r'^estabilidad/(?P<idEstudio>\d+)/$', login_required(generar_indicador_estabilidad), name='estabilidad'),
 
     # Urls modelo Relacion_MAO y matrices
-    url(r'^1mao/(?P<idEstudio>\d+)/$', login_required(Crear_1mao), name='1mao'),
-    url(r'^2mao/(?P<idEstudio>\d+)/$', login_required(Crear_2mao), name='2mao'),
-    url(r'^matriz_mao/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(Generar_matriz_mao), name='matriz_mao'),
-    url(r'^matriz_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(Generar_matrices_caa_daa), name='caa_daa'),
+    url(r'^1mao/(?P<idEstudio>\d+)/$', login_required(crear_1mao), name='1mao'),
+    url(r'^2mao/(?P<idEstudio>\d+)/$', login_required(crear_2mao), name='2mao'),
+    url(r'^matriz_mao/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(generar_matriz_mao), name='matriz_mao'),
+    url(r'^matriz_caa_daa/(?P<idEstudio>\d+)/(?P<numero_matriz>\d)/', login_required(generar_matrices_caa_daa), name='caa_daa'),
 
     # Urls consultas ajax
-    url(r'mid-ajax/$', login_required(Consultar_actores_faltantes)),  # obtiene lista actores X registrados en la mid
-    url(r'mao-ajax/$', login_required(Consultar_objetivos_faltantes)),  # obtiene lista objetivos X registrados en la mao
+    url(r'mid-ajax/$', login_required(consultar_actores_faltantes)),  # obtiene lista actores X registrados en la mid
+    url(r'mao-ajax/$', login_required(consultar_objetivos_faltantes)),  # obtiene lista objetivos X registrados en la mao
 
     # Urls histogramas de influencia
     url(r'^histograma_mid/(?P<idEstudio>\d+)/$', login_required(histograma_mid), name='histograma_mid'),
@@ -102,7 +100,7 @@ urlpatterns = [
     url(r'^consenso_mao/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)', login_required(activar_consenso_mao), name='consenso_mao'),
     url(r'^consenso_caa_daa/(?P<idEstudio>\d+)/(?P<matriz>\d)/(?P<tipo>\d)/', login_required(activar_consenso_caa_daa), name='consenso_caa_daa'),
 
-    # Urls modelo Estudio_mactor
-    url(r'^informe_final/(?P<idEstudio>\d+)/$', login_required(Crear_informe), name='informe_final'),
+    # Urls modelo informe final
+    url(r'^informe_final/(?P<idEstudio>\d+)/$', login_required(crear_informe), name='informe_final'),
 
 ]

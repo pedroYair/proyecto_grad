@@ -8,115 +8,115 @@
            <! INICIO MODAL CREAR--------------------------->
 
               <div id="myModal1" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     	<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-											<h4 class="modal-title">Nuevo actor</h4>
-								     	</div>
-								     	<div id="mod_body2" class="modal-body" style="text-align: justify">
-											{% include 'actor/formulario_crear.html'%}
-								     	</div>
-										 <div class="modal-footer">
-										<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
-										<button id="boton_guardar" type="submit" onclick="guardar()" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
-								  		</div>
-									 </div>
-								</div>
-                    </div>
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							  <h4 class="modal-title">Nuevo actor</h4>
+						  </div>
+						  <div id="mod_body2" class="modal-body" style="text-align: justify">
+							  {% include 'actor/formulario_crear.html'%}
+						  </div>
+						  <div class="modal-footer">
+							  <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
+							  <button id="boton_guardar" type="submit" onclick="guardar()" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
 
 
            <! INICIO MODAL ELIMINAR------------------------>
 
               <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     	<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-											<h4 class="modal-title">Eliminar actor</h4>
-								     	</div>
-								     	<div id="mod_body" class="modal-body" style="text-align: justify">
-                                            <p>¿Eliminar al actor <span style="color: red" id="modal_name"></span>?</p>
-								     	</div>
-										 <div class="modal-footer">
-                                                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
-                                                <button id="modal_idProducto"  type="submit" class="btn btn-danger" onclick="Eliminar()">Eliminar</button>
-								  		</div>
-									 </div>
-								</div>
-                    </div>
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							  <h4 class="modal-title">Eliminar actor</h4>
+						  </div>
+						  <div id="mod_body" class="modal-body" style="text-align: justify">
+							  <p>¿Eliminar al actor <span style="color: red" id="modal_name"></span>?</p>
+						  </div>
+						  <div class="modal-footer">
+							  <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
+							  <button id="modal_idProducto"  type="submit" class="btn btn-danger" onclick="Eliminar()">Eliminar</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
 
 
            <! INICIO MODAL EDITAR--------------------------->
 
               <div id="myModal3" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     	<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-											<h4 class="modal-title">Editar actor</h4>
-								     	</div>
-								     	<div id="mod_body3" class="modal-body" style="text-align: justify">
-											{% include 'actor/formulario_editar.html'%}
-								     	</div>
-										 <div class="modal-footer">
-										<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
-										<button id="modal_actualizar" type="submit" onclick="actualizar()" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
-								  		</div>
-									 </div>
-								</div>
-                    </div>
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							  <h4 class="modal-title">Editar actor</h4>
+						  </div>
+						  <div id="mod_body3" class="modal-body" style="text-align: justify">
+							  {% include 'actor/formulario_editar.html'%}
+						  </div>
+						  <div class="modal-footer">
+							  <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
+							  <button id="modal_actualizar" type="submit" onclick="actualizar()" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
 
 
-		   <! MODAL DETALLE DEL ACTOR-->
+		   <! MODAL DETALLE DEL ACTOR---------------------->
 
             <div id="myModal5" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     <div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-									<h4 class="modal-title">Detalle del actor</h4>
-								     </div>
-								     <div id="mod_body5" class="modal-body" style="text-align: justify"></div>
-								  <div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-								  </div>
-								    </div>
-								</div>
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h4 class="modal-title">Detalle del actor</h4>
+						</div>
+						<div id="mod_body5" class="modal-body" style="text-align: justify"></div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+						</div>
+					</div>
+				</div>
 			</div>
 
 
             <! INICIO MODAL AYUDA--------------------------->
 
               <div id="myModal4" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     	<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-											<h4 class="modal-title">Ayuda - Lista de Actores</h4>
-								     	</div>
-								     	<div class="modal-body" style="text-align: justify">
-											<p>De acuerdo a Cely (1999) los actores son “personas que pueden influir
-												significativamente sobre el sistema mediante la toma de decisiones o la
-												realización de proyectos” (p.27). De igual forma afirma que estos actores
-												pueden pertenecer a grupos asociados a: el poder (organismos del estado),
-												producción (sector industrial), saber (entidades que generan conocimiento,
-												universidades, etc.) o la comunidad (beneficiarios de productos o servicios).
-											</p>
-											<br>
-											<p>La lista de actores de MACTOR generalmente es establecida a partir de la
-												determinación de variables claves, aplicandose para ello técnicas como
-												Lluvia de ideas y MICMAC. Por ello se recomienda tener en cuenta a aquellos
-												actores que interactuen con dichas variables (tenga en cuenta que en la
-												presente aplicación puede registrar máximo 15 actores.)
-											</p>
-								     	</div>
-										 <div class="modal-footer">
-										<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-								  		</div>
-									 </div>
-								</div>
-                    </div>
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							  <h4 class="modal-title">Ayuda - Lista de Actores</h4>
+						  </div>
+						  <div class="modal-body" style="text-align: justify">
+							  <p>De acuerdo a Cely (1999) los actores son “personas que pueden influir
+								  significativamente sobre el sistema mediante la toma de decisiones o la
+								  realización de proyectos” (p.27). De igual forma afirma que estos actores
+								  pueden pertenecer a grupos asociados a: el poder (organismos del estado),
+								  producción (sector industrial), saber (entidades que generan conocimiento,
+								  universidades, etc.) o la comunidad (beneficiarios de productos o servicios).
+							  </p>
+							  <br>
+							  <p>La lista de actores de MACTOR generalmente es establecida a partir de la
+								  determinación de variables claves, aplicandose para ello técnicas como
+								  Lluvia de ideas y MICMAC. Por ello se recomienda tener en cuenta a aquellos
+								  actores que interactuen con dichas variables <p style="color: black">(tenga en cuenta
+							      que en la presente aplicación puede registrar máximo 15 actores.)</p>
+							  </p>
+						  </div>
+						  <div class="modal-footer">
+							  <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
 
 
 
