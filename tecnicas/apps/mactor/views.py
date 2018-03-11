@@ -1,7 +1,7 @@
 import xlwt
 import json
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from .constants import VALOR_RELACION_NO_REGISTRADA, COLUMNAS_EXTRAS_MATRIZ_MAO, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
+from .constants import VALOR_RELACION_NO_REGISTRADA, MATRIZ_COMPLETA, MATRIZ_INCOMPLETA
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import JsonResponse, HttpResponse, request, Http404
@@ -1150,7 +1150,6 @@ def establecer_dependencias(lista, cant_actores, tipo):
 
         # se inserta el valor dependencia a la lista de valores
         lista.append(Valor_posicion(posicion="", valor=dependencia, descripcion=dependencia))
-        # se actualizan los parametros de iteracion
         suma_di += dependencia  # sumatoria total de dependencia
         indice += 1
         dependencia = 0
@@ -1167,7 +1166,7 @@ def calcular_estabilidad(request, idEstudio):
     valores_midi = calcular_midi(request, idEstudio)
     lista_influencias = []
     lista_dependencias = []
-    total = valores_midi[len(valores_midi) - 1].valor  # valor de la ultima celda de la matriz midi
+    total = valores_midi[len(valores_midi) - 1].valor  # valor de la ultima celda de la matriz midi (total suma)
     estabilidad = 0
 
     for midi in valores_midi:
@@ -1179,13 +1178,12 @@ def calcular_estabilidad(request, idEstudio):
     for inf in range(len(lista_influencias)):
         estabilidad += abs(lista_influencias[inf] - lista_dependencias[inf])
 
-    estabilidad = round((estabilidad / (2 * total)) * 100, 2)
-    return estabilidad
+    return round((estabilidad / (2 * total)) * 100, 2)
 
 
 # <<<<FUNCIONES RELACIONES MAO>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
-# Establece el contexto a enviar al template de la matriz mao correspondiente
+# Establece el contexto a enviar al template de la matriz mao correspondiente, idEstudio tipo str
 def crear_contexto_mao(request, idEstudio, numero_matriz):
 
     consenso = verificar_consenso(request, idEstudio)
@@ -1196,6 +1194,10 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
     tamano_matriz_completa = len(actores) * len(objetivos)
     lista_mao = []
     num_expertos = []
+
+    contexto = {'objetivos': objetivos, 'actores': actores,
+                'posicion_salto': objetivos.count() + 3, 'posicion_salto_movilizacion': (objetivos.count() * 2) + 4,
+                'posicion_salto_caa_daa': actores.count(),  'estudio': estudio, 'usuario': tipo_usuario}
 
     if numero_matriz < 3:  # para la matriz 1mao y 2mao
         if consenso is True:
@@ -1223,22 +1225,20 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
         valores_caa = agregar_descripcion_caa_daa(estudio.id, lista_contexto[1])
         valores_daa = agregar_descripcion_caa_daa(estudio.id, lista_contexto[2])
 
-        contexto = {'objetivos': objetivos, 'actores': actores, 'valores_mao': valores_mao,
-                    'posicion_salto': objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
-                    'posicion_salto_movilizacion': (objetivos.count() * 2) + 4,
-                    'valores_caa': valores_caa, 'valores_daa': valores_daa,
-                    'posicion_salto_caa_daa': actores.count(), 'estado_matriz': MATRIZ_COMPLETA,
-                    'estudio': estudio, 'usuario': tipo_usuario, 'expertos': num_expertos}
+        contexto['valores_mao'] = valores_mao
+        contexto['valores_caa'] = valores_caa
+        contexto['valores_daa'] = valores_daa
+        contexto['estado_matriz'] = MATRIZ_COMPLETA
+        contexto['expertos'] = num_expertos
     # Si la matriz es 1mao o 2mao y esta incompleta
     elif len(lista_mao) != tamano_matriz_completa or len(lista_mao) == 0 and numero_matriz != 3:
-
         valores_mao = generar_mao_incompleta(estudio.id, lista_mao)
         valores_mao = agregar_descripcion_mao(estudio.id, numero_matriz, valores_mao)
-        contexto = {'objetivos': objetivos, 'actores': actores, 'valores_mao': valores_mao,
-                    'valores_caa': [], 'valores_daa': [],
-                    'posicion_salto': objetivos.count() + COLUMNAS_EXTRAS_MATRIZ_MAO,
-                    'posicion_salto_movilizacion': (objetivos.count() * 2) + 4,
-                    'estado_matriz': MATRIZ_INCOMPLETA, 'estudio': estudio, 'usuario': tipo_usuario}
+
+        contexto['valores_mao'] = valores_mao
+        contexto['valores_caa'] = []
+        contexto['valores_daa'] = []
+        contexto['estado_matriz'] = MATRIZ_INCOMPLETA
     # si no se han registrado actores u objetivos
     else:
         contexto = {'estudio': estudio, 'usuario': tipo_usuario, 'estado_matriz': MATRIZ_INCOMPLETA}
@@ -1251,9 +1251,9 @@ def calcular_valores_mao(idEstudio, mao, estado_matriz):
 
     objetivos = Objetivo.objects.filter(idEstudio=idEstudio).order_by('id')
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    lista_valores_mao = []
-    list_valores_caa = []
-    lista_valores_daa = []
+    valores_mao = []
+    valores_caa = []
+    valores_daa = []
     posicion = 0        # referencia a la lista de valores mao
     indice = 0          # referencia a las lista de actores y objetivos
     suma_positivos = 0  # sumatoria de los valores positivos de implicacion
@@ -1263,7 +1263,7 @@ def calcular_valores_mao(idEstudio, mao, estado_matriz):
     for i in range(len(mao)):
         posicion += 1
         # se agregan las relaciones mao registradas asignandoles una posicion para facilitar su impresion
-        lista_valores_mao.append(Valor_posicion(posicion=posicion, valor=mao[i].valor, descripcion=""))
+        valores_mao.append(Valor_posicion(posicion=posicion, valor=mao[i].valor, descripcion=""))
 
         # se determinan las implicaciones positivas, negativas y totales (columnas +, - , Imp)
         if mao[i].valor == abs(mao[i].valor) and mao[i].valor != VALOR_RELACION_NO_REGISTRADA:
@@ -1276,14 +1276,13 @@ def calcular_valores_mao(idEstudio, mao, estado_matriz):
             positivo = round(suma_positivos, 1)
             negativo = round(suma_negativos, 1)
             total = round(suma_positivos + suma_negativos, 1)
-            lista_valores_mao.extend([
+            valores_mao.extend([
                 Valor_posicion(posicion=posicion + 1, valor=positivo, descripcion=positivo),
                 Valor_posicion(posicion=posicion + 2, valor=negativo, descripcion=negativo),
                 Valor_posicion(posicion=posicion + 3, valor=total, descripcion=total)])
-
             # Agregada la fila se determina la posicion donde se va a colocar el nombre corto de fila (primera columna)
             posicion_nombre = (objetivos.count() + 4) * indice
-            lista_valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto,
+            valores_mao.insert(posicion_nombre, Valor_posicion(posicion=0, valor=actores[indice].nombreCorto,
                                                                      descripcion=actores[indice].nombreLargo))
             # se reinician los valores para crear la nueva fila
             posicion = 0
@@ -1293,22 +1292,19 @@ def calcular_valores_mao(idEstudio, mao, estado_matriz):
 
     # si la matriz esta totalmente diligenciada
     if estado_matriz == MATRIZ_COMPLETA:
-        list_valores_caa = calcular_caa_daa(idEstudio, lista_valores_mao, 1)
-        lista_valores_daa = calcular_caa_daa(idEstudio, lista_valores_mao, 2)
+        valores_caa = calcular_caa_daa(idEstudio, valores_mao, 1)
+        valores_daa = calcular_caa_daa(idEstudio, valores_mao, 2)
 
     # se agrega a lista los valores de movilizacion
-    valores_mao = []
+    mao = []
     if objetivos.count() > 0:
-        valores_mao = establecer_valores_movilizacion(objetivos, lista_valores_mao)
+        mao = establecer_valores_movilizacion(objetivos, valores_mao)
 
     if estado_matriz == MATRIZ_COMPLETA:
-        lista = []
-        lista.append(valores_mao)
-        lista.append(list_valores_caa)
-        lista.append(lista_valores_daa)
+        lista = [mao, valores_caa, valores_daa]
         return lista
     else:
-        return valores_mao
+        return mao
 
 
 # <<<<FUNCIONES RELACIONES CAA Y DAA>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
@@ -1331,10 +1327,10 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
                 cont2 = 0
 
     # Devuelve una sublista con los valores que poseen la posicion pasada como parametro
-    def filtrar_posicion(pos):
+    def filtrar_posicion(posicion):
         sublista_aux = []
         for mao in valores_mao:
-            if mao.posicion == pos:
+            if mao.posicion == posicion:
                 sublista_aux.append(mao.valor)
 
         # a la sublista se ingresan los mismos n valores que contiene, hasta que tenga
@@ -1348,11 +1344,11 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
         return sublista_aux
 
     # devuelve una lista de los valores con que se ha de comparar la lista retornada por filtrar_posicion
-    def filtrar_comparacion(pos):
+    def filtrar_comparacion(posicion):
         sublista_aux = []
-        for q in valores_mao:
-            if q.posicion != pos:
-                sublista_aux.append(q.valor)
+        for mao in valores_mao:
+            if mao.posicion != posicion:
+                sublista_aux.append(mao.valor)
         return sublista_aux
 
     # Se lleva a cabo el calculo de las convergencias o divergencias de acuerdo al tipo de matriz
@@ -1366,12 +1362,12 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
             cont2 = 0
             suma = 0
             for i in range(len(aux)):
-                # compara si ambos valores son positivos
-                if (aux[i] == abs(aux[i])) and (aux2[i] == abs(aux2[i])) and (aux[i] != 0) and (aux2[i] != 0):
+                # compara si ambos valores son positivos y diferentes de cero
+                if aux[i] > 0 and aux2[i] > 0:
                     suma += (aux[i] + aux2[i]) / 2.0
                     cont += 1
-                # compara si ambos valores son negativos
-                elif (aux[i] != abs(aux[i])) and (aux2[i] != abs(aux2[i])) and (aux[i] != 0) and (aux2[i] != 0):
+                # compara si ambos valores son negativos y diferentes de cero
+                elif aux[i] < 0 and aux2[i] < 0:
                     suma += (abs(aux[i]) + abs(aux2[i])) / 2.0
                     cont += 1
                 else:
@@ -1391,12 +1387,12 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
             cont2 = 0
             suma = 0
             for i in range(len(aux)):
-                # compara si el primero es positivo y el segundo negativo
-                if (aux[i] == abs(aux[i])) and (aux2[i] != abs(aux2[i])) and (aux[i] != 0) and (aux2[i] != 0):
+                # compara si el primero es positivo y el segundo negativo y diferentes de cero
+                if aux[i] > 0 and aux2[i] < 0:
                     suma += (aux[i] + abs(aux2[i])) / 2.0
                     cont += 1
                 # compara si el primero es negativo y el segundo positivo
-                elif (aux[i] != abs(aux[i])) and (aux2[i] == abs(aux2[i])) and (aux[i] != 0) and (aux2[i] != 0):
+                elif aux[i] < 0 and aux2[i] > 0:
                     suma += (abs(aux[i]) + aux2[i]) / 2.0
                     cont += 1
                 else:
@@ -1408,17 +1404,13 @@ def calcular_caa_daa(idEstudio, lista_mao, tipo):
                     suma = 0
             pos += 1
 
-# posible corte-----------------------------------------------------------------------------
     # Agregado a la lista de los nombres cortos y de los ceros de la diagonal
     cont = 0
     pos_list = 1
-
     for i in range(actores.count()):
-        # agregado de los nombres cortos de los actores
-        valores.insert(cont, actores[i].nombreCorto)
+        valores.insert(cont, actores[i].nombreCorto)  # se agregan los nombres cortos del los actores
         cont2 = cont + pos_list
-        # agregado de los valores 0 de la diagonal
-        valores.insert(cont2, 0)
+        valores.insert(cont2, 0)  # se agregan los ceros de la diagonal
         pos_list += 1
         cont += actores.count() + 1
 
