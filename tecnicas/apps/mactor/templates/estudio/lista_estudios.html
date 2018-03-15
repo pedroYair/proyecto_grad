@@ -49,10 +49,10 @@ Bienvenido: {{user.username}}
                                                 {% endif %}
                                             </td>
                                             <td>
-                                                <a id="{{estudio.id}}" class="btn btn-primary" title="Ver"
+                                                <a id="ver{{estudio.id}}" class="btn btn-primary" title="Ver"
                                                    data-toggle="modal" href="#modal_Consultar"><i class="fa fa-eye"></i>
                                                 </a>
-                                                {% if request.user.is_superuser %}
+                                                {% if request.user == estudio.idAdministrador %}
                                                 <a class="btn btn-warning" title="Editar"
                                                    href="{%url 'mactor:editar_estudio' estudio.id%}">
                                                     <i class="fa fa-pencil"></i>

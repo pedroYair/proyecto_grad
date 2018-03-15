@@ -26,6 +26,7 @@ class Form_Estudio(forms.ModelForm):
         fields = [
             'titulo',
             'descripcion',
+            'idAdministrador',
             'idCoordinador',
             'idExpertos',
             'fecha_inicio',
@@ -37,6 +38,7 @@ class Form_Estudio(forms.ModelForm):
         widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
             'descripcion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'idAdministrador': forms.Select(attrs={'class': 'form-control'}),
             'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idExpertos': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'fecha_inicio': forms.DateInput(attrs={'class': 'datepicker'}),

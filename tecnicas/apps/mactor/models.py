@@ -8,6 +8,7 @@ from django.utils.timezone import now
 class Estudio_Mactor(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
+    idAdministrador = models.ForeignKey(User, verbose_name='administrador', related_name='mactor_administrador')
     idCoordinador = models.ForeignKey(User, verbose_name='coordinador', related_name='mactor_coordinador')
     idExpertos = models.ManyToManyField(User, verbose_name='Expertos', related_name='mactor_expertos_set')
     fecha_inicio = models.DateField(default=now)

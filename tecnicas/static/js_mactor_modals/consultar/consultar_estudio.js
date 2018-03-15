@@ -4,9 +4,9 @@
     $(document).ready(function () {
         $("a").click(function () {
             var id = $(this).attr("id");
-            //Si se pulsa el tr de un estudio
-            if(id!=undefined)
+            if(id!=undefined && id.indexOf("ver")!= -1)
             {
+                id = id.substring(3);
                     $.ajax(
                         {
                             data: {'id': id},

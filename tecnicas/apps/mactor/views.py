@@ -411,7 +411,11 @@ def crear_relacion_mid(request, idEstudio):
     influencias_total = (len(actores) ** 2) - len(actores)  # total de influencias que se deben registrar
     influencias_registradas = len(Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
                                                         idExperto=request.user.id))  # inf actualmente registradas
-    porcentaje = round((100 / influencias_total) * (influencias_registradas - len(actores)), 2)  # porc diligenciado
+    porcentaje = 0
+    if influencias_registradas > 0:
+        porcentaje = round((100 / influencias_total) * (influencias_registradas - len(actores)), 2)  # porc diligenciado
+
+
     if request.method == 'POST':
         form = Form_MID(request.POST)
         if form.is_valid():
@@ -615,7 +619,10 @@ def crear_1mao(request, idEstudio):
     influencias_total = len(actores) * len(objetivos)  # total de influencias que se deben registrar
     influencias_registradas = len(Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=1,
                                                 idExperto=request.user.id))  # inf actualmente registradas
-    porcentaje = round((100 / influencias_total) * influencias_registradas, 2)   # porcentaje de diligenciamiento
+    porcentaje = 0
+    if influencias_registradas > 0:
+        porcentaje = round((100 / influencias_total) * influencias_registradas, 2)   # porcentaje de diligenciamiento
+
     if request.method == 'POST':
         form = Form_1mao(request.POST)
         if form.is_valid():
@@ -638,7 +645,10 @@ def crear_2mao(request, idEstudio):
     influencias_total = len(actores) * len(objetivos)  # total de influencias que se deben registrar
     influencias_registradas = len(Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2,
                                                               idExperto=request.user.id))  # inf actualmente registradas
-    porcentaje = round((100 / influencias_total) * influencias_registradas, 2)  # porcentaje de diligenciamiento
+    porcentaje = 0
+    if influencias_registradas > 0:
+        porcentaje = round((100 / influencias_total) * influencias_registradas, 2)  # porcentaje de diligenciamiento
+
     if request.method == 'POST':
         form = Form_2mao(request.POST)
         if form.is_valid():
@@ -1782,7 +1792,9 @@ def obtener_tipo_usuario(request, idEstudio):
     tipo = ""
 
     # Si el usuario es coordinador y experto
-    if request.user in lista_expertos and estudio.idCoordinador == request.user:
+    if estudio.idAdministrador == request.user:
+        tipo = "ADMINISTRADOR"
+    elif request.user in lista_expertos and estudio.idCoordinador == request.user:
         tipo = "COORDINADOR_EXPERTO"
     # Si el usuario solo es coordinador or request.user.is_superuser
     elif estudio.idCoordinador == request.user:
