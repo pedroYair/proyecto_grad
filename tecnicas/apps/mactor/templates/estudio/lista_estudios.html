@@ -2,7 +2,7 @@
 {% load staticfiles %}
 
 {% block head_title %}
-Bienvenido: {{user.username}}
+    Bienvenido: {{user.username}}
 {% endblock %}
 
 {% block content %}
@@ -15,7 +15,6 @@ Bienvenido: {{user.username}}
                         <div class="pull-left">Lista de estudios MACTOR</div>
                         <div class="widget-icons pull-right">
                             <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
-                            <a href="#" class="wclose"><i class="fa fa-times"></i></a>
                         </div>
                         <div class="clearfix"></div>
                     </div>
@@ -65,7 +64,7 @@ Bienvenido: {{user.username}}
                                         </tr>
                                     {% endfor %}
                                 {% else %}
-                                <h3>No hay estudios MACTOR registrados</h3>
+                                <h3>No tiene estudios MACTOR registrados</h3>
                                 {% endif %}
                             </tbody>
                         </table>
@@ -103,9 +102,9 @@ Bienvenido: {{user.username}}
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
                     {% if request.user.is_superuser %}
-                    <a class="btn btn-primary" id="boton_agregar" href="{% url 'mactor:estudio' %}"><i class="fa fa-plus"></i> Agregar</a>
+                    <a class="btn btn-primary" id="boton_agregar" href="{% url 'mactor:estudio' %}" title="Agregar nuevo estudio"><i class="fa fa-plus"></i> Agregar</a>
                     {%  endif %}
-                    <a class="btn btn-primary" data-toggle="modal" href="#modal_Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                    <a class="btn btn-primary" data-toggle="modal" href="#modal_Ayuda" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                 </div>
             </div>
 

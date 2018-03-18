@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if usuario != '' %}
+    {% if usuario != '' and usuario != 'COORDINADOR' %}
 
         <!--MATRIZ MID-------------------------------------------------------------------------------------------------->
         <div class="container">
@@ -30,7 +30,7 @@
                                  </div>
                                  <div class="clearfix"></div>
                             </div>
-                            <!--INICIO DIV MATRIZ-->
+                            <!--------------------------Table matriz------------------------------->
                             <div id="div_tabla" class="widget-content">
                                 <table class="table table-bordered" id="matriz_mid">
                                     <thead>
@@ -48,12 +48,12 @@
                                                 {% endif %}
                                                 <br>
                                              </tr>
-                                        </thead>
+                                    </thead>
                                     <tbody>
                                         {% if valores %}
                                         <tr>
                                             {% for i in valores %}
-                                                <!--Inserta el ultimo valor de la fila antes del salto de linea (Valores de influencia directa)-->
+                                                <!--Inserta el ultimo valor de la fila-->
                                                 {% if i.posicion == posicion_salto %}
                                                     <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
                                                     <br>
@@ -67,7 +67,7 @@
                                                                 <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
                                                                size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
                                                         {% endif %}
-                                                <!--Inserta los valores mid posteriores al nombre en Y y previos al valor de la ultima celda-->
+                                                <!--Inserta los valores ubicados entre la primera y ultima celda-->
                                                 {% else %}
                                                     {% if i.valor == 100 %}
                                                         <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" title="Influencia sin registrar" size="4" value="X">
@@ -77,14 +77,14 @@
                                                 {% endif %}
                                             {% endfor %}
                                         {% else %}
-                                            <h3>Registre los actores del estudio.</h3>
+                                            <h3>No se han registrado actores en el estudio.</h3>
                                         {% endif %}
                                                 <br>
                                         </tr>
                                         </tbody>
                                 </table>
                             </div>
-                            <!--FINAL DIV MATRIZ-->
+                            <!--------------------------------------------------------------------->
                         </div>
                     </div>
                 </div>
@@ -93,10 +93,10 @@
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id %}"><i class="fa fa-arrow-left"></i> Inf. MID</a>
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" href="{% url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-table"></i> MIDI</a>
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao' estudio.id %}">Inf. 1MAO<i class="fa fa-arrow-right"></i></a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:influencia' estudio.id %}" title="Formulario MID"><i class="fa fa-arrow-left"></i> Inf. MID</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" href="{% url 'mactor:matriz_midi' estudio.id %}" title="Matriz MIDI"><i class="fa fa-table"></i> MIDI</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:1mao' estudio.id %}" title="Formulario 1MAO">Inf. 1MAO<i class="fa fa-arrow-right"></i></a>
             </div>
         </div>
 
@@ -107,36 +107,36 @@
         <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
 
             <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                                        <div class="modal-dialog">
-                                             <div class="modal-content">
-                                             <div class="modal-header">
-                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                                            <h4 class="modal-title">Ayuda - Matriz de Influencias Directas</h4>
-                                             </div>
-                                             <div class="modal-body" style="text-align: justify">
-                                            <p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
-                                                que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
-                                                influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
-                                                procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
-                                                de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
-                                                de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
-                                                existencia o permanencia de otro (4) (Godet y Durance, 2009).
-                                            </p>
-                                                 <br>
-                                            <p>La columna Influencia Directa (Inf. D), representa la influencia que determinado
-                                                actor ejerce en el grupo de actores estudiado. Mientras que la fila Dependencia
-                                                Directa (Dep. D), la influencia que el mismo actor recibe del resto de actores.
-                                            </p>
-                                             </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-                                          </div>
-                                            </div>
-                                        </div>
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                            <h4 class="modal-title">Ayuda - Matriz de Influencias Directas</h4>
+                        </div>
+                        <div class="modal-body" style="text-align: justify">
+                            <p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
+                                que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
+                                influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
+                                procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
+                                de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
+                                de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
+                                existencia o permanencia de otro (4) (Godet y Durance, 2009).
+                            </p>
+                            <br>
+                            <p>La columna Influencia Directa (Inf. D), representa la influencia que determinado
+                                actor ejerce en el grupo de actores estudiado. Mientras que la fila Dependencia
+                                Directa (Dep. D), la influencia que el mismo actor recibe del resto de actores.
+                            </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                        </div>
+                    </div>
+                </div>
             </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
-        <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+        <h2>Upps...no cuenta permisos en este estudio.</h2>
     {% endif %}
 
 {% block extrajs %}

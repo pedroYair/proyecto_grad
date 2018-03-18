@@ -9,7 +9,7 @@
 
 {% block content %}
 
-	{% if usuario != '' %}
+	{% if usuario != '' and usuario != 'COORDINADOR' %}
 		<div class="matter">
 					<div class="container">
 						<div class="row">
@@ -115,11 +115,13 @@
 												<div class="row">
 													<div class="form-group">
 													  <div class="col-md-offset-2 col-md-8">
-														  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_objetivos' estudio.id%}"><i class="fa fa-arrow-left"></i> Objetivos</a>
-														  <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
-														  <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-														  <a class="btn btn-primary" data-toggle="modal" href="#myModal2" onclick="Consultar_ficha()"><i class="fa fa-eye"></i> Consultar</a>
-														  <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id%}">Matriz MID <i class="fa fa-arrow-right"></i></a>
+														  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_objetivos' estudio.id%}" title="Lista de objetivos"><i class="fa fa-arrow-left"></i> Objetivos</a>
+														  <button type="submit" class="btn btn-primary" title="Guardar"><i class="fa fa-plus"></i> Guardar</button>
+														  <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+														  {% if actores %}
+														  <a class="btn btn-primary" data-toggle="modal" href="#myModal2" onclick="Consultar_ficha()" title="Consultar estrategias"><i class="fa fa-eye"></i> Consultar</a>
+														  {% endif %}
+														  <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id%}" title="Matriz MID">Matriz MID <i class="fa fa-arrow-right"></i></a>
 													  </div>
 													</div>
 												</div>
@@ -140,7 +142,7 @@
 </div>
 	{% else %}
 		<img src="{% static 'img/acceso_denegado.png' %}">
-		<h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+		<h2>Upps...no cuenta con en este estudio.</h2>
 	{% endif %}
 
 {% block extrajs %}

@@ -12,7 +12,7 @@
 
 {% block content %}
 
- {% if usuario != 'EXPERTO' %}
+ {% if usuario != '' and usuario != 'EXPERTO' %}
 	<div class="matter">
 					<div class="container">
 						<div class="row">
@@ -103,33 +103,34 @@
 
 												<div class="form-group">
 												  <div class="col-md-offset-2 col-md-8">
-													  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-													  <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
-													  <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+													  <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}" title="Lista de estrategias"><i class="fa fa-arrow-left"></i> Atrás</a>
+													  <button type="submit" class="btn btn-primary" title="Guardar"><i class="fa fa-plus"></i> Guardar</button>
+													  <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
 												  </div>
 												</div>
 											</form>
 
 <!--INICIO MODAL AYUDA--------------------------->
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     <div class="modal-header">
+						<div class="modal-dialog">
+							<div class="modal-content">
+								<div class="modal-header">
 									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
 									<h4 class="modal-title">Ayuda</h4>
-								     </div>
-								     <div class="modal-body" style="text-align: justify">
-									<p>Ingrese los planes, motivaciones, limitaciones y  medios de acción de cada actor (Elaborar la tabla de la "estrategia de los actores").
+                                </div>
+                                <div class="modal-body" style="text-align: justify">
+                                    <p>Ingrese los planes, motivaciones, limitaciones y  medios de acción de cada actor (Elaborar la tabla de la "estrategia de los actores").
 									La información de la influencia de un actor sobre si mismo corresponde a una "tarjeta de identidad" que puede incluir información asociada
                                     a las metas, fortalezas, debilidades del actor, siendo estos registros generalmente los mas completos. Por el contrario, muchas de las
                                     acciones de un actor hacia otro se encuentran casi o totalmente vacías, estas describen los medios de acción que cada actor puede utilizar
-									contra los otros a fin de alcanzar sus metas. </p>
-								     </div>
-								  <div class="modal-footer">
+									contra los otros a fin de alcanzar sus metas.
+                                    </p>
+                                </div>
+                                <div class="modal-footer">
 									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-								  </div>
-								    </div>
-								</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
 									  </div>

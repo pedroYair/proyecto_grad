@@ -98,16 +98,20 @@
 
 <br>
 <br>
+
+<!--BOTONES----------------------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if expertos %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:consenso_influencias' estudio.id 5 %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:consenso_influencias' estudio.id 5 %}" title="Coeficientes de fuerza Ri"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% else %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_ri' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_ri' estudio.id %}" title="Coeficientes de fuerza Ri"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% endif %}
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
             </div>
         </div>
+
+<!--MODAL AYUDA----------------------------->
 
          <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog">

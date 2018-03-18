@@ -2,13 +2,10 @@
 {% load staticfiles %}
 
 {% block head_title %}
-
     {% if usuario != '' %}
         <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
     {% endif %}
-
 {% endblock %}
-
 
 {% block content %}
 
@@ -64,20 +61,19 @@
                     </div>
                 </div>
 
-    <! BOTONES--------------------------------------------------------------------------------->
+    <!--BOTONES--------------------------------------------------------------------------------->
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-8">
-                        <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Estudios</a>
+                        <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}" title="Lista de estudios"><i class="fa fa-arrow-left"></i> Estudios</a>
                         {% if usuario != 'EXPERTO' %}
-                            <button class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar"><i class="fa fa-plus"></i> Agregar</button>
+                            <button class="btn btn-primary" data-toggle="modal" href="#myModal1" id="boton_agregar" title="Agregar actor"><i class="fa fa-plus"></i> Agregar</button>
                         {% endif %}
-                        <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
-                        <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas' estudio.id%}">Estrategias <i class="fa fa-arrow-right"></i></a>
+                        <a class="btn btn-primary" data-toggle="modal" href="#myModal4" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                        <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_fichas' estudio.id%}" title="Lista de estrategias">Estrategias <i class="fa fa-arrow-right"></i></a>
                     </div>
                 </div>
 
-
-     <! INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
+     <!--INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
 
             {% include 'actor/modals_actor.html'%}
 

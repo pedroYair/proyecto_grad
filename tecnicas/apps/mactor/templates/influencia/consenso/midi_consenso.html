@@ -66,7 +66,7 @@
                                                                 <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
                                                                size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
                                                         {% endif %}
-                                            <!--Inserta los valores midi posteriores al nombre corto en Y y previos a la ultima celda-->
+                                            <!--Inserta los valores ubicados entre la primera y ultima celda-->
                                             {% else %}
                                                 <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
                                             {% endif %}
@@ -91,13 +91,13 @@
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if usuario == 'COORDINADOR_EXPERTO' %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_midi' estudio.id %}" title="MIDI del usuario"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_midi' estudio.id %}" title="Matriz MIDI"><i class="fa fa-arrow-left"></i> Atrás</a>
                 {% else %}
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="MID"><i class="fa fa-arrow-left"></i> Matriz MID</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="Matriz MID consenso"><i class="fa fa-arrow-left"></i> Matriz MID</a>
                 {% endif %}
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" href="{%url 'mactor:consenso_influencias' estudio.id 3%}"><i class="fa fa-table"></i> MAX</a>
-                <a class="btn btn-primary" href="{%url 'mactor:consenso_influencias' estudio.id 4%}"><i class="fa fa-table"></i> BL</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" href="{%url 'mactor:consenso_influencias' estudio.id 3%}" title="Matriz Máxima Consenso"><i class="fa fa-table"></i> MAX</a>
+                <a class="btn btn-primary" href="{%url 'mactor:consenso_influencias' estudio.id 4%}" title="Matriz consenso de Balance Líquido"><i class="fa fa-table"></i> BL</a>
             </div>
         </div>
 

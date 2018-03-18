@@ -39,7 +39,6 @@
                                     'rgb(75, 0, 130)',
                                     'rgb(128, 128, 128)',
                                     'rgb(0, 0, 0)',
-
                                 ]
 
 			// se obtienen los datos a graficar
@@ -94,13 +93,13 @@
                         scales:{
 	            	        xAxes: [{
 	            		    scaleLabel: {
-	            			labelString: 'Dependencia',
+	            			labelString: 'Influencia',
 	            			display: true,
 	            		                }
 	            	                }],
 	            	        yAxes: [{
 	            		    scaleLabel: {
-	            			labelString: 'Influencia',
+	            			labelString: 'Dependencia',
 	            			display: true
 	            		                }
 	            	                }]
@@ -117,8 +116,8 @@
 <br>
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
-                <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_midi' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_midi' estudio.id %}" title="Matriz MIDI"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
             </div>
         </div>
 
@@ -139,7 +138,7 @@
                         <p>De acuerdo a este se tiene que:<br>
                             <i class="fa fa-check"></i> El cuadrante superior izquierdo, corresponde a actores dependientes.<br>
                             <i class="fa fa-check"></i> El cuadrante superior derecho, abarca a actores muy influyentes y muy dependientes.<br>
-                            <i class="fa fa-check"></i> El cuadrante inferior derecho, cobija a los actores muy influyentes del estudio.
+                            <i class="fa fa-check"></i> El cuadrante inferior derecho, corresponde a los actores muy influyentes del estudio.
                         </p>
                     </div>
                     <div class="modal-footer">

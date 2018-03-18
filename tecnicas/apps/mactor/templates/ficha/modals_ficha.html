@@ -5,73 +5,73 @@
     <title>Title</title>
 </head>
 <body>
-           <! INICIO MODAL ELIMINAR--------------------------->
+           <!--INICIO MODAL ELIMINAR----------------------------------->
 
               <div id="myModal2" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     	<div class="modal-header">
-											<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-											<h4 class="modal-title">Eliminar ficha de estrategias</h4>
-								     	</div>
-								     	<div id="mod_body" class="modal-body" style="text-align: justify">
-                                            <p>¿Eliminar este registro de estrategias?</p>
-								     	</div>
-										 <div class="modal-footer">
-                                                <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
-                                                <button id="modal_idButton"  type="submit" class="btn btn-danger" onclick="Eliminar()">Eliminar</button>
-								  		</div>
-									 </div>
-								</div>
-                    </div>
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							  <h4 class="modal-title">Eliminar ficha de estrategias</h4>
+						  </div>
+						  <div id="mod_body" class="modal-body" style="text-align: justify">
+							  <p>¿Desea eliminar este registro de estrategias?</p>
+						  </div>
+						  <div class="modal-footer">
+							  <button class="btn" data-dismiss="modal" aria-hidden="true" onclick="document.location.reload();">Cerrar</button>
+							  <button id="modal_idButton"  type="submit" class="btn btn-danger" onclick="Eliminar()">Eliminar</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
 
-		    <! MODAL CONSULTAR-->
+		    <!--INICIO MODAL CONSULTAR--------------------------------->
 
             <div id="modalConsultar" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     <div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-									<h4 class="modal-title">Ficha de estrategias</h4>
-								     </div>
-								     <div id="mod_body5" class="modal-body" style="text-align: justify"></div>
-								  <div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-								  </div>
-								    </div>
-								</div>
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
+							<h4 class="modal-title">Ficha de estrategias</h4>
+						</div>
+						<div id="mod_body5" class="modal-body" style="text-align: justify"></div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+						</div>
+					</div>
+				</div>
 			</div>
 
-		   <! INICIO MODAL AYUDA--------------------------->
+		   <!--INICIO MODAL AYUDA-------------------------------------->
 
               <div id="myModal4" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-								<div class="modal-dialog">
-								     <div class="modal-content">
-								     <div class="modal-header">
-									<button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-									<h4 class="modal-title">Ayuda -  Lista de estrategias</h4>
-								     </div>
-								     <div class="modal-body" style="text-align: justify">
-									<p>La tabla de estrategias de los actores describe los planes, motivaciones, limitaciones y
-										medios de acción de cada actor. La información de la influencia de un actor sobre si
-										mismo corresponde a una "tarjeta de identidad" que puede incluir información asociada
-                                    	a las metas, fortalezas, debilidades del actor, siendo estos registros generalmente los
-										mas completos. Por el contrario, muchas de las acciones de un actor hacia otro se
-										encuentran casi o totalmente vacías, estas describen los medios de acción que cada actor
-										puede utilizar contra los otros a fin de alcanzar sus metas.
-										<br>
-										La información proporcionada por técnicas preliminares como MICMAC se utiliza para
-										completar la mayor parte de la tabla, el resto contendría el resultado de entrevistas
-										más exhaustivas, recordandose que la calidad de los resultados a alcanzar dependerá
-										de la información recolectada(LIPSOR-EPITA, s.f).
-									</p>
-								     </div>
-								  <div class="modal-footer">
-									<button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-								  </div>
-								    </div>
-								</div>
-                    </div>
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							  <h4 class="modal-title">Ayuda -  Lista de estrategias</h4>
+						  </div>
+						  <div class="modal-body" style="text-align: justify">
+							  <p>La tabla de estrategias de los actores describe los planes, motivaciones, limitaciones y
+								  medios de acción de cada actor. La información de la influencia de un actor sobre si
+								  mismo corresponde a una "tarjeta de identidad" que puede incluir información asociada
+								  a las metas, fortalezas, debilidades del actor, siendo estos registros generalmente los
+								  mas completos. Por el contrario, muchas de las acciones de un actor hacia otro se
+								  encuentran casi o totalmente vacías, estas describen los medios de acción que cada actor
+								  puede utilizar contra los otros a fin de alcanzar sus metas.
+								  <br>
+								  La información proporcionada por técnicas preliminares como MICMAC se utiliza para
+								  completar la mayor parte de la tabla, el resto contendría el resultado de entrevistas
+								  más exhaustivas, recordandose que la calidad de los resultados a alcanzar dependerá
+								  de la información recolectada(LIPSOR-EPITA, s.f).
+							  </p>
+						  </div>
+						  <div class="modal-footer">
+							  <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
 
 </body>
 </html>

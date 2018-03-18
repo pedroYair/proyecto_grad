@@ -45,10 +45,8 @@
                                             <td>
                                                 <a id="ver{{ficha.id}}" class="btn btn-primary" title="Ver" data-toggle="modal" href="#modalConsultar"><i class="fa fa-eye"></i></a>
                                                 {% if estudio.estado is True and usuario != 'EXPERTO' %}
-                                                    <a class="btn btn-warning" id="editarFicha" title="Editar"
-                                                       href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
-                                                    <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete"
-                                                       data-toggle="modal" id="{{ficha.id}}"><i class="fa fa-times"></i></a>
+                                                    <a class="btn btn-warning" id="editarFicha" title="Editar" href="{%url 'mactor:editar_ficha' ficha.id%}"><i class="fa fa-pencil"></i></a>
+                                                    <a href="#myModal2" role="button" title="Eliminar" class="btn btn-danger delete" data-toggle="modal" id="{{ficha.id}}"><i class="fa fa-times"></i></a>
                                                 {% endif %}
                                             </td>
                                         </tr>
@@ -89,12 +87,12 @@
 
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
-                   <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_actores' estudio.id%}"><i class="fa fa-arrow-left"></i> Actores</a>
+                   <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_actores' estudio.id%}" title="Lista de actores"><i class="fa fa-arrow-left"></i> Actores</a>
                    {% if usuario != 'EXPERTO' %}
-                    <a class="btn btn-primary" id="agregarFicha" href="{%url 'mactor:ficha' estudio.id%}"><i class="fa fa-plus"></i> Agregar</a>
+                    <a class="btn btn-primary" id="agregarFicha" href="{%url 'mactor:ficha' estudio.id%}" title="Agregar"><i class="fa fa-plus"></i> Agregar</a>
                    {% endif %}
-                   <a class="btn btn-primary" data-toggle="modal" href="#myModal4"><i class="fa fa-book"></i> Ayuda</a>
-                   <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_objetivos' estudio.id%}">Objetivos <i class="fa fa-arrow-right"></i></a>
+                   <a class="btn btn-primary" data-toggle="modal" href="#myModal4" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                   <a class="btn btn-sm btn-success" href="{% url 'mactor:lista_objetivos' estudio.id%}" title="Lista de objetivos">Objetivos <i class="fa fa-arrow-right"></i></a>
                 </div>
             </div>
 
@@ -105,7 +103,7 @@
 </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
-        <h2>Upps...no cuenta con permisos en este proyecto.</h2>
+        <h2>Upps...no cuenta con permisos en este estudio.</h2>
     {% endif %}
 
 {% block extrajs %}

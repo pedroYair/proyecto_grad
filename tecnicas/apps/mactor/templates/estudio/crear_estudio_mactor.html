@@ -11,122 +11,120 @@
 {% block content %}
     {% if request.user.is_superuser %}
         <div class="matter">
-					<div class="container">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="widget wgreen">
-              						<div class="widget-head">
-									  <div class="pull-left">Formulario - Nuevo Estudio MACTOR</div>
-									  <div class="clearfix"></div>
-									</div>
-									<div class="widget-content">
-									  <div class="padd">
-
-										<hr />
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="widget wgreen">
+                            <div class="widget-head">
+                                <div class="pull-left">Formulario - Nuevo Estudio MACTOR</div>
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget-content">
+                                <div class="padd">
+										<hr/>
 										<!-- Form starts.  -->
+                                    <form class="form-horizontal" role="form" method="post">
+                                        {% csrf_token %}
 
-											<form class="form-horizontal" role="form" method="post">
-                                            {% csrf_token %}
-
-                                                <div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                            {{form.titulo.errors}}
-                                                            <label class="control-label" style="text-align: left">Título</label>
-                                                            {{form.titulo}}
-                                                        </div>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    {{form.titulo.errors}}
+                                                    <label class="control-label" style="text-align: left">Título</label>
+                                                    {{form.titulo}}
                                                 </div>
+                                            </div>
+                                        </div>
 
-                                                <div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label class="control-label" style="text-align: left">Descripción</label>
-                                                          {{form.descripcion}}
-                                                        </div>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Descripción</label>
+                                                    {{form.descripcion}}
                                                 </div>
+                                            </div>
+                                        </div>
 
-                                                <div  class="row">
-                                                    <div class="col-md-3 col-md-offset-1" hidden>
-                                                        <div class="form-group">
-												            <label class="control-label" style="text-align: left">Administrador</label>
-												            <input class="form-control" type="text" value="{{user.id}}" name="idAdministrador">
-												        </div>
-                                                    </div>
-												</div>
-
-                                                <div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label class="control-label" style="text-align: left">Coordinador</label>
-                                                          {{form.idCoordinador}}
-                                                        </div>
-                                                    </div>
+                                        <div  class="row">
+                                            <div class="col-md-3 col-md-offset-1" hidden>
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Administrador</label>
+                                                    <input class="form-control" type="text" value="{{user.id}}" name="idAdministrador">
                                                 </div>
+                                            </div>
+                                        </div>
 
-												<div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          {{form.idExpertos.errors}}
-                                                          <label class="control-label" style="text-align: left">Expertos</label>
-                                                          {{form.idExpertos}}
-                                                        </div>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Coordinador</label>
+                                                    {{form.idCoordinador}}
                                                 </div>
+                                            </div>
+                                        </div>
 
-												<div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label style="text-align: left" class="control-label">Fecha Inicio</label>
-                                                            <br>
-                                                            <input type="date" name="fecha_inicio">
-                                                        </div>
-                                                    </div>
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    {{form.idExpertos.errors}}
+                                                    <label class="control-label" style="text-align: left">Expertos</label>
+                                                    {{form.idExpertos}}
+                                                </div>
+                                            </div>
+                                        </div>
 
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label style="text-align: left" class="control-label">Fecha Inicio</label>
                                                     <br>
-                                                    <br>
-
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label style="text-align: left"  class="control-label">Fecha Final</label>
-                                                            <br>
-                                                            <input type="date" name="fecha_final">
-                                                        </div>
-                                                    </div>
+                                                    <input type="date" name="fecha_inicio">
                                                 </div>
+                                            </div>
 
-                                                <div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label style="text-align: left"  class="control-label">Estado</label>
-                                                            {{form.estado}}
-                                                        </div>
-                                                    </div>
+                                            <br>
+                                            <br>
 
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label class="control-label" style="text-align: left">Proyecto</label>
-                                                            <br>
-                                                          {{form.idProyecto}}
-                                                        </div>
-                                                    </div>
-                                                 </div>
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label style="text-align: left"  class="control-label">Fecha Final</label>
+                                                    <br>
+                                                    <input type="date" name="fecha_final">
+                                                </div>
+                                            </div>
+                                        </div>
 
-												<div class="form-group">
-												  <div class="col-md-8 col-md-offset-3">
-                                                     <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-													<button type="submit" class="btn btn-primary"><i class="fa fa-check"></i> Guardar</button>
-                                                     <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-												  </div>
-												</div>
-											</form>
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label style="text-align: left"  class="control-label">Estado</label>
+                                                    {{form.estado}}
+                                                </div>
+                                            </div>
 
-									  </div>
-									</div>
-								</div>
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Proyecto</label>
+                                                    <br>
+                                                    {{form.idProyecto}}
+                                                </div>
+                                            </div>
+                                        </div>
 
-        <! INICIO MODAL AYUDA--------------------------->
+                                        <div class="form-group">
+                                            <div class="col-md-8 col-md-offset-3">
+                                                <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_estudios'%}" title="Lista de estudios"><i class="fa fa-arrow-left"></i> Atrás</a>
+                                                <button type="submit" class="btn btn-primary" title="Guardar"><i class="fa fa-check"></i> Guardar</button>
+                                                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+                        </div>
+
+        <!--INICIO MODAL AYUDA--------------------------->
 
 		<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 				  <div class="modal-dialog">
@@ -161,17 +159,14 @@
 				  </div>
 			  </div>
 
-
-
-							</div>
-						</div>
-					</div>
+                    </div>
+                </div>
+            </div>
 </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
     {% endif %}
-
 
 {% endblock %}
 

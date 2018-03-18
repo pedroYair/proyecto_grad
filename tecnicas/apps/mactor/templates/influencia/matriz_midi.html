@@ -8,7 +8,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if usuario != '' %}
+    {% if usuario != '' and usuario != 'COORDINADOR' %}
 
         <!--MATRIZ MIDI------------------------------------------------------------------------------------------------->
         <div class="container">
@@ -69,7 +69,7 @@
                                                                size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
                                                         {% endif %}
 
-                                            <!--Inserta los valores midi posteriores al nombre corto en Y y previos a la ultima celda-->
+                                            <!--Inserta los valores ubicados entre la primera y ultima celda-->
                                             {% else %}
                                                 <input style='text-align: center;' readonly type="text" size="4" value="{{i.valor}}" title="{{i.descripcion}}">
                                             {% endif %}
@@ -90,10 +90,10 @@
         <!--BOTONES---------------------------------------------------------------------------------------------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
-                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}"><i class="fa fa-arrow-left"></i> Atrás</a>
-                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                <a class="btn btn-primary" href="{% url 'mactor:matriz_maxima' estudio.id %}"><i class="fa fa-table"></i> MAX</a>
-                <a class="btn btn-primary" href="{% url 'mactor:matriz_balance' estudio.id %}"><i class="fa fa-table"></i> BL</a>
+                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mid' estudio.id %}" title="Matriz MID"><i class="fa fa-arrow-left"></i> Atrás</a>
+                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                <a class="btn btn-primary" href="{% url 'mactor:matriz_maxima' estudio.id %}" title="Matriz Máxima"><i class="fa fa-table"></i> MAX</a>
+                <a class="btn btn-primary" href="{% url 'mactor:matriz_balance' estudio.id %}" title="Matriz de Balance Líquido"><i class="fa fa-table"></i> BL</a>
             </div>
         </div>
 
@@ -130,7 +130,7 @@
         </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
-        <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>
+        <h2>Upps...no cuenta con permisos en este estudio.</h2>
     {% endif %}
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>

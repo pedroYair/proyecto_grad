@@ -27,7 +27,7 @@ def listar_estudios(request):
     for i in estudios:
         estudio = Estudio_Mactor.objects.get(id=i.id)
         lista_expertos = estudio.idExpertos.all()
-        if request.user in lista_expertos or request.user == i.idCoordinador:
+        if request.user in lista_expertos or request.user == i.idCoordinador or request.user == i.idAdministrador:
             estudios_usuario.append(i)
 
     page = request.GET.get('page', 1)
@@ -72,7 +72,7 @@ def editar_estudio(request, idEstudio):
             form.save()
             return redirect('mactor:lista_estudios')
     return render(request, 'estudio/editar_estudio.html', {'form': form, 'informe': flag,
-                                                             'estudio': estudio, 'usuario': tipo_usuario})
+                                                           'estudio': estudio, 'usuario': tipo_usuario})
 
 """-------------------------------------------VIEWS MODELO ACTOR---------------------------------------"""
 
@@ -382,7 +382,7 @@ def consultar_objetivo(request):
         id = request.GET.get('id')
         objetivo = get_object_or_404(Objetivo, id=int(id))
         response = JsonResponse({'nombreCorto': objetivo.nombreCorto, 'nombreLargo': objetivo.nombreLargo,
-                                    'descripcion': objetivo.descripcion})
+                                 'descripcion': objetivo.descripcion})
         return HttpResponse(response.content)
     else:
         return redirect('/')
@@ -414,7 +414,6 @@ def crear_relacion_mid(request, idEstudio):
     porcentaje = 0
     if influencias_registradas > 0:
         porcentaje = round((100 / influencias_total) * (influencias_registradas - len(actores)), 2)  # porc diligenciado
-
 
     if request.method == 'POST':
         form = Form_MID(request.POST)
@@ -934,7 +933,8 @@ def calcular_midi(request, idEstudio):
 
     # se calculan los valores di (ultima fila, suma de columnas)
     valores_midi.append(ValorPosicion(posicion=0, valor="D.DI", descripcion="DEPENDENCIA DIRECTA E INDIRECTA"))
-    valores_midi = establecer_dependencias(valores_midi, actores.count(), "MIDI")
+    if len(valores_midi) > 1:
+        valores_midi = establecer_dependencias(valores_midi, actores.count(), "MIDI")
 
     return valores_midi
 
@@ -1791,18 +1791,12 @@ def obtener_tipo_usuario(request, idEstudio):
     lista_expertos = estudio.idExpertos.all()
     tipo = ""
 
-    # Si el usuario es coordinador y experto
-    if estudio.idAdministrador == request.user:
-        tipo = "ADMINISTRADOR"
-    elif request.user in lista_expertos and estudio.idCoordinador == request.user:
-        tipo = "COORDINADOR_EXPERTO"
-    # Si el usuario solo es coordinador or request.user.is_superuser
-    elif estudio.idCoordinador == request.user:
+    if request.user == estudio.idAdministrador or request.user == estudio.idCoordinador:
         tipo = "COORDINADOR"
-    # Si el usuario es solo experto
+    if request.user in lista_expertos and tipo == "COORDINADOR":
+        tipo = "COORDINADOR_EXPERTO"
     elif request.user in lista_expertos:
         tipo = "EXPERTO"
-
     print(tipo, "-------")
     return tipo
 
