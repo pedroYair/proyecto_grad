@@ -40,10 +40,10 @@
 
                     <div class="form-group">
                         <div class="col-md-offset-2 col-md-8">
-                            <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao' estudio.id%}"><i class="fa fa-arrow-left"></i> Inf. 2MAO</a>
-                            <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-                            <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:caa_daa' estudio.id 2%}"><i class="fa fa-table"></i> CAA-DAA</a>
-                            <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 3%}">Matriz 3MAO <i class="fa fa-arrow-right"></i></a>
+                            <a class="btn btn-sm btn-success" href="{%url 'mactor:2mao' estudio.id%}" title="Formulario 2MAO"><i class="fa fa-arrow-left"></i> Inf. 2MAO</a>
+                            <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                            <a class="btn btn-primary" id="caa_daa" href="{%url 'mactor:caa_daa' estudio.id 2%}" title="Matrices de convergencia y divergencia"><i class="fa fa-table"></i> CAA-DAA</a>
+                            <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 3%}" title="Matriz Valorada y Ponderada de Posiciones">Matriz 3MAO <i class="fa fa-arrow-right"></i></a>
                         </div>
                     </div>
 
@@ -54,7 +54,7 @@
 
                     {% include 'objetivo/modal_detalle_objetivo.html' %}
 
-         <!--MODAL AYUDA------------------------------------------------------------------------------------------>
+         <!--MODAL AYUDA------------------------------------------->
 
                     <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
@@ -79,13 +79,13 @@
                                         el número de actores que tienen una posición activa, de acuerdo o desacuerdo,
                                         para cada objetivo.
                                     </p>
-                                             </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-                                          </div>
-                                            </div>
-                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                </div>
                             </div>
+                        </div>
+                    </div>
 
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
@@ -102,7 +102,6 @@
         document.getElementById("caa_daa").disabled = true;
     </script>
 {% endif %}
-
 
 {% endblock %}
 

@@ -267,6 +267,7 @@ def consultar_ficha(request):
 
 
 def eliminar_ficha(request):
+
     if request.is_ajax():
         ficha = Ficha.objects.get(id=request.GET['id'])
         try:

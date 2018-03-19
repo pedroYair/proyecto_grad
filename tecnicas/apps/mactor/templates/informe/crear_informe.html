@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if usuario != 'EXPERTO' %}
+    {% if usuario != '' and usuario != 'EXPERTO' %}
         <div class="matter">
 					<div class="container">
 						<div class="row">
@@ -77,12 +77,14 @@
                                                     </div>
                                                  </div>
 
+                                                <!--BOTONES-------------------------------------------------------->
+
                                                 <div class="form-group">
                                                     <div class="col-md-offset-2 col-md-8">
-                                                        <button id="boton_guardar" type="submit" class="btn btn-primary">Guardar
-														<i class="fa fa-check"></i>
+                                                        <button id="boton_guardar" type="submit" class="btn btn-primary" title="Guardar informe">
+														<i class="fa fa-check"></i> Guardar
 													    </button>
-                                                        <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                                                        <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                                                     </div>
                                                 </div>
 											</form>
