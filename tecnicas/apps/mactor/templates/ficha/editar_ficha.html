@@ -37,10 +37,12 @@
 
 												<div class="row">
 													<div class="col-md-7 col-md-offset-1">
-                                                		<div class="form-group">
+                                                		<div class="form-group" readonly="true">
                                                     		{{form.idActorY.errors}}
 												  			<label class="control-label" style="text-align: left">Estrategias del actor</label>
-                                                    		{{form.idActorY}}
+                                                    		<select name="idActorY" class="form-control" required id="id_idActorY">
+															  <option value="{{actores.0.id}}">{{actores.0}}</option>
+															</select>
 														</div>
 													</div>
 												</div>
@@ -56,7 +58,9 @@
 												        <div class="form-group">
 													        {{form.idActorX.errors}}
 												            <label class="control-label" style="text-align: left">Sobre el actor</label>
-                                                            {{form.idActorX}}
+                                                            <select name="idActorX" class="form-control" required id="id_idActorX">
+															  <option value="{{actores.1.id}}">{{actores.1}}</option>
+															</select>
 												        </div>
 													</div>
                                                 </div>
@@ -123,8 +127,8 @@
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
-<script src="{% static 'js_mactor_consultas/consultar_desc_actor.js'%}"></script>
-<script src="{% static 'js_mactor_consultas/desactivar_opciones_select.js'%}"></script>
+<script src="{% static 'js/js_mactor/consultar_desc_actor.js'%}"></script>
+<script src="{% static 'js/js_mactor/desactivar_opciones_select.js'%}"></script>
 {% endblock %}
 
 {% endblock %}

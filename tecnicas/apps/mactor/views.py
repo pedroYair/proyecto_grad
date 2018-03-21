@@ -242,6 +242,7 @@ def editar_ficha(request, idFicha):
     ficha = get_object_or_404(Ficha, id=int(idFicha))
     estudio = get_object_or_404(Estudio_Mactor, id=ficha.idActorY.idEstudio.id)
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
+    actores = [Actor.objects.get(id=ficha.idActorY.id), Actor.objects.get(id=ficha.idActorX.id)]
 
     if request.method == 'GET':
         form = Form_Ficha(instance=ficha)
@@ -250,7 +251,8 @@ def editar_ficha(request, idFicha):
         if form.is_valid():
             form.save()
             return redirect('mactor:lista_fichas', estudio.id)
-    return render(request, 'ficha/editar_ficha.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario})
+    return render(request, 'ficha/editar_ficha.html', {'form': form, 'actores': actores, 'estudio': estudio,
+                                                       'usuario': tipo_usuario})
 
 
 def consultar_ficha(request):
