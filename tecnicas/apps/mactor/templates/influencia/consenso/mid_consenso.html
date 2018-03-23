@@ -104,34 +104,34 @@
 
         <!--INICIO MODAL AYUDA----------------------------------------------------------------------------------------->
 
-    <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
-                    <h4 class="modal-title">Ayuda - Matriz de Influencias Directas</h4>
-                </div>
-                <div class="modal-body" style="text-align: justify">
-                    <p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
-                        que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
-                        influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
-                        procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
-                        de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
-                        de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
-                        existencia o permanencia de otro (4) (Godet y Durance, 2009).
-                    </p>
-                    <br>
-                    <p>La columna Influencia Directa (Inf. D), representa la influencia que determinado
-                        actor ejerce en el grupo de actores estudiado. Mientras que la fila Dependencia
-                        Directa (Dep. D), la influencia que el mismo actor recibe del resto de actores.
-                    </p>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+        <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+                        <h4 class="modal-title">Ayuda - Matriz de Influencias Directas</h4>
+                    </div>
+                    <div class="modal-body" style="text-align: justify">
+                        <p>La Matriz de Influencias Directas (MID), permite evidenciar el nivel de influencia
+                            que un actor ejerce sobre otro de forma directa, asi: el actor tiene poca o ninguna
+                            influencia sobre otro (0), el actor puede poner en riesgo de forma limitada los
+                            procesos operativos de gestión de otro (1), el actor puede poner en riesgo el éxito
+                            de los proyectos de otro actor (2), el actor puede poner en riesgo el cumplimiento
+                            de las misiones de otro actor (3) y por último el actor puede poner en riesgo la
+                            existencia o permanencia de otro (4) (Godet y Durance, 2009).
+                        </p>
+                        <br>
+                        <p>La columna Influencia Directa (Inf. D), representa la influencia que determinado
+                            actor ejerce en el grupo de actores estudiado. Mientras que la fila Dependencia
+                            Directa (Dep. D), la influencia que el mismo actor recibe del resto de actores.
+                        </p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
@@ -140,7 +140,7 @@
 
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
-<script src="{% static 'js_mactor_modals/consultar/consultar_actor_objetivo_matriz.js'%}"></script>
+<script src="{% static 'js/js_mactor/js_mactor_modals/consultar/consultar_actor_objetivo_matriz.js'%}"></script>
 {% endblock %}
 
 {% endblock %}

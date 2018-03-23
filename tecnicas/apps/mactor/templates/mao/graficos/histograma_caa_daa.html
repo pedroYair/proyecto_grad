@@ -104,6 +104,7 @@
 <h6>Histograma de Convergencias y Divergencias {{numero_matriz}}CAA - {{numero_matriz}}DAA.</h6>
 <br>
 <br>
+        <!--BOTONES------------->
         <div class="form-group">
             <div class="col-md-offset-2 col-md-8">
                 {% if expertos %}
@@ -115,6 +116,7 @@
             </div>
         </div>
 
+        <!--INICIO MODAL AYUDA-->
          <div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -137,7 +139,6 @@
                             </div>
                         </div>
                     </div>
-
 
 {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
