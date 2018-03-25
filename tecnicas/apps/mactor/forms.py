@@ -155,7 +155,6 @@ class Form_Informe(forms.ModelForm):
         fields = [
             'informe',
             'estado',
-            'idCoordinador',
             'idEstudio',
         ]
 
@@ -163,7 +162,6 @@ class Form_Informe(forms.ModelForm):
             'fecha': forms.TextInput(attrs={'class': 'form-control'}, ),
             'informe': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'estado': forms.CheckboxInput(attrs={'class': 'form-control'}),
-            'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idEstudio': forms.Select(attrs={'class': 'form-control'}),
         }
 

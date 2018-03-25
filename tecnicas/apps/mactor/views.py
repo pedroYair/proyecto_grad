@@ -2607,14 +2607,9 @@ def crear_informe(request, idEstudio):
 
     estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    informes = Informe_Final.objects.filter(idCoordinador=request.user.id).order_by('id')
+    informe = Informe_Final.objects.filter(idEstudio=estudio.id)
 
-    flag = False
-    for informe in informes:
-        if informe.idEstudio.id == estudio.id and flag is False:
-            flag = True
-
-    if flag is False:
+    if len(informe) == 0:
         # si se va a guardar primera vez
         if request.method == 'POST':
             form = Form_Informe(request.POST)
