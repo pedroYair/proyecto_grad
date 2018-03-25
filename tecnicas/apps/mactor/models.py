@@ -121,7 +121,7 @@ class Relacion_MAO(models.Model):
 
 
 class Informe_Final(models.Model):
-    fecha = models.DateField(auto_now=True)
+    fecha = models.DateTimeField(auto_now=True)
     informe = models.TextField()
     estado = models.BooleanField(default=False)
     idEstudio = models.ForeignKey(Estudio_Mactor)

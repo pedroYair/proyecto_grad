@@ -2615,7 +2615,7 @@ def crear_informe(request, idEstudio):
             form = Form_Informe(request.POST)
             if form.is_valid():
                 form.save()
-            return redirect('mactor:lista_actores', estudio.id)
+            return redirect('mactor:informe_final', estudio.id)
         else:
             form = Form_Informe()
         return render(request, 'informe/crear_informe.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario})
@@ -2633,7 +2633,7 @@ def editar_informe(request, estudio):
         form = Form_Informe(request.POST, instance=informe)
         if form.is_valid():
             form.save()
-            return redirect('mactor:lista_actores', estudio.id)
+            return redirect('mactor:informe_final', estudio.id)
     return render(request, 'informe/crear_informe.html',
                   {'form': form, 'estudio': estudio, 'usuario': tipo_usuario, 'datos': informe})
 
