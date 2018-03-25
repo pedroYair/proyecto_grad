@@ -1,12 +1,12 @@
 from django.contrib import admin
-from .models import Estudio_Mactor, Actor, Objetivo, Relacion_MID, Relacion_MAO
+from .models import EstudioMactor, Actor, Objetivo, RelacionMID, RelacionMAO
 
 
 class EstudioAdmin(admin.ModelAdmin):
     list_display = ('titulo', 'fecha_inicio', 'fecha_final', 'estado')
     ordering = ('titulo',)
 
-admin.site.register(Estudio_Mactor, EstudioAdmin)
+admin.site.register(EstudioMactor, EstudioAdmin)
 
 # -------------------------------------------------------------------------
 
@@ -36,7 +36,7 @@ class Relacion_MIDAdmin(admin.ModelAdmin):
     search_fields = ('idActorY',)                      # Campo de busqueda
     ordering = ('idActorY', 'idActorX',)               # Campo de ordenamiento
 
-admin.site.register(Relacion_MID, Relacion_MIDAdmin)
+admin.site.register(RelacionMID, Relacion_MIDAdmin)
 
 # ----------------------------------------------------------------------------
 
@@ -46,4 +46,4 @@ class Relacion_MAOAdmin(admin.ModelAdmin):
     search_fields = ('idActorY',)                                 # Campo de busqueda
     ordering = ('idActorY', 'idObjetivoX',)                       # Campo de ordenamiento
 
-admin.site.register(Relacion_MAO, Relacion_MAOAdmin)
+admin.site.register(RelacionMAO, Relacion_MAOAdmin)

@@ -2,10 +2,10 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
 
+"""MODELO ESTUDIO MACTOR--------------------------------------------------------------------------------------------"""
 
-# MODELO ESTUDIO MACTOR---------------------------------------------------------------------------------------->
 
-class Estudio_Mactor(models.Model):
+class EstudioMactor(models.Model):
     titulo = models.CharField(max_length=200)
     descripcion = models.TextField()
     idAdministrador = models.ForeignKey(User, verbose_name='administrador', related_name='mactor_administrador')
@@ -14,9 +14,7 @@ class Estudio_Mactor(models.Model):
     fecha_inicio = models.DateField(default=now)
     fecha_final = models.DateField(default=now)
     estado = models.BooleanField(default=True)
-    idProyecto = models.PositiveIntegerField(default=1)  # modelo de integracion que permite listar los 
-    # estudios donde el usuario es administrador, actualmente se listan solo aquellos donde el usuario es 
-    # coordinador o experto del estudio.
+    idProyecto = models.PositiveIntegerField(default=1)  # este campo junto con idAdministrador deben obtenerse mediante FK del modelo proyecto
 
 # Definicion de nombre singular y plurar del modelo
     class Meta:
@@ -28,14 +26,14 @@ class Estudio_Mactor(models.Model):
         return u'{0}'.format(self.titulo)
 
 
-# MODELO ACTOR: FASE ----------------------------------------------------------------------------------------->
+"""MODELO ACTOR-----------------------------------------------------------------------------------------------------"""
 
 
 class Actor(models.Model):
     nombreLargo = models.CharField(max_length=50)
     nombreCorto = models.CharField(max_length=5)
     descripcion = models.TextField(max_length=500)
-    idEstudio = models.ForeignKey(Estudio_Mactor, null=True, blank=False, on_delete=models.CASCADE)
+    idEstudio = models.ForeignKey(EstudioMactor, null=True, blank=False, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Actor'
@@ -45,7 +43,7 @@ class Actor(models.Model):
         return u'{0} - {1}'.format(self.nombreCorto, self.nombreLargo)
 
 
-# MODELO FICHA DE ESTRATEGIAS--------------------------------------------------------------------------------->
+"""MODELO FICHA DE ESTRATEGIAS--------------------------------------------------------------------------------------"""
 
 
 class Ficha(models.Model):
@@ -63,13 +61,14 @@ class Ficha(models.Model):
         return u'{0} - {1} - {2}'.format(self.idActorX, self.idActorY, self.estrategia)
 
 
-# MODELO OBJETIVO --------------------------------------------------------------------------------------------->
+"""MODELO OBJETIVO--------------------------------------------------------------------------------------------------"""
+
 
 class Objetivo(models.Model):
     nombreLargo = models.CharField(max_length=50)
     nombreCorto = models.CharField(max_length=5)
     descripcion = models.TextField(max_length=500)
-    idEstudio = models.ForeignKey(Estudio_Mactor, null=True, blank=False, on_delete=models.CASCADE)
+    idEstudio = models.ForeignKey(EstudioMactor, null=True, blank=False, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Objetivo'
@@ -78,10 +77,11 @@ class Objetivo(models.Model):
     def __str__(self):
         return u'{0} - {1}'.format(self.nombreCorto, self.nombreLargo)
 
-# MODELO INFLUENCIAS MID---------------------------------------------------------------------->
+
+"""MODELO RELACIONES DE INFLUENCIA DIRECTA---------------------------------------------------------------------------"""
 
 
-class Relacion_MID(models.Model):
+class RelacionMID(models.Model):
     idActorX = models.ForeignKey(Actor, null=True, blank=False, related_name='mactor_actorX_set', on_delete=models.CASCADE)
     idActorY = models.ForeignKey(Actor, null=True, blank=False, related_name='mactor_actorY_set', on_delete=models.CASCADE)
     valor = models.IntegerField()
@@ -98,9 +98,10 @@ class Relacion_MID(models.Model):
         return u'{0} - {1} - {2}'.format(self.idActorY, self.idActorX, self.valor)
 
 
-# MODELO RELACION MAO ------------------------------------------------------------------------------------------->
+"""MODELO RELACIONES DE ACTOR x OBJETIVO---------------------------------------------------------------------------"""
 
-class Relacion_MAO(models.Model):
+
+class RelacionMAO(models.Model):
     tipo = models.IntegerField(null=True, blank=True)
     idActorY = models.ForeignKey(Actor, null=False, blank=False, on_delete=models.CASCADE)
     idObjetivoX = models.ForeignKey(Objetivo, null=False, blank=False, on_delete=models.CASCADE)
@@ -117,14 +118,14 @@ class Relacion_MAO(models.Model):
         return u'{0} - {1} - {2} - {3} - {4} - {5}'.format(self.tipo, self.idActorY, self.idObjetivoX, self.valor, self.idExperto)
 
 
-# MODELO INFORME FINAL ---------------------------------------------------------------------->
+"""MODELO INFORME FINAL---------------------------------------------------------------------------------------------"""
 
 
-class Informe_Final(models.Model):
+class InformeFinal(models.Model):
     fecha = models.DateTimeField(auto_now=True)
     informe = models.TextField()
     estado = models.BooleanField(default=False)
-    idEstudio = models.ForeignKey(Estudio_Mactor)
+    idEstudio = models.ForeignKey(EstudioMactor)
 
     class Meta:
         verbose_name = 'Informe_final'

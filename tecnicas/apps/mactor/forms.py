@@ -1,11 +1,12 @@
 from django import forms
-from .models import Estudio_Mactor, Ficha, Relacion_MID, Relacion_MAO, Informe_Final
+from .models import EstudioMactor, Ficha, RelacionMID, RelacionMAO, InformeFinal
 from .choices import VALORES, VALORES_1MAO, VALORES_2MAO
 
 
-# FORMULARIO DE ESTUDIO MACTOR---------------------------------------------------------------------------------->
+"""FORMULARIO ESTUDIO MACTOR------------------------------------------------------------------------------------"""
 
-class Form_Estudio(forms.ModelForm):
+
+class FormEstudio(forms.ModelForm):
 
     def clean_titulo(self):
         mensaje = self.cleaned_data["titulo"]
@@ -21,7 +22,7 @@ class Form_Estudio(forms.ModelForm):
         return cantidad
 
     class Meta:
-        model = Estudio_Mactor
+        model = EstudioMactor
 
         fields = [
             'titulo',
@@ -47,11 +48,10 @@ class Form_Estudio(forms.ModelForm):
             'id_Proyecto': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
+"""FORMULARIO FICHA DEL ACTOR------------------------------------------------------------------------------------"""
 
-# FORMULARIO FICHA DEL ACTOR------------------------------------------------------------------------------------>
 
-
-class Form_Ficha(forms.ModelForm):
+class FormFicha(forms.ModelForm):
 
     class Meta:
         model = Ficha
@@ -68,13 +68,13 @@ class Form_Ficha(forms.ModelForm):
             'estrategia': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
         }
 
+"""FORMULARIO DE INFLUENCIAS------------------------------------------------------------------------------------"""
 
-# FORMULARIO DE INFLUENCIAS-------------------------------------------------------------------------------------------->
 
-class Form_MID(forms.ModelForm):
+class FormMID(forms.ModelForm):
 
     class Meta:
-        model = Relacion_MID
+        model = RelacionMID
 
         fields = [
             'idActorY',
@@ -92,13 +92,13 @@ class Form_MID(forms.ModelForm):
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
         }
 
+"""FORMULARIO 1MAO----------------------------------------------------------------------------------------------"""
 
-# FORMULARIO 1MAO------------------------------------------------------------------------------------------------------>
 
-class Form_1mao(forms.ModelForm):
+class Form1mao(forms.ModelForm):
 
     class Meta:
-        model = Relacion_MAO
+        model = RelacionMAO
 
         fields = [
             'tipo',
@@ -118,13 +118,13 @@ class Form_1mao(forms.ModelForm):
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
             }
 
+"""FORMULARIO 2MAO----------------------------------------------------------------------------------------------"""
 
-# FORMULARIO 2MAO------------------------------------------------------------------------------------------------------>
 
-class Form_2mao(forms.ModelForm):
+class Form2mao(forms.ModelForm):
 
     class Meta:
-        model = Relacion_MAO
+        model = RelacionMAO
 
         fields = [
             'tipo',
@@ -144,13 +144,13 @@ class Form_2mao(forms.ModelForm):
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
             }
 
+"""FORMULARIO INFORME FINAL-------------------------------------------------------------------------------------"""
 
-# FORMULARIO INFORME FINAL
 
-class Form_Informe(forms.ModelForm):
+class FormInforme(forms.ModelForm):
 
     class Meta:
-        model = Informe_Final
+        model = InformeFinal
 
         fields = [
             'informe',

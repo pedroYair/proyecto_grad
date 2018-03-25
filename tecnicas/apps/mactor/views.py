@@ -13,19 +13,19 @@ from .forms import *
 
 
 class crear_estudio(CreateView):
-    model = Estudio_Mactor
-    form_class = Form_Estudio
+    model = EstudioMactor
+    form_class = FormEstudio
     template_name = 'estudio/crear_estudio_mactor.html'
     success_url = reverse_lazy('mactor:lista_estudios')
 
 
 def listar_estudios(request):
 
-    estudios = Estudio_Mactor.objects.all().order_by('-estado', 'titulo')
+    estudios = EstudioMactor.objects.all().order_by('-estado', 'titulo')
     estudios_usuario = []
 
     for i in estudios:
-        estudio = Estudio_Mactor.objects.get(id=i.id)
+        estudio = EstudioMactor.objects.get(id=i.id)
         lista_expertos = estudio.idExpertos.all()
         if request.user in lista_expertos or request.user == i.idCoordinador or request.user == i.idAdministrador:
             estudios_usuario.append(i)
@@ -46,7 +46,7 @@ def listar_estudios(request):
 def consultar_estudio(request):
 
     if request.is_ajax():
-        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['id']))
+        estudio = get_object_or_404(EstudioMactor, id=int(request.GET['id']))
         response = JsonResponse({'titulo': estudio.titulo, 'descripcion': estudio.descripcion})
         return HttpResponse(response.content)
     else:
@@ -55,8 +55,8 @@ def consultar_estudio(request):
 
 def editar_estudio(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
-    informes = Informe_Final.objects.all().order_by('idEstudio')
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
+    informes = InformeFinal.objects.all().order_by('idEstudio')
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     flag = False
 
@@ -65,9 +65,9 @@ def editar_estudio(request, idEstudio):
             flag = True
            
     if request.method == 'GET':
-        form = Form_Estudio(instance=estudio)
+        form = FormEstudio(instance=estudio)
     else:
-        form = Form_Estudio(request.POST, instance=estudio)
+        form = FormEstudio(request.POST, instance=estudio)
         if form.is_valid():
             form.save()
             return redirect('mactor:lista_estudios')
@@ -82,7 +82,7 @@ def crear_actor(request):
     nombreLargo = request.GET['nombreLargo']
     nombreCorto = request.GET['nombreCorto']
     descripcion = request.GET['descripcion']
-    estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
+    estudio = get_object_or_404(EstudioMactor, id=int(request.GET['codigo_Estudio']))
     actores = Actor.objects.filter(idEstudio=estudio.id)
     flag = False
 
@@ -176,7 +176,7 @@ def consultar_actor(request):
 
 def listar_actores(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
     contexto = {'estudio': estudio,
@@ -204,23 +204,23 @@ def eliminar_actor(request):
 
 def crear_ficha(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     if request.method == 'POST':
-        form = Form_Ficha(request.POST)
+        form = FormFicha(request.POST)
         if form.is_valid():
             form.save()
         return redirect('mactor:lista_fichas', estudio.id)
     else:
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
-        form = Form_Ficha()
+        form = FormFicha()
     return render(request, 'ficha/crear_ficha.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
                                                       'actores': actores})
 
 
 def lista_fichas(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     fichas = Ficha.objects.filter(idActorY__idEstudio=estudio.id).order_by('idActorY', 'idActorX')
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
@@ -240,14 +240,14 @@ def lista_fichas(request, idEstudio):
 def editar_ficha(request, idFicha):
 
     ficha = get_object_or_404(Ficha, id=int(idFicha))
-    estudio = get_object_or_404(Estudio_Mactor, id=ficha.idActorY.idEstudio.id)
+    estudio = get_object_or_404(EstudioMactor, id=ficha.idActorY.idEstudio.id)
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     actores = [Actor.objects.get(id=ficha.idActorY.id), Actor.objects.get(id=ficha.idActorX.id)]
 
     if request.method == 'GET':
-        form = Form_Ficha(instance=ficha)
+        form = FormFicha(instance=ficha)
     else:
-        form = Form_Ficha(request.POST, instance=ficha)
+        form = FormFicha(request.POST, instance=ficha)
         if form.is_valid():
             form.save()
             return redirect('mactor:lista_fichas', estudio.id)
@@ -309,7 +309,7 @@ def crear_objetivo(request):
     nombreLargo = request.GET['nombreLargo']
     nombreCorto = request.GET['nombreCorto']
     descripcion = request.GET['descripcion']
-    estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['codigo_Estudio']))
+    estudio = get_object_or_404(EstudioMactor, id=int(request.GET['codigo_Estudio']))
     objetivos = Objetivo.objects.filter(idEstudio=estudio.id)
     flag = False
 
@@ -333,7 +333,7 @@ def crear_objetivo(request):
 
 def listar_objetivos(request, idEstudio):
 
-    estudio_mactor = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio_mactor = get_object_or_404(EstudioMactor, id=int(idEstudio))
     objetivos = Objetivo.objects.filter(idEstudio=estudio_mactor.id).order_by('nombreLargo')
     tipo_usuario = obtener_tipo_usuario(request, idEstudio)
     contexto = {'estudio': estudio_mactor, 'usuario': tipo_usuario, 'lista_objetivos': objetivos,
@@ -409,17 +409,17 @@ def eliminar_objetivo(request):
 
 def crear_relacion_mid(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id)
     influencias_total = (len(actores) ** 2) - len(actores)  # total de influencias que se deben registrar
-    influencias_registradas = len(Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                        idExperto=request.user.id))  # inf actualmente registradas
+    influencias_registradas = len(RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                                             idExperto=request.user.id))  # inf actualmente registradas
     porcentaje = 0
     if influencias_registradas > 0:
         porcentaje = round((100 / influencias_total) * (influencias_registradas - len(actores)), 2)  # porc diligenciado
 
     if request.method == 'POST':
-        form = Form_MID(request.POST)
+        form = FormMID(request.POST)
         if form.is_valid():
             form.save()
             crear_auto_influencia(request, idEstudio)  # crea la linea de ceros de la diagonal
@@ -427,7 +427,7 @@ def crear_relacion_mid(request, idEstudio):
     else:
         tipo_usuario = obtener_tipo_usuario(request, idEstudio)
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
-        form = Form_MID()
+        form = FormMID()
     return render(request, 'influencia/crear_influencia.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario,
                                                                 'actores': actores, 'porcentaje': porcentaje})
 
@@ -436,7 +436,7 @@ def crear_relacion_mid(request, idEstudio):
 def generar_matriz_mid(request, idEstudio):  # idEstudio tipo str() para verificar consenso
 
     consenso = verificar_consenso(request, idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     tamano_matriz_completa = len(actores) ** 2
@@ -450,8 +450,8 @@ def generar_matriz_mid(request, idEstudio):  # idEstudio tipo str() para verific
         influencias = influencias['consenso']
     # se carga la matriz diligenciada por el usuario en sesion sino no se esta accediendo al consenso
     elif tipo_usuario != "COORDINADOR":
-        influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                        idExperto=request.user.id).order_by('idActorY', 'idActorX')
+        influencias = RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                                 idExperto=request.user.id).order_by('idActorY', 'idActorX')
     # si la matriz esta completamente diligenciada o se esta accediendo al consenso
     if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_mid = establecer_valores_mid(estudio.id, influencias)
@@ -476,13 +476,13 @@ def generar_matriz_mid(request, idEstudio):  # idEstudio tipo str() para verific
 def generar_matriz_midi(request, idEstudio):  # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tamano_matriz_completa = len(actores) ** 2
     posicion_salto_linea = actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                              idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    influencias = RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                             idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     # si la matriz esta completa o el consenso esta activo
     if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
@@ -507,13 +507,13 @@ def generar_matriz_midi(request, idEstudio):  # idEstudio tipo str()
 def generar_matriz_maxima(request, idEstudio):  # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tamano_matriz_completa = len(actores) ** 2
     posicion_salto_linea = actores.count() + 1
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                              idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    influencias = RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                             idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     if len(influencias) == tamano_matriz_completa and tamano_matriz_completa > 0 or consenso is True:
         valores_maximos = calcular_maxima_influencia(request, idEstudio)
@@ -537,7 +537,7 @@ def generar_matriz_maxima(request, idEstudio):  # idEstudio tipo str()
 def generar_matriz_ri(request, idEstudio):
 
     consenso = verificar_consenso(request, idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     valores_ri = calcular_ri(request, idEstudio)
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     lista_contexto = []
@@ -564,10 +564,10 @@ def generar_matriz_ri(request, idEstudio):
 def generar_matriz_balance(request, idEstudio): # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-    influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                    idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    influencias = RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                             idExperto=request.user.id).order_by('idActorY', 'idActorX')
     tamano_matriz_completa = len(actores) ** 2
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
@@ -592,7 +592,7 @@ def generar_matriz_balance(request, idEstudio): # idEstudio tipo str()
 def generar_indicador_estabilidad(request, idEstudio): # idEstudio tipo str()
 
     consenso = verificar_consenso(request, idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     indicador = calcular_estabilidad(request, idEstudio)
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
 
@@ -614,52 +614,52 @@ def generar_indicador_estabilidad(request, idEstudio): # idEstudio tipo str()
 
 def crear_1mao(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     actores = Actor.objects.filter(idEstudio=estudio.id)
     objetivos = Objetivo.objects.filter(idEstudio=estudio.id)
     influencias_total = len(actores) * len(objetivos)  # total de influencias que se deben registrar
-    influencias_registradas = len(Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=1,
-                                                idExperto=request.user.id))  # inf actualmente registradas
+    influencias_registradas = len(RelacionMAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=1,
+                                                             idExperto=request.user.id))  # inf actualmente registradas
     porcentaje = 0
     if influencias_registradas > 0:
         porcentaje = round((100 / influencias_total) * influencias_registradas, 2)   # porcentaje de diligenciamiento
 
     if request.method == 'POST':
-        form = Form_1mao(request.POST)
+        form = Form1mao(request.POST)
         if form.is_valid():
             form.save()
         return redirect('mactor:1mao', estudio.id)
     else:
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
-        form = Form_1mao()
+        form = Form1mao()
     return render(request, 'mao/crear_1mao.html', {'form': form,  'actores': actores, 'objetivos': objetivos,
                                                 'estudio': estudio, 'usuario': tipo_usuario, 'porcentaje': porcentaje})
 
 
 def crear_2mao(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     actores = Actor.objects.filter(idEstudio=estudio.id)
     objetivos = Objetivo.objects.filter(idEstudio=estudio.id)
     influencias_total = len(actores) * len(objetivos)  # total de influencias que se deben registrar
-    influencias_registradas = len(Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2,
-                                                              idExperto=request.user.id))  # inf actualmente registradas
+    influencias_registradas = len(RelacionMAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2,
+                                                             idExperto=request.user.id))  # inf actualmente registradas
     porcentaje = 0
     if influencias_registradas > 0:
         porcentaje = round((100 / influencias_total) * influencias_registradas, 2)  # porcentaje de diligenciamiento
 
     if request.method == 'POST':
-        form = Form_2mao(request.POST)
+        form = Form2mao(request.POST)
         if form.is_valid():
             form.save()
         return redirect('mactor:2mao', estudio.id)
     else:
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
         objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('nombreLargo')
-        form = Form_2mao()
+        form = Form2mao()
     return render(request, 'mao/crear_2mao.html', {'form': form,  'actores': actores, 'objetivos': objetivos,
                                                 'estudio': estudio, 'usuario': tipo_usuario, 'porcentaje': porcentaje})
 
@@ -685,7 +685,7 @@ def generar_matrices_caa_daa(request, idEstudio, numero_matriz):
     consenso = verificar_consenso(request, idEstudio)
     numero_matriz = int(numero_matriz)
     if numero_matriz in [1, 2, 3]:
-        estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+        estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
         tipo_usuario = obtener_tipo_usuario(request, estudio.id)
         contexto_mao = crear_contexto_mao(request, idEstudio, numero_matriz)
@@ -746,10 +746,10 @@ class ValorPareja:
 # crea los 0 de la diagonal de la matriz mid
 def crear_auto_influencia(request, idEstudio):
 
-        estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+        estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
-        influencias = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                  idExperto=request.user.id).order_by('idActorY', 'idActorX')
+        influencias = RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                                 idExperto=request.user.id).order_by('idActorY', 'idActorX')
         lista_registrados = []
 
         # se verifica si estas influencias ya existen
@@ -761,7 +761,7 @@ def crear_auto_influencia(request, idEstudio):
         # se agregan las autoinfluencias restantes
         for actor in actores:
             if actor.id not in lista_registrados:
-                a = Relacion_MID()
+                a = RelacionMID()
                 a.idActorY = actor
                 a.idActorX = actor
                 a.valor = 0
@@ -825,7 +825,7 @@ def establecer_valores_mid(idEstudio, influencias):
 def generar_mid_incompleta(request, idEstudio):
 
     actores = Actor.objects.filter(idEstudio=idEstudio).order_by('id')
-    mid = Relacion_MID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
+    mid = RelacionMID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
     lista_ejes_incompletos = []
     lista_ejes_ordenados = []
 
@@ -893,7 +893,7 @@ def calcular_midi(request, idEstudio):
         influencias_mid = calcular_consenso_mid(estudio)
         influencias_mid = influencias_mid['consenso']
     else:
-        influencias_mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by(
+        influencias_mid = RelacionMID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by(
             'idActorY', 'idActorX')  # se trabaja con la lista mid del usuario en sesion
 
     # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
@@ -952,7 +952,7 @@ def sumar_valores_minimos(request, actorY, idEstudio):
         mid = calcular_consenso_mid(estudio)
         mid = mid['consenso']
     else:
-        mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
+        mid = RelacionMID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     lista_suma = [0] * len(mid)  # contiene la suma de los valores minimos establecidos al comparar
     valores_minimos = obtener_valores_minimos(request, idEstudio, actorY)
@@ -982,8 +982,8 @@ def calcular_maxima_influencia(request, idEstudio):
         influencias_mid = calcular_consenso_mid(estudio)
         influencias_mid = influencias_mid['consenso']
     else:
-        influencias_mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio,
-                                                        idExperto=request.user.id).order_by('idActorY', 'idActorX')
+        influencias_mid = RelacionMID.objects.filter(idActorY__idEstudio=estudio,
+                                                     idExperto=request.user.id).order_by('idActorY', 'idActorX')
 
     # se agrega la sublista de valores minimos correspondiente al actorY a lista_comparacion_minimo
     for inf in range(len(influencias_mid)):
@@ -1073,7 +1073,7 @@ def obtener_valores_minimos(request, idEstudio, actorY):
         mid = calcular_consenso_mid(estudio)
         mid = mid['consenso']
     else:
-        mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by('idActorY',
+        mid = RelacionMID.objects.filter(idActorY__idEstudio=estudio, idExperto=request.user.id).order_by('idActorY',
                                                                                                    'idActorX')
 
     # Valores_derechos: influencias de los actores influenciados por Y sobre el actor X excepto Y
@@ -1212,7 +1212,7 @@ def calcular_estabilidad(request, idEstudio):
 def crear_contexto_mao(request, idEstudio, numero_matriz):
 
     consenso = verificar_consenso(request, idEstudio)
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     objetivos = Objetivo.objects.filter(idEstudio=estudio.id).order_by('id')
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
@@ -1230,8 +1230,8 @@ def crear_contexto_mao(request, idEstudio, numero_matriz):
             num_expertos = lista_mao['expertos']
             lista_mao = lista_mao['consenso']
         else:
-            lista_mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=numero_matriz,
-                                                idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
+            lista_mao = RelacionMAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=numero_matriz,
+                                                   idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
     else:  # para la matriz 3mao por ser calculada
         if consenso is True:
             lista_mao = calcular_consenso_mao(request, estudio.id, numero_matriz)
@@ -1525,8 +1525,8 @@ def verificar_mid_mao2(request, idEstudio):
 
     objetivos = Objetivo.objects.filter(idEstudio=idEstudio)
     actores = Actor.objects.filter(idEstudio=idEstudio)
-    mid = Relacion_MID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id)
-    mao2 = Relacion_MAO.objects.filter(tipo=2, idActorY__idEstudio=idEstudio, idExperto=request.user.id)
+    mid = RelacionMID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id)
+    mao2 = RelacionMAO.objects.filter(tipo=2, idActorY__idEstudio=idEstudio, idExperto=request.user.id)
     tamano_mid = len(actores) * len(actores)
     tamano_2mao = len(actores) * len(objetivos)
     estado_3mao = False
@@ -1540,7 +1540,7 @@ def verificar_mid_mao2(request, idEstudio):
 # Calculo de los valores 3mao = 2mao * ri, idEstudio tipo str
 def calcular_valores_3mao(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     cant_objetivos = len(Objetivo.objects.filter(idEstudio=estudio.id).order_by('id'))
     valores_ri = calcular_ri(request, idEstudio)
     valores_3mao = []
@@ -1549,7 +1549,7 @@ def calcular_valores_3mao(request, idEstudio):
         mao = calcular_consenso_mao(request, estudio.id, 2)
         mao = mao['consenso']
     else:
-        mao = Relacion_MAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2, idExperto=request.user.id).order_by('idActorY',
+        mao = RelacionMAO.objects.filter(idActorY__idEstudio=estudio.id, tipo=2, idExperto=request.user.id).order_by('idActorY',
                                                                                                             'idObjetivoX')
     # Multiplicacion de los valores 2mao por los valores ri para hallar los valores 3mao
     cont = 0
@@ -1720,7 +1720,7 @@ def consultar_actores_faltantes(request):
 
         # si se esta registrando una influencia mid
         if tipo == "form_mid":
-            mid = Relacion_MID.objects.filter(idActorY__idEstudio=idEstudio).order_by('idActorY', 'idActorX')
+            mid = RelacionMID.objects.filter(idActorY__idEstudio=idEstudio).order_by('idActorY', 'idActorX')
             # se obtienen los id de los actores ya registrados en la matriz mid
             for i in mid:
                 if i.idActorY.id == int(id) and i.idExperto == request.user:
@@ -1760,8 +1760,8 @@ def consultar_objetivos_faltantes(request):
 
         # si se esta registrando una influencia 1mao
         if tipo == "form_1mao":
-            mao = Relacion_MAO.objects.filter(tipo=1, idActorY__idEstudio=idEstudio,
-                                              idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
+            mao = RelacionMAO.objects.filter(tipo=1, idActorY__idEstudio=idEstudio,
+                                             idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
             # se obtienen los id de los objetivos ya registrados en la matriz mao con ese actor Y
             for i in mao:
                 if i.idActorY.id == int(id) and i.idExperto == request.user:
@@ -1770,8 +1770,8 @@ def consultar_objetivos_faltantes(request):
 
         # si se esta registrando una influencia 2mao
         elif tipo == "form_2mao":
-            mao = Relacion_MAO.objects.all().filter(tipo=2, idActorY__idEstudio=idEstudio,
-                                                    idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
+            mao = RelacionMAO.objects.all().filter(tipo=2, idActorY__idEstudio=idEstudio,
+                                                   idExperto=request.user.id).order_by('idActorY', 'idObjetivoX')
             for i in mao:
                 if i.idActorY.id == int(id):
                     lista_registrados.append(i.idObjetivoX.id)
@@ -1790,7 +1790,7 @@ def consultar_objetivos_faltantes(request):
 # Determina si el usuario en sesion hace parte del proyecto y que rol ocupa
 def obtener_tipo_usuario(request, idEstudio):
 
-    estudio = Estudio_Mactor.objects.get(id=idEstudio)
+    estudio = EstudioMactor.objects.get(id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
     tipo = ""
 
@@ -1809,7 +1809,7 @@ def obtener_tipo_usuario(request, idEstudio):
 # Exporta a excel los datos basicos del estudio y sus respectivas entradas
 def exportar_estudio_xls(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     response = HttpResponse(content_type='application/ms-excel')
     response['Content-Disposition'] = 'attachment; filename='+estudio.titulo+'.xls'
 
@@ -1900,18 +1900,18 @@ def obtener_datos_estudio(request, idEstudio):
         'nombreLargo', 'nombreCorto', 'descripcion')
 
     if usuario == "COORDINADOR":
-        filas_mid = Relacion_MID.objects.filter(idActorY__idEstudio=idEstudio).values_list(
+        filas_mid = RelacionMID.objects.filter(idActorY__idEstudio=idEstudio).values_list(
             'idActorY__nombreLargo', 'idActorX__nombreLargo', 'valor', 'justificacion').order_by('idActorY', 'idActorX')
-        filas_1mao = Relacion_MAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=1).values_list(
+        filas_1mao = RelacionMAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=1).values_list(
             'idActorY__nombreLargo', 'idObjetivoX__nombreLargo', 'valor', 'justificacion').order_by('idActorY', 'idObjetivoX')
-        filas_2mao = Relacion_MAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=2).values_list(
+        filas_2mao = RelacionMAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=2).values_list(
             'idActorY__nombreLargo', 'idObjetivoX__nombreLargo', 'valor', 'justificacion').order_by('idActorY', 'idObjetivoX')
     else:
-        filas_mid = Relacion_MID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id).values_list(
+        filas_mid = RelacionMID.objects.filter(idActorY__idEstudio=idEstudio, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo', 'idActorX__nombreLargo', 'valor', 'justificacion').order_by('idActorY', 'idActorX')
-        filas_1mao = Relacion_MAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=1, idExperto=request.user.id).values_list(
+        filas_1mao = RelacionMAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=1, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo', 'idObjetivoX__nombreLargo', 'valor', 'justificacion').order_by('idActorY', 'idObjetivoX')
-        filas_2mao = Relacion_MAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=2, idExperto=request.user.id).values_list(
+        filas_2mao = RelacionMAO.objects.filter(idActorY__idEstudio=idEstudio, tipo=2, idExperto=request.user.id).values_list(
             'idActorY__nombreLargo', 'idObjetivoX__nombreLargo', 'valor', 'justificacion').order_by('idActorY', 'idObjetivoX')
 
     filas = {'actores': filas_actores, 'fichas': filas_fichas, 'objetivos': filas_objetivos,
@@ -1926,7 +1926,7 @@ def obtener_datos_estudio(request, idEstudio):
 # genera el histograma de la matriz de influencias directas, idEstudio tipo str
 def histograma_mid(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if verificar_consenso(request, idEstudio):
@@ -1943,7 +1943,7 @@ def histograma_mid(request, idEstudio):
 def datos_histograma_mid(request):
 
     if request.is_ajax():
-        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
+        estudio = get_object_or_404(EstudioMactor, id=int(request.GET['estudio']))
         usuario = obtener_tipo_usuario(request, estudio.id)
         actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
         lista_nombres = []
@@ -1955,8 +1955,8 @@ def datos_histograma_mid(request):
             valores_mid = calcular_consenso_mid(estudio.id)
             valores_mid = valores_mid['consenso']
         elif usuario != "COORDINADOR":                          # histograma del experto
-            valores_mid = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                            idExperto=request.user.id).order_by('idActorY', 'idActorX')
+            valores_mid = RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                                     idExperto=request.user.id).order_by('idActorY', 'idActorX')
         valores_mid = establecer_valores_mid(estudio.id, valores_mid)
 
         for i in valores_mid:
@@ -1979,7 +1979,7 @@ def datos_histograma_mid(request):
 # genera el histograma del coeficiente Ri, idEstudio tipo str
 def histograma_ri(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if verificar_consenso(request, idEstudio):
@@ -2016,7 +2016,7 @@ def datos_histograma_ri(request):
 # genera el histograma de implicacion, idEstudio tipo str
 def histograma_implicacion(request, idEstudio, numero_matriz):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
     matriz = int(numero_matriz)
 
@@ -2038,7 +2038,7 @@ def histograma_implicacion(request, idEstudio, numero_matriz):
 # genera el histograma de movilizacion, idEstudio tipo str
 def histograma_movilizacion(request, idEstudio, numero_matriz):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
     matriz = int(numero_matriz)
 
@@ -2064,7 +2064,7 @@ def datos_histogramas_mao(request):
         idEstudio = request.GET['estudio']
         numero_matriz = int(request.GET['numero_matriz'])
         tipo = request.GET['tipo']
-        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
+        estudio = get_object_or_404(EstudioMactor, id=int(request.GET['estudio']))
         cant_objetivos = Objetivo.objects.filter(idEstudio=estudio.id).count()
         lista_nombres = []
 
@@ -2108,7 +2108,7 @@ def datos_histogramas_mao(request):
 # genera el histograma de convergencias y divergencias, idEstudio tipo str
 def histograma_caa_daa(request, idEstudio, numero_matriz):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if verificar_consenso(request, idEstudio):
@@ -2126,7 +2126,7 @@ def datos_histograma_caa_daa(request):
 
     if request.is_ajax():
         numero_matriz = int(request.GET['numero_matriz'])
-        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
+        estudio = get_object_or_404(EstudioMactor, id=int(request.GET['estudio']))
         labels = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
         lista_nombres = []
 
@@ -2156,7 +2156,7 @@ def datos_histograma_caa_daa(request):
 # genera el plano cartesiano de los actores en la matriz midi, idEstudio tipo str
 def generar_mapa_midi(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if verificar_consenso(request, idEstudio):
@@ -2210,7 +2210,7 @@ def datos_mapa_midi(request):
 # genera el plano cartesiano de convergencias y divergencias, idEstudio tipo str
 def generar_mapa_caa_daa(request, idEstudio, numero_matriz):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if verificar_consenso(request, idEstudio):
@@ -2266,7 +2266,7 @@ def datos_mapa_caa_daa(request):
 # Genera el grafo de convergencias, idEstudio tipo str
 def generar_grafo_caa(request, idEstudio, numero_matriz):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if verificar_consenso(request, idEstudio):
@@ -2284,7 +2284,7 @@ def generar_grafo_caa(request, idEstudio, numero_matriz):
 def datos_grafo_caa(request):
 
     if request.is_ajax():
-        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
+        estudio = get_object_or_404(EstudioMactor, id=int(request.GET['estudio']))
         numero_matriz = int(request.GET['numero_matriz'])
 
         valores_mao = crear_contexto_mao(request, request.GET['estudio'], numero_matriz)
@@ -2328,7 +2328,7 @@ def datos_grafo_caa(request):
 # genera el grafo de divergencias, idEstudio tipo str
 def generar_grafo_daa(request, idEstudio, numero_matriz):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     usuario = obtener_tipo_usuario(request, estudio.id)
 
     if verificar_consenso(request, idEstudio):
@@ -2346,7 +2346,7 @@ def generar_grafo_daa(request, idEstudio, numero_matriz):
 def datos_grafo_daa(request):
 
     if request.is_ajax():
-        estudio = get_object_or_404(Estudio_Mactor, id=int(request.GET['estudio']))
+        estudio = get_object_or_404(EstudioMactor, id=int(request.GET['estudio']))
         numero_matriz = int(request.GET['numero_matriz'])
 
         valores_mao = crear_contexto_mao(request, request.GET['estudio'], numero_matriz)
@@ -2421,7 +2421,7 @@ def verificar_consenso(request, idEstudio):
 # activa el consenso para las matrices y graficos de las influencias mid, idEstudio tipo str
 def activar_consenso_influencias(request, idEstudio, tipo):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
     tipo = int(tipo)
 
@@ -2450,7 +2450,7 @@ def activar_consenso_influencias(request, idEstudio, tipo):
 # Calcula el consenso de la matriz mid
 def calcular_consenso_mid(idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
+    estudio = get_object_or_404(EstudioMactor, id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
     actores = Actor.objects.filter(idEstudio=estudio.id).order_by('id')
     tamano_matriz_completa = len(actores) ** 2
@@ -2458,8 +2458,8 @@ def calcular_consenso_mid(idEstudio):
     contador = 0
 
     for experto in lista_expertos:
-        consulta = Relacion_MID.objects.filter(idActorY__idEstudio=estudio.id,
-                                                        idExperto=experto.id).order_by('idActorY', 'idActorX')
+        consulta = RelacionMID.objects.filter(idActorY__idEstudio=estudio.id,
+                                              idExperto=experto.id).order_by('idActorY', 'idActorX')
         if len(consulta) == tamano_matriz_completa and len(lista_consenso) == 0:
             lista_consenso = consulta
             contador += 1
@@ -2480,7 +2480,7 @@ def calcular_consenso_mid(idEstudio):
 # Activa el consenso de las matrices y graficos de las matrices mao, idEstudio tipo str
 def activar_consenso_mao(request, idEstudio, matriz, tipo):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     idEstudio = "0"+str(estudio.id)
     matriz = int(matriz)
     tipo = int(tipo)
@@ -2498,7 +2498,7 @@ def activar_consenso_mao(request, idEstudio, matriz, tipo):
 # activa el consenso de matrices de convergencia y divergencia, idEstudio tipo str
 def activar_consenso_caa_daa(request, idEstudio, matriz, tipo):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     idEstudio = "0" + str(estudio.id)
     tipo = int(tipo)
     matriz = int(matriz)
@@ -2520,7 +2520,7 @@ def activar_consenso_caa_daa(request, idEstudio, matriz, tipo):
 # Calcula el consenso de las matrices 1mao y 2mao
 def calcular_consenso_mao(request, idEstudio, num_matriz):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=idEstudio)
+    estudio = get_object_or_404(EstudioMactor, id=idEstudio)
     lista_expertos = estudio.idExpertos.all()
     actores = Actor.objects.filter(idEstudio=estudio.id)
     objetivos = Objetivo.objects.filter(idEstudio=estudio.id)
@@ -2536,7 +2536,7 @@ def calcular_consenso_mao(request, idEstudio, num_matriz):
     consulta_base = []
     if num_matriz < 3:
         for experto in lista_expertos:
-            consulta = Relacion_MAO.objects.filter(
+            consulta = RelacionMAO.objects.filter(
                 idActorY__idEstudio=estudio.id, idExperto=experto.id, tipo=num_matriz).order_by('idActorY', 'idObjetivoX')
 
             if len(consulta) == tamano_matriz_completa and len(consulta) > 0:
@@ -2605,19 +2605,19 @@ def calcular_consenso_mao(request, idEstudio, num_matriz):
 
 def crear_informe(request, idEstudio):
 
-    estudio = get_object_or_404(Estudio_Mactor, id=int(idEstudio))
+    estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    informe = Informe_Final.objects.filter(idEstudio=estudio.id)
+    informe = InformeFinal.objects.filter(idEstudio=estudio.id)
 
     if len(informe) == 0:
         # si se va a guardar primera vez
         if request.method == 'POST':
-            form = Form_Informe(request.POST)
+            form = FormInforme(request.POST)
             if form.is_valid():
                 form.save()
             return redirect('mactor:informe_final', estudio.id)
         else:
-            form = Form_Informe()
+            form = FormInforme()
         return render(request, 'informe/crear_informe.html', {'form': form, 'estudio': estudio, 'usuario': tipo_usuario})
     else:
         return editar_informe(request, estudio)
@@ -2626,11 +2626,11 @@ def crear_informe(request, idEstudio):
 def editar_informe(request, estudio):
 
     tipo_usuario = obtener_tipo_usuario(request, estudio.id)
-    informe = Informe_Final.objects.get(idEstudio=estudio.id)
+    informe = InformeFinal.objects.get(idEstudio=estudio.id)
     if request.method == 'GET':
-        form = Form_Informe(instance=informe)
+        form = FormInforme(instance=informe)
     else:
-        form = Form_Informe(request.POST, instance=informe)
+        form = FormInforme(request.POST, instance=informe)
         if form.is_valid():
             form.save()
             return redirect('mactor:informe_final', estudio.id)
