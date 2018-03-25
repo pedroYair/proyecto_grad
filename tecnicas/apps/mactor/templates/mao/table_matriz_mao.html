@@ -25,47 +25,39 @@
                 {% if valores_mao %}
                 <tr>
                     {% for i in valores_mao %}
-                                                    <!--Inserta la ultima celda de la fila y hace el salto de fila-->
-                                                    {% if i.posicion == posicion_salto %}
-                                                        <input style='text-align: center;' readonly type="text" size="4"
-                                                               title="{{i.descripcion}}" value="{{i.valor}}">
-                                                        <br>
-                                                    <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
-                                                    {% elif i.posicion == posicion_salto_movilizacion %}
-                                                        <input style='text-align: center;' readonly type="text" size="4"
-                                                               title="{{i.descripcion}}" value="{{i.valor}}">
-                                                        <br>
-                                                    <!--Inserta las etiquetas del eje Y-->
-                                                    {% elif i.posicion == 0 %}
-                                                        <!--Si la etiqueta corresponde a un actor-->
-                                                        {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
-                                                               <input id="mid{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}"
-                                                                    data-toggle="modal" href="#modal_Consultar_actor">
-                                                        {% else %}
-                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="4" title="{{i.descripcion}}" value="{{i.valor}}">
-                                                        {% endif %}
-                                                    <!--Inserta los valores de la matriz posteriores al nombre en Y y previos a la ultima celda-->
-                                                    {% else %}
-                                                        <!--Si la celda no ha sido diligenciada-->
-                                                        {% if i.valor == 100 %}
-                                                            <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="4"
-                                                                   title="INFLUENCIA SIN REGISTRAR" value="X">
-                                                        {% else %}
-                                                            <input style='text-align: center;' readonly type="text" size="4"
-                                                                   title="{{i.descripcion}}" value="{{i.valor}}">
-                                                        {% endif %}
-                                                    {% endif %}
+
+                        <!--Inserta la ultima celda de la fila y hace el salto de fila-->
+                        {% if i.posicion == posicion_salto %}
+                            <input style='text-align: center;' readonly type="text" size="4" title="{{i.descripcion}}" value="{{i.valor}}">
+                            <br>
+                        <!--Inserta las sumatorias de movilizacion (ultimas 3 filas) -->
+                        {% elif i.posicion == posicion_salto_movilizacion %}
+                            <input style='text-align: center;' readonly type="text" size="4" title="{{i.descripcion}}" value="{{i.valor}}">
+                            <br>
+                        <!--Inserta las etiquetas del eje Y-->
+                        {% elif i.posicion == 0 %}
+                            <!--Si la etiqueta corresponde a un actor-->
+                            {% if i.valor != '+' and i.valor != '-' and i.valor != 'Mov.' %}
+                                <input id="mid{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="4" title="{{i.descripcion|upper}}"
+                                       value="{{i.valor}}" data-toggle="modal" href="#modal_Consultar_actor">
+                            {% else %}
+                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="4" title="{{i.descripcion}}" value="{{i.valor}}">
+                            {% endif %}
+                        <!--Inserta los valores de la matriz posteriores al nombre en Y y previos a la ultima celda-->
+                        {% else %}
+                            <!--Si la celda no ha sido diligenciada-->
+                            {% if i.valor == 100 %}
+                                <input style='text-align: center; background-color: #5e5e5e; color: white' readonly type="text" size="4" title="INFLUENCIA SIN REGISTRAR" value="X">
+                            {% else %}
+                                <input style='text-align: center;' readonly type="text" size="4" title="{{i.descripcion}}" value="{{i.valor}}">
+                            {% endif %}
+                        {% endif %}
+
                     {% endfor %}
                 {% else %}
                     <h3>Registre los actores y objetivos del estudio.</h3>
                 {% endif %}
                 <br>
-                                                       
-
-
-
                 </tr>
             </tbody>
         </table>
