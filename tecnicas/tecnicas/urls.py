@@ -22,6 +22,8 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls, ),
     # urls de la app mactor
     url(r'^mactor/', include('apps.mactor.urls', namespace="mactor")),
+    # urls de la app entrevista
+    url(r'^entrevista/', include('apps.entrevista.urls', namespace="entrevista")),
     # urls vista control de usuarios paquete Registration
     url(r'^accounts/', include('registration.backends.default.urls'))
 ]

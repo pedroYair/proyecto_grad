@@ -11,84 +11,85 @@
 
 	{% if usuario != '' and usuario != 'EXPERTO' %}
 		<div class="matter">
-					<div class="container">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="widget wgreen">
-              						<div class="widget-head">
-									  <div class="pull-left">Editar ficha de Estrategias</div>
-									  <div class="clearfix"></div>
-									</div>
-									<div class="widget-content">
-									  <div class="padd">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="widget wgreen">
+							<div class="widget-head">
+								<div class="pull-left">Editar ficha de Estrategias</div>
+								<div class="clearfix"></div>
+							</div>
+							<div class="widget-content">
+								<div class="padd">
+									<hr />
+									<!-- Form starts.  -->
+									<form class="form-horizontal" role="form" method="post" id="form_ficha">
+										{% csrf_token %}
 
-										<hr />
-										<!-- Form starts.  -->
-											<form class="form-horizontal" role="form" method="post" id="form_ficha">
-                                            {% csrf_token %}
-
-												<div class="col-md-3 col-md-offset-1" hidden>
-                                                	<div  class="row">
-                                                		<div class="form-group">
-															<input class="form-control" type="number" value="{{estudio.id}}" name="idEstudio">
-														</div>
-                                                	</div>
-                                                </div>
-
-												<div class="row">
-													<div class="col-md-7 col-md-offset-1">
-                                                		<div class="form-group" readonly="true">
-                                                    		{{form.idActorY.errors}}
-												  			<label class="control-label" style="text-align: left">Estrategias del actor</label>
-                                                    		<select name="idActorY" class="form-control" required id="id_idActorY">
-															  <option value="{{actores.0.id}}">{{actores.0}}</option>
-															</select>
-														</div>
-													</div>
-												</div>
-
-												<div class="row">
-													<div class="col-md-7 col-md-offset-1">
-														<div id="info"></div>
-													</div>
-												</div>
-
-												<div class="row">
-													<div class="col-md-7 col-md-offset-1">
-												        <div class="form-group">
-													        {{form.idActorX.errors}}
-												            <label class="control-label" style="text-align: left">Sobre el actor</label>
-                                                            <select name="idActorX" class="form-control" required id="id_idActorX">
-															  <option value="{{actores.1.id}}">{{actores.1}}</option>
-															</select>
-												        </div>
-													</div>
-                                                </div>
-
-												<div class="row">
-													<div class="col-md-7 col-md-offset-1">
-														<div id="info2"></div>
-													</div>
-												</div>
-
-                                                <div class="row">
-                                                    <div class="col-md-7 col-md-offset-1">
-												        <div class="form-group">
-												            <label class="control-label" style="text-align: left">Estrategias</label>
-												            {{form.estrategia}}
-												        </div>
-                                                    </div>
-                                                </div>
-
+										<div class="col-md-3 col-md-offset-1" hidden>
+											<div  class="row">
 												<div class="form-group">
-												  <div class="col-md-offset-2 col-md-8">
-                                                      <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}"><i class="fa fa-arrow-left"></i> Atrás</a>
-													  <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
-													  <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
-												  </div>
+													<input class="form-control" type="number" value="{{estudio.id}}" name="idEstudio">
 												</div>
+											</div>
+										</div>
 
-											</form>
+										<div class="row">
+											<div class="col-md-7 col-md-offset-1">
+												<div class="form-group" readonly="true">
+													{{form.idActorY.errors}}
+													<label class="control-label" style="text-align: left">Estrategias del actor</label>
+													<select name="idActorY" class="form-control" required id="id_idActorY">
+														<option value="{{actores.0.id}}">{{actores.0}}</option>
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<!--DIV descripcion del actorY-->
+										<div class="row">
+											<div class="col-md-7 col-md-offset-1">
+												<div id="info"></div>
+											</div>
+										</div>
+
+                                        <div class="row">
+                                            <div class="col-md-7 col-md-offset-1">
+                                                <div class="form-group">
+                                                    {{form.idActorX.errors}}
+                                                    <label class="control-label" style="text-align: left">Sobre el actor</label>
+                                                    <select name="idActorX" class="form-control" required id="id_idActorX">
+                                                        <option value="{{actores.1.id}}">{{actores.1}}</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!--DIV descripcion actorX-->
+                                        <div class="row">
+                                            <div class="col-md-7 col-md-offset-1">
+                                                <div id="info2"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-7 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Estrategias</label>
+                                                    {{form.estrategia}}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-md-offset-2 col-md-8">
+                                                <a class="btn btn-sm btn-success" href="{%url 'mactor:lista_fichas' estudio.id%}"><i class="fa fa-arrow-left"></i> Atrás</a>
+                                                <button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Guardar</button>
+                                                <a class="btn btn-primary" data-toggle="modal" href="#myModal"><i class="fa fa-book"></i> Ayuda</a>
+                                            </div>
+                                        </div>
+
+                                    </form>
 
 
 <!--INICIO MODAL AYUDA--------------------------->
@@ -113,12 +114,12 @@
 						</div>
                     </div>
 
-									  </div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 </div>
 	{% else %}
 	<img src="{% static 'img/acceso_denegado.png' %}">

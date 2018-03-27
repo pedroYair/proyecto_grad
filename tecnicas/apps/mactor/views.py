@@ -12,7 +12,7 @@ from .forms import *
 """ ----------------------------------------VIEWS MODELO ESTUDIO MACTOR---------------------------------"""
 
 
-class crear_estudio(CreateView):
+class crearEstudio(CreateView):
     model = EstudioMactor
     form_class = FormEstudio
     template_name = 'estudio/crear_estudio_mactor.html'
@@ -57,7 +57,6 @@ def editar_estudio(request, idEstudio):
 
     estudio = get_object_or_404(EstudioMactor, id=int(idEstudio))
     informes = InformeFinal.objects.all().order_by('idEstudio')
-    tipo_usuario = obtener_tipo_usuario(request, estudio.id)
     flag = False
 
     for informe in informes:
@@ -71,8 +70,7 @@ def editar_estudio(request, idEstudio):
         if form.is_valid():
             form.save()
             return redirect('mactor:lista_estudios')
-    return render(request, 'estudio/editar_estudio.html', {'form': form, 'informe': flag,
-                                                           'estudio': estudio, 'usuario': tipo_usuario})
+    return render(request, 'estudio/editar_estudio.html', {'form': form, 'informe': flag, 'estudio': estudio})
 
 """-------------------------------------------VIEWS MODELO ACTOR---------------------------------------"""
 

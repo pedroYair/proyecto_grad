@@ -1,9 +1,8 @@
 from django import forms
-from .models import EstudioMactor, Ficha, RelacionMID, RelacionMAO, InformeFinal
-from .choices import VALORES, VALORES_1MAO, VALORES_2MAO
+from .models import EstudioEntrevista
 
 
-"""FORMULARIO ESTUDIO MACTOR------------------------------------------------------------------------------------"""
+"""FORMULARIO ESTUDIO ENTREVISTA------------------------------------------------------------------------------------"""
 
 
 class FormEstudio(forms.ModelForm):
@@ -22,11 +21,13 @@ class FormEstudio(forms.ModelForm):
         return cantidad
 
     class Meta:
-        model = EstudioMactor
+        model = EstudioEntrevista
 
         fields = [
             'titulo',
-            'descripcion',
+            'objetivo',
+            'entrevistador',
+            'entrevistado',
             'idAdministrador',
             'idCoordinador',
             'idExpertos',
@@ -36,9 +37,11 @@ class FormEstudio(forms.ModelForm):
             'idProyecto',
         ]
 
-        widgets = {
+    widgets = {
             'titulo': forms.TextInput(attrs={'class': 'form-control'}),
-            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'objetivo': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'entrevistador': forms.TextInput(attrs={'class': 'form-control'}),
+            'entrevistado': forms.TextInput(attrs={'class': 'form-control'}),
             'idAdministrador': forms.Select(attrs={'class': 'form-control'}),
             'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idExpertos': forms.SelectMultiple(attrs={'class': 'form-control'}),
@@ -48,7 +51,7 @@ class FormEstudio(forms.ModelForm):
             'idProyecto': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-"""FORMULARIO FICHA DEL ACTOR------------------------------------------------------------------------------------"""
+"""FORMULARIO FICHA DEL ACTOR------------------------------------------------------------------------------------
 
 
 class FormFicha(forms.ModelForm):
@@ -68,7 +71,7 @@ class FormFicha(forms.ModelForm):
             'estrategia': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
         }
 
-"""FORMULARIO DE INFLUENCIAS------------------------------------------------------------------------------------"""
+FORMULARIO DE INFLUENCIAS-----------------------------------------------------------------------------------
 
 
 class FormMID(forms.ModelForm):
@@ -92,7 +95,7 @@ class FormMID(forms.ModelForm):
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
         }
 
-"""FORMULARIO 1MAO----------------------------------------------------------------------------------------------"""
+FORMULARIO 1MAO----------------------------------------------------------------------------------------------
 
 
 class Form1mao(forms.ModelForm):
@@ -117,8 +120,7 @@ class Form1mao(forms.ModelForm):
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
             }
-
-"""FORMULARIO 2MAO----------------------------------------------------------------------------------------------"""
+FORMULARIO 2MAO---------------------------------------------------------------------------------------------
 
 
 class Form2mao(forms.ModelForm):
@@ -144,7 +146,7 @@ class Form2mao(forms.ModelForm):
             'idExperto': forms.Select(attrs={'class': 'form-control'}),
             }
 
-"""FORMULARIO INFORME FINAL-------------------------------------------------------------------------------------"""
+FORMULARIO INFORME FINAL-------------------------------------------------------------------------------------
 
 
 class FormInforme(forms.ModelForm):
@@ -164,6 +166,8 @@ class FormInforme(forms.ModelForm):
             'estado': forms.CheckboxInput(attrs={'class': 'form-control'}),
             'idEstudio': forms.Select(attrs={'class': 'form-control'}),
         }
+
+        """
 
 
 

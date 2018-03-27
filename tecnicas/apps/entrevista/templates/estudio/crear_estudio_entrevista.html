@@ -3,25 +3,25 @@
 {% load crispy_forms_tags %}
 
 {% block head_title %}
-    {% if request.user == estudio.idAdministrador %}
+    {% if request.user.is_superuser %}
         Bienvenido: {{user.username}}
     {% endif %}
 {% endblock %}
 
 {% block content %}
-    {% if request.user == estudio.idAdministrador %}
+    {% if request.user.is_superuser %}
         <div class="matter">
             <div class="container">
                 <div class="row">
                     <div class="col-md-12">
                         <div class="widget wgreen">
                             <div class="widget-head">
-                                <div class="pull-left">Formulario - Editar Estudio MACTOR</div>
+                                <div class="pull-left">Formulario - Nuevo Estudio Entrevista</div>
                                 <div class="clearfix"></div>
                             </div>
                             <div class="widget-content">
                                 <div class="padd">
-										<hr />
+										<hr/>
 										<!-- Form starts.  -->
                                     <form class="form-horizontal" role="form" method="post">
                                         {% csrf_token %}
@@ -31,7 +31,7 @@
                                                 <div class="form-group">
                                                     {{form.titulo.errors}}
                                                     <label class="control-label" style="text-align: left">Título</label>
-                                                    {{form.titulo}}
+                                                    <input class="form-control" type="text" name="titulo">
                                                 </div>
                                             </div>
                                         </div>
@@ -39,8 +39,26 @@
                                         <div class="row">
                                             <div class="col-md-8 col-md-offset-1">
                                                 <div class="form-group">
-                                                    <label class="control-label" style="text-align: left">Descripción</label>
-                                                    {{form.descripcion}}
+                                                    <label class="control-label" style="text-align: left">Objetivo</label>
+                                                    <textarea class="form-control" rows="5" name="objetivo"></textarea>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Entrevistador</label>
+                                                    <input class="form-control" type="text" name="entrevistador">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Entrevistado</label>
+                                                    <input class="form-control" type="text" name="entrevistado">
                                                 </div>
                                             </div>
                                         </div>
@@ -57,7 +75,7 @@
                                         <div class="row">
                                             <div class="col-md-8 col-md-offset-1">
                                                 <div class="form-group">
-                                                    <label class="control-label" style="text-align: left">Coordinador</label>
+                                                    <label class="control-label" style="text-align: left">Coordinador</label><br>
                                                     {{form.idCoordinador}}
                                                 </div>
                                             </div>
@@ -66,8 +84,7 @@
                                         <div class="row">
                                             <div class="col-md-8 col-md-offset-1">
                                                 <div class="form-group">
-                                                    {{form.idExpertos.errors}}
-                                                    <label class="control-label" style="text-align: left">Expertos</label>
+                                                    <label class="control-label" style="text-align: left">Expertos</label><br>
                                                     {{form.idExpertos}}
                                                 </div>
                                             </div>
@@ -78,8 +95,7 @@
                                                 <div class="form-group">
                                                     <label style="text-align: left" class="control-label">Fecha Inicio</label>
                                                     <br>
-                                                    {{form.fecha_inicio}}
-                                                    <br>
+                                                    <input type="date" name="fecha_inicio">
                                                 </div>
                                             </div>
 
@@ -90,8 +106,7 @@
                                                 <div class="form-group">
                                                     <label style="text-align: left"  class="control-label">Fecha Final</label>
                                                     <br>
-                                                    {{form.fecha_final}}
-                                                    <br>
+                                                    <input type="date" name="fecha_final">
                                                 </div>
                                             </div>
                                         </div>
@@ -99,13 +114,7 @@
                                         <div class="row">
                                             <div class="col-md-8 col-md-offset-1">
                                                 <div class="form-group">
-                                                    {% if informe is True %}
-                                                    <h5>El informe final ha sido redactado</h5>
-                                                    {% else %}
-                                                    <h5>El informe final no ha sido redactado</h5>
-                                                    {% endif %}
                                                     <label style="text-align: left"  class="control-label">Estado</label>
-                                                    <br>
                                                     {{form.estado}}
                                                 </div>
                                             </div>
@@ -121,9 +130,9 @@
 
                                         <div class="form-group">
                                             <div class="col-md-8 col-md-offset-3">
-                                                <button type="submit" class="btn btn-primary pull-right" title="Guardar">
-                                                    <i class="fa fa-check"></i> Guardar
-                                                </button>
+                                                <a class="btn btn-sm btn-success" href="#" title="Lista de estudios"><i class="fa fa-arrow-left"></i> Atrás</a>
+                                                <button type="submit" class="btn btn-primary" title="Guardar"><i class="fa fa-check"></i> Guardar</button>
+                                                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                                             </div>
                                         </div>
                                     </form>
@@ -131,6 +140,42 @@
                                 </div>
                             </div>
                         </div>
+
+        <!--INICIO MODAL AYUDA--------------------------->
+
+		<div id="myModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+				  <div class="modal-dialog">
+					  <div class="modal-content">
+						  <div class="modal-header">
+							  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">X</button>
+							  <h4 class="modal-title">Ayuda - Nuevo estudio MACTOR</h4>
+						  </div>
+						  <div class="modal-body" style="text-align: justify">
+							  <p>Ingrese la información básica del estudio, tenga en cuenta las funciones de los
+                                  individuos de acuerdo al rol que ejercen dentro del mismo:
+								  <br>
+								  <br>
+								  <i class="fa fa-check"></i> Administrador: encargado de crear y finalizar el estudio.
+								  <br>
+								  <i class="fa fa-check"></i> Coordinador: responsable de registrar las entradas necesarias
+                                  para el desarrollo del estudio(actores, objetivos y fichas de estrategia) y
+								  redactar el informe final de acuerdo al consenso entre los expertos.
+								  <br>
+								  <i class="fa fa-check"></i> Experto: encargado de diligenciar las matrices necesarias
+                                  para el análisis de las convergencias y divergencias entre los actores respecto
+								  a los objetivos estudiados. <p style="color: black">Puede seleccionar máximo 10 expertos.</p>
+								  <br>
+								  <p style="color: black">Nota: Un administrador puede ocupar dentro de un estudio los tres roles
+                              descritos, asi como el coordinador designado puede hacer parte del grupo de expertos.</p>
+							  </p>
+						  </div>
+						  <div class="modal-footer">
+							  <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+						  </div>
+					  </div>
+				  </div>
+			  </div>
+
                     </div>
                 </div>
             </div>
@@ -139,7 +184,7 @@
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
     {% endif %}
-   
+
 {% endblock %}
 
 
