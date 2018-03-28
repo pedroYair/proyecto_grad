@@ -11,78 +11,77 @@
 {% block content %}
     {% if usuario != '' and usuario != 'EXPERTO' %}
         <div class="matter">
-					<div class="container">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="widget wblue">
-              						<div class="widget-head">
-									  <div class="pull-left">Formulario - Informe Final</div>
-                                        {% if datos %}
-                                      <div class="pull-right">Última actualización: {{datos.fecha}}</div>
-                                        {% endif %}
-									  <div class="clearfix"></div>
-									</div>
-									<div class="widget-content">
-									  <div class="padd">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="widget wblue">
+                            <div class="widget-head">
+                                <div class="pull-left">Formulario - Informe Final</div>
+                                {% if datos %}
+                                    <div class="pull-right">Última actualización: {{datos.fecha}}</div>
+                                {% endif %}
+                                <div class="clearfix"></div>
+                            </div>
+                            <div class="widget-content">
+                                <div class="padd">
 
-										<hr />
+                                    <hr />
 										<!-- Form starts.  -->
+                                    <form class="form-horizontal" role="form" method="post">
+                                        {% csrf_token %}
 
-											<form class="form-horizontal" role="form" method="post">
-                                            {% csrf_token %}
-
-                                                <div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label class="control-label" style="text-align: left">Informe</label>
-                                                            {%if datos %}
-                                                             <textarea name="informe" cols="40" rows="20" class="form-control" row="3" required>{{datos.informe}}</textarea>
-                                                            {%else%}
-                                                            <textarea name="informe" cols="40" rows="20" class="form-control" row="3" required id="id_informe"></textarea>
-                                                            {%endif%}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="row">
-                                                    <div class="col-md-8 col-md-offset-1">
-                                                        <div class="form-group">
-                                                          <label style="text-align: left"  class="control-label">Estado</label>
-                                                            <br>
-                                                            {% if datos.estado is True %}
-                                                            <input type="checkbox" checked name="estado">
-                                                            {% else %}
-                                                            <input type="checkbox" name="estado">
-                                                            {% endif %}
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <div class="col-md-3 col-md-offset-1" hidden>
-                                                    <div  class="row">
-                                                        <div class="form-group">
-                                                            <input class="form-control" type="number" value="{{estudio.id}}" name="idEstudio">
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!--BOTONES-------------------------------------------------------->
-
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
                                                 <div class="form-group">
-                                                    <div class="col-md-offset-2 col-md-8">
-                                                        <button id="boton_guardar" type="submit" class="btn btn-primary" title="Guardar informe">
-														<i class="fa fa-check"></i> Guardar
-													    </button>
-                                                        <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
-                                                    </div>
+                                                    <label class="control-label" style="text-align: left">Informe</label>
+                                                    {%if datos %}
+                                                        <textarea name="informe" cols="40" rows="20" class="form-control" row="3" required>{{datos.informe}}</textarea>
+                                                    {%else%}
+                                                        <textarea name="informe" cols="40" rows="20" class="form-control" row="3" required id="id_informe"></textarea>
+                                                    {%endif%}
                                                 </div>
-											</form>
-									  </div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-8 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label style="text-align: left"  class="control-label">Estado</label>
+                                                    <br>
+                                                    {% if datos.estado is True %}
+                                                        <input type="checkbox" checked name="estado">
+                                                    {% else %}
+                                                        <input type="checkbox" name="estado">
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3 col-md-offset-1" hidden>
+                                            <div  class="row">
+                                                <div class="form-group">
+                                                    <input class="form-control" type="number" value="{{estudio.id}}" name="idEstudio">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!--BOTONES-------------------------------------------------------->
+
+                                        <div class="form-group">
+                                            <div class="col-md-offset-2 col-md-8">
+                                                <button id="boton_guardar" type="submit" class="btn btn-primary" title="Guardar informe">
+                                                    <i class="fa fa-check"></i> Guardar
+                                                </button>
+                                                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
              <!--MODAL AYUDA------------------------------------------------------------------------------------------>
 

@@ -33,9 +33,9 @@
                 </div>
         </div>
         {% if expertos %}
-        <p><h5>Expertos en consenso = {{expertos}}</h5></p>
+            <p><h5>Expertos en consenso = {{expertos}}</h5></p>
         {% else %}
-        <p><h5>Ningún experto ha finalizado la matriz 1MAO</h5></p>
+            <p><h5>Ningún experto ha finalizado la matriz 1MAO</h5></p>
         {% endif %}
         <br>
 
@@ -84,13 +84,13 @@
                                         el número de actores que tienen una posición activa, de acuerdo o desacuerdo,
                                         para cada objetivo.
                                     </p>
-                                             </div>
-                                          <div class="modal-footer">
-                                            <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
-                                          </div>
-                                            </div>
-                                        </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cerrar</button>
+                                </div>
                             </div>
+                        </div>
+                    </div>
     {% else %}
         <img src="{% static 'img/acceso_denegado.png' %}">
         <h2>Upps...no cuenta con los permisos necesarios para acceder a esta página.</h2>

@@ -60,14 +60,14 @@
 
                                             <!--Inserta los nombres cortos en el eje Y-->
                                             {% elif i.posicion == 0 %}
-                                                        {% if i.valor != 'D.DI' %}
-                                                               <input id="mid{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}"
-                                                                    data-toggle="modal" href="#modal_Consultar_actor">
-                                                        {% else %}
-                                                                <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text"
-                                                               size="4" title="{{i.descripcion|upper}}" value="{{i.valor}}">
-                                                        {% endif %}
+                                                {% if i.valor != 'D.DI' %}
+                                                    <input id="mid{{i.valor}}" style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="4"
+                                                           title="{{i.descripcion|upper}}" value="{{i.valor}}"
+                                                           data-toggle="modal" href="#modal_Consultar_actor">
+                                                {% else %}
+                                                    <input style='text-align: center; background-color: #5e5e5e; color: white ' readonly type="text" size="4" title="{{i.descripcion|upper}}"
+                                                           value="{{i.valor}}">
+                                                {% endif %}
 
                                             <!--Inserta los valores ubicados entre la primera y ultima celda-->
                                             {% else %}

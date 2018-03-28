@@ -36,7 +36,7 @@
     {% if expertos %}
         <p><h5>Expertos en consenso = {{expertos}}</h5></p>
     {% else %}
-    <p><h5>Ningún experto ha finalizado la matriz 2MAO.</h5></p>
+        <p><h5>Ningún experto ha finalizado la matriz 2MAO.</h5></p>
     {% endif %}
     <br>
 
@@ -105,13 +105,6 @@
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js/js_mactor/js_mactor_modals/consultar/consultar_actor_objetivo_matriz.js'%}"></script>
 {% endblock %}
-
-{% if estado_matriz == 0%}
-    <script type="text/javascript">
-        document.getElementById("caa_daa").disabled = true;
-    </script>
-{% endif %}
-
 
 {% endblock %}
 

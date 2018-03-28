@@ -10,125 +10,126 @@
 {% block content %}
 	{% if usuario != '' %}
 		<div class="matter">
-					<div class="container">
-						<div class="row">
-							<div class="col-md-12">
-								<div class="widget wgreen">
-              						<div class="widget-head">
-									  <div class="pull-left">Formulario - Matriz de Posiciones Simples 1MAO</div>
-										<div class="pull-right">{{porcentaje}}% Diligenciado</div>
-									  <div class="clearfix"></div>
-									</div>
-									<div class="widget-content">
-									  <div class="padd">
-										<hr/>
+			<div class="container">
+				<div class="row">
+					<div class="col-md-12">
+						<div class="widget wgreen">
+							<div class="widget-head">
+								<div class="pull-left">Formulario - Matriz de Posiciones Simples 1MAO</div>
+								<div class="pull-right">{{porcentaje}}% Diligenciado</div>
+								<div class="clearfix"></div>
+							</div>
+							<div class="widget-content">
+								<div class="padd">
+									<hr/>
 					<!-- Form starts. ----- ------------------------------------>
-											<form class="form-horizontal" role="form" method="post" id="form_1mao">
-                                            {% csrf_token %}
+									<form class="form-horizontal" role="form" method="post" id="form_1mao">
+										{% csrf_token %}
 
-												<div class="col-md-3 col-md-offset-1" hidden>
-                                                	<div  class="row">
-                                                		<div class="form-group">
-															<label class="control-label">Tipo</label>
-															<input class="form-control" type="number" value="1" name="tipo">
-														</div>
-                                                	</div>
-                                                </div>
-
-												<div class="row">
-													<div class="col-md-7 col-md-offset-1">
-                                                		<div class="form-group">
-                                                    		{{form.idActorY.errors}}
-												  			<label class="control-label" style="text-align: left">Relación del actor</label>
-                                                    		<select name="idActorY" class="form-control" required id="id_idActorY">
-                                                    			{% if estudio.estado is True %}
-																	{% if actores %}
-																		<option value="" selected>----Seleccionar----</option>
-																		{% for actor in actores %}
-																			<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
-																		{% endfor %}
-																	{% else %}
-																		<option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
-																	{% endif %}
-																{% else %}
-																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
-																{% endif %}				
-															</select>
-														</div>
-													</div>
-												</div>
-
-                                                <div class="row">
-                                                    <div class="col-md-7 col-md-offset-1">
-                                                        <div id="info" style="text-align: justify"></div>
-                                                    </div>
-                                                </div>
-
-												<div class="row">
-													<div class="col-md-7 col-md-offset-1">
-														<div class="form-group">
-															{{form.idObjetivoX.errors}}
-												  			<label class="control-label" style="text-align: left">Sobre el objetivo</label>
-                                                    		<select name="idObjetivoX" class="form-control" required id="id_idObjetivoX">
-                                                    			{% if estudio.estado is True %}
-																	{% if objetivos %}
-																		<option value="" selected>----Seleccionar----</option>
-																		{% for objetivo in objetivos %}
-																		<option value="{{objetivo.id}}">{{objetivo.nombreCorto}} - {{objetivo.nombreLargo}}</option>
-																		{% endfor %}
-																	{% else %}
-																		<option value="" selected>----NO SE HAN REGISTRADO OBJETIVOS EN ESTE ESTUDIO----</option>
-																	{% endif %}
-																{% else %}
-																	<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
-																{% endif %}			
-															</select>
-														</div>
-													</div>
-
-                                                	<div class="col-md-2 col-md-offset-1">
-														<div class="form-group">
-															<label class="control-label" style="text-align: left">Valor</label>
-															<br>
-													  		{{form.valor}}
-														</div>
-													</div>
-												</div>
-
-                                                <div class="row">
-                                                    <div class="col-md-7 col-md-offset-1">
-                                                        <div id="info2" style="text-align: justify"></div>
-                                                    </div>
-                                                </div>
-
-
-                                                <div class="row">
-                                                	<div class="col-md-7 col-md-offset-1">
-														<div class="form-group">
-														  <label class="control-label" style="text-align: left">Justificación</label>
-														  {{form.justificacion}}
-														</div>
-                                                	</div>
-                                                </div>
-
-												<div  class="row">
-                                                	<div class="col-md-3 col-md-offset-1" hidden>
-                                                		<div class="form-group">
-												  			<label class="control-label" style="text-align: left">Experto</label>
-                                                            <input class="form-control" type="text" value="{{user.id}}" name="idExperto">
-														</div>
-                                                	</div>
-												</div>
-
+										<div class="col-md-3 col-md-offset-1" hidden>
+											<div  class="row">
 												<div class="form-group">
-												  <div class="col-md-offset-2 col-md-8">
-													   <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mid' estudio.id %}" title="Matriz de Influencias Directas"><i class="fa fa-arrow-left"></i> Matriz MID</a>
-                                                     	<button type="submit" class="btn btn-sm btn-primary" title="Guardar influencia 1MAO"><i class="fa fa-plus"></i> Guardar</button>
-													  	<a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
-                                                      	<a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}" title="Matriz de posiciones simples 1MAO">Matriz 1MAO <i class="fa fa-arrow-right"></i></a>
-												  </div>
+													<label class="control-label">Tipo</label>
+													<input class="form-control" type="number" value="1" name="tipo">
 												</div>
-											</form>
+											</div>
+										</div>
+
+										<div class="row">
+											<div class="col-md-7 col-md-offset-1">
+												<div class="form-group">
+													{{form.idActorY.errors}}
+													<label class="control-label" style="text-align: left">Relación del actor</label>
+													<select name="idActorY" class="form-control" required id="id_idActorY">
+														{% if estudio.estado is True %}
+															{% if actores %}
+																<option value="" selected>----Seleccionar----</option>
+																{% for actor in actores %}
+																	<option value="{{actor.id}}">{{actor.nombreCorto}} - {{actor.nombreLargo}}</option>
+																{% endfor %}
+															{% else %}
+																<option value="" selected>----NO SE HAN REGISTRADO ACTORES EN ESTE ESTUDIO----</option>
+															{% endif %}
+														{% else %}
+															<option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
+														{% endif %}
+													</select>
+												</div>
+											</div>
+										</div>
+
+										<!--Div descripcion actor-->
+										<div class="row">
+											<div class="col-md-7 col-md-offset-1">
+												<div id="info" style="text-align: justify"></div>
+											</div>
+										</div>
+
+                                        <div class="row">
+                                            <div class="col-md-7 col-md-offset-1">
+                                                <div class="form-group">
+                                                    {{form.idObjetivoX.errors}}
+                                                    <label class="control-label" style="text-align: left">Sobre el objetivo</label>
+                                                    <select name="idObjetivoX" class="form-control" required id="id_idObjetivoX">
+                                                        {% if estudio.estado is True %}
+                                                            {% if objetivos %}
+                                                                <option value="" selected>----Seleccionar----</option>
+                                                                {% for objetivo in objetivos %}
+                                                                    <option value="{{objetivo.id}}">{{objetivo.nombreCorto}} - {{objetivo.nombreLargo}}</option>
+                                                                {% endfor %}
+                                                            {% else %}
+                                                                <option value="" selected>----NO SE HAN REGISTRADO OBJETIVOS EN ESTE ESTUDIO----</option>
+                                                            {% endif %}
+                                                        {% else %}
+                                                            <option value="" selected>----EL PRESENTE ESTUDIO NO ESTA HABILITADO----</option>
+                                                        {% endif %}
+                                                    </select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Valor</label>
+                                                    <br>
+                                                    {{form.valor}}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <!--Div descripcion objetivo-->
+                                        <div class="row">
+                                            <div class="col-md-7 col-md-offset-1">
+                                                <div id="info2" style="text-align: justify"></div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-7 col-md-offset-1">
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Justificación</label>
+                                                    {{form.justificacion}}
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div  class="row">
+                                            <div class="col-md-3 col-md-offset-1" hidden>
+                                                <div class="form-group">
+                                                    <label class="control-label" style="text-align: left">Experto</label>
+                                                    <input class="form-control" type="text" value="{{user.id}}" name="idExperto">
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group">
+                                            <div class="col-md-offset-2 col-md-8">
+                                                <a class="btn btn-sm btn-success" href="{%url 'mactor:matriz_mid' estudio.id %}" title="Matriz de Influencias Directas"><i class="fa fa-arrow-left"></i> Matriz MID</a>
+                                                <button type="submit" class="btn btn-sm btn-primary" title="Guardar influencia 1MAO"><i class="fa fa-plus"></i> Guardar</button>
+                                                <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                                                <a class="btn btn-sm btn-success" href="{% url 'mactor:matriz_mao' estudio.id 1%}" title="Matriz de posiciones simples 1MAO">Matriz 1MAO <i class="fa fa-arrow-right"></i></a>
+                                            </div>
+                                        </div>
+                                    </form>
 
 <! INICIO MODAL AYUDA--------------------------->
 
@@ -159,14 +160,12 @@
 						</div>
                     </div>
 
-									  </div>
-									</div>
-								</div>
-
-
-							</div>
-						</div>
-					</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 </div>
 	{% else %}
 		<img src="{% static 'img/acceso_denegado.png' %}">
