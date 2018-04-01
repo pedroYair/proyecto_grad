@@ -12,7 +12,7 @@
             <div class="col-md-12">
                 <div class="widget wgreen">
                     <div class="widget-head">
-                        <div class="pull-left">Lista de estudios MACTOR</div>
+                        <div class="pull-left">Lista de estudios Entrevista</div>
                         <div class="widget-icons pull-right">
                             <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
                         </div>
@@ -21,7 +21,7 @@
                     <div class="widget-content">
                         <table class="table table-bordered" id="tabla_estudios">
                             <thead>
-                            {% if lista_estudios %}
+                            {% if estudios %}
                                 <tr>
                                     <th style="text-align: center">#</th>
                                     <th style="text-align: center">Título</th>
@@ -32,10 +32,10 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                    {% for estudio in lista_estudios %}
+                                    {% for estudio in estudios %}
                                         <tr>
                                             <td>{{forloop.counter}}</td>
-                                            <td ><a href="{%url 'mactor:lista_actores' estudio.id%}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
+                                            <td ><a href="#" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
                                             <td>{{estudio.fecha_inicio}}</td>
                                             <td>{{estudio.fecha_final}}</td>
                                             <td>
@@ -47,28 +47,28 @@
                                             </td>
                                             <td>
                                                 <a id="ver{{estudio.id}}" class="btn btn-primary" title="Ver"
-                                                   data-toggle="modal" href="#modal_Consultar"><i class="fa fa-eye"></i>
+                                                   data-toggle="modal" href="#"><i class="fa fa-eye"></i>
                                                 </a>
                                                 {% if request.user == estudio.idAdministrador %}
                                                 <a class="btn btn-warning" title="Editar"
-                                                   href="{%url 'mactor:editar_estudio' estudio.id%}">
+                                                   href="#">
                                                     <i class="fa fa-pencil"></i>
                                                 </a>
                                                 {% endif %}
-                                                <a class="btn btn-primary" title="Exportar" href="{% url 'mactor:estudios_xls' estudio.id %}" >
+                                                <a class="btn btn-primary" title="Exportar" href="#" >
                                                     <i class="fa fa-download"></i>
                                                 </a>
                                             </td>
                                         </tr>
                                     {% endfor %}
                             {% else %}
-                                    <h3>No tiene estudios MACTOR registrados</h3>
+                                <h3>No tiene estudios Entrevista registrados</h3>
                             {% endif %}
                             </tbody>
                         </table>
                     </div>
 
-<!--PAGINACION ----------------------------------->
+<!--PAGINACION -----------------------------------
                         {% if lista_estudios.has_other_pages %}
                           <ul class="pagination">
                             {% if lista_estudios.has_previous %}
@@ -91,6 +91,8 @@
                           </ul>
                         {% endif %}
 
+                    -->
+
                 </div>
             </div>
         </div>
@@ -100,20 +102,22 @@
             <div class="form-group">
                 <div class="col-md-offset-2 col-md-8">
                     {% if request.user.is_superuser %}
-                    <a class="btn btn-primary" id="boton_agregar" href="{% url 'mactor:estudio' %}" title="Agregar nuevo estudio"><i class="fa fa-plus"></i> Agregar</a>
+                    <a class="btn btn-primary" id="boton_agregar" href="{% url 'entrevista:estudio' %}" title="Agregar nuevo estudio"><i class="fa fa-plus"></i> Agregar</a>
                     {%  endif %}
-                    <a class="btn btn-primary" data-toggle="modal" href="#modal_Ayuda" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
+                    <a class="btn btn-primary" data-toggle="modal" href="#" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                 </div>
             </div>
 
 <!--INICIO MODAL DETALLE DEL ESTUDIO--------------------------->
 
-            {% include 'estudio/modals_estudio.html'%}
+            <!--{% include 'estudio/modals_estudio.html'%}-->
 </div>
 
+<!--
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
 <script src="{% static 'js/js_mactor/js_mactor_modals/consultar/consultar_estudio.js'%}"></script>
 {% endblock %}
+-->
 
 {% endblock %}
