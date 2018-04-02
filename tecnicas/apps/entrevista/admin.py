@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import EstudioEntrevista
+from .models import EstudioEntrevista, Pregunta
 
 
 class EstudioAdmin(admin.ModelAdmin):
@@ -7,3 +7,11 @@ class EstudioAdmin(admin.ModelAdmin):
     ordering = ('titulo',)
 
 admin.site.register(EstudioEntrevista, EstudioAdmin)
+
+
+class PreguntaAdmin(admin.ModelAdmin):
+    list_display = ('texto_pregunta',)
+    ordering = ('texto_pregunta',)
+
+admin.site.register(Pregunta, PreguntaAdmin)
+

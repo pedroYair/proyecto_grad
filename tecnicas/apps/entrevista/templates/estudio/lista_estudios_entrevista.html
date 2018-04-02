@@ -35,7 +35,7 @@
                                     {% for estudio in estudios %}
                                         <tr>
                                             <td>{{forloop.counter}}</td>
-                                            <td ><a href="#" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
+                                            <td ><a href="{% url 'entrevista:lista_preguntas' %}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
                                             <td>{{estudio.fecha_inicio}}</td>
                                             <td>{{estudio.fecha_final}}</td>
                                             <td>
@@ -51,7 +51,7 @@
                                                 </a>
                                                 {% if request.user == estudio.idAdministrador %}
                                                 <a class="btn btn-warning" title="Editar"
-                                                   href="#">
+                                                   href="{% url 'entrevista:editar_estudio' estudio.id %}">
                                                     <i class="fa fa-pencil"></i>
                                                 </a>
                                                 {% endif %}

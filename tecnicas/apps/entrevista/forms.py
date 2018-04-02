@@ -14,12 +14,6 @@ class FormEstudio(forms.ModelForm):
             raise forms.ValidationError("Ingrese mínimo dos palabras para el título del estudio")
         return mensaje
 
-    def clean_idExpertos(self):
-        cantidad = self.cleaned_data["idExpertos"]
-        if len(cantidad) > 10:
-            raise forms.ValidationError("Seleccione máximo 10 expertos para el estudio.")
-        return cantidad
-
     class Meta:
         model = EstudioEntrevista
 
