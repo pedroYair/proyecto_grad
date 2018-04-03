@@ -1,11 +1,11 @@
 from django import forms
-from .models import EstudioEntrevista
+from .models import EstudioEntrevista, Pregunta
 
 
 """FORMULARIO ESTUDIO ENTREVISTA------------------------------------------------------------------------------------"""
 
 
-class FormEstudio(forms.ModelForm):
+class FormEstudioE(forms.ModelForm):
 
     def clean_titulo(self):
         mensaje = self.cleaned_data["titulo"]
@@ -32,7 +32,7 @@ class FormEstudio(forms.ModelForm):
         ]
 
     widgets = {
-            'titulo': forms.TextInput(attrs={'class': 'form-control'}),
+            'titulo': forms.Textarea(),
             'objetivo': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
             'entrevistador': forms.TextInput(attrs={'class': 'form-control'}),
             'entrevistado': forms.TextInput(attrs={'class': 'form-control'}),
@@ -45,27 +45,29 @@ class FormEstudio(forms.ModelForm):
             'idProyecto': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
-"""FORMULARIO FICHA DEL ACTOR------------------------------------------------------------------------------------
+"""FORMULARIO PREGUNTA------------------------------------------------------------------------------------"""
 
 
-class FormFicha(forms.ModelForm):
+class FormPregunta(forms.ModelForm):
 
     class Meta:
-        model = Ficha
+        model = Pregunta
 
         fields = [
-            'idActorX',
-            'idActorY',
-            'estrategia',
+            'texto_pregunta',
+            'texto_respuesta',
+            'observacion',
+            'idEstudio',
         ]
 
         widgets = {
-            'idActorX': forms.Select(attrs={'class': 'form-control'}),
-            'idActorY': forms.Select(attrs={'class': 'form-control'}),
-            'estrategia': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'texto_pregunta': forms.Textarea(attrs={'class': 'form-control', 'row': '2'}),
+            'texto_respuesta': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'observacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
         }
 
-FORMULARIO DE INFLUENCIAS-----------------------------------------------------------------------------------
+"""FORMULARIO DE INFLUENCIAS-----------------------------------------------------------------------------------
 
 
 class FormMID(forms.ModelForm):

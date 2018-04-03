@@ -66,6 +66,21 @@
                             {% endif %}
                             </tbody>
                         </table>
+
+                        <!------------PAGINACION--------->
+                        <ul class="pager">
+                                <li>
+                                    {% if page_obj.has_previous %}
+                                        <a href="?page={{page_obj.previous_page_number}}">Anterior</a>
+                                    {% endif %}
+                                </li>
+                                <li>
+                                    {% if page_obj.has_next %}
+                                        <a href="?page={{page_obj.next_page_number}}">Siguiente</a>
+                                    {% endif %}
+                                </li>
+
+                        </ul>
                     </div>
 
 <!--PAGINACION -----------------------------------

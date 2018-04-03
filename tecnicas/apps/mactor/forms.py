@@ -15,6 +15,7 @@ class FormEstudio(forms.ModelForm):
             raise forms.ValidationError("Ingrese mínimo dos palabras para el título del estudio")
         return mensaje
 
+
     def clean_idExpertos(self):
         cantidad = self.cleaned_data["idExpertos"]
         if len(cantidad) > 10:

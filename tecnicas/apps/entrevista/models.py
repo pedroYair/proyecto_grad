@@ -32,8 +32,8 @@ class EstudioEntrevista(models.Model):
 
 class Pregunta(models.Model):
     texto_pregunta = models.TextField()
-    texto_respuesta = models.TextField()
-    observacion = models.TextField()
+    texto_respuesta = models.TextField(null=True, blank=True)
+    observacion = models.TextField(null=True, blank=True)
     idEstudio = models.ForeignKey(EstudioEntrevista, null=True, blank=False, on_delete=models.CASCADE)
 
     class Meta:
@@ -94,26 +94,6 @@ class Juicio(models.Model):
 
     def __str__(self):
         return u'{0} - {1} - {2}'.format(self.idRonda, self.idPregunta, self.idValorEscala)
-
-
-"""MODELO ACTA DE ENTREVISTA----------------------------------------------------------------------------------------"""
-
-
-class ActaEntrevista(models.Model):
-    lugar = models.TextField()
-    fecha = models.DateField()
-    hora_inicio = models.TimeField()
-    hora_final = models.TimeField()
-    preguntas_realizadas = models.IntegerField()
-    estado = models.BooleanField(default=True)
-    idEstudio = models.ForeignKey(EstudioEntrevista, null=True, blank=False, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Acta de entrevista'
-        verbose_name_plural = 'Actas de entrevista'
-
-    def __str__(self):
-        return u'{0} - {1}'.format(self.idEstudio, self.estado)
 
 
 
