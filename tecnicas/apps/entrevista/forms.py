@@ -14,6 +14,13 @@ class FormEstudioE(forms.ModelForm):
             raise forms.ValidationError("Ingrese mínimo dos palabras para el título del estudio")
         return mensaje
 
+    def clean_idExpertos(self):
+        expertos = self.cleaned_data["idExpertos"]
+
+        if self.cleaned_data["idCoordinador"] in expertos:
+            raise forms.ValidationError("El coordinador no puede hacer parte del grupo de expertos")
+        return expertos
+
     class Meta:
         model = EstudioEntrevista
 

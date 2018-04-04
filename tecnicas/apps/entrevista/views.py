@@ -35,6 +35,7 @@ class ListaPreguntas(ListView):
     paginate_by = 1
 
 
+
 class CrearPregunta(CreateView):
     model = Pregunta
     form_class = FormPregunta
