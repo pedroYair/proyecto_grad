@@ -82,32 +82,6 @@
 
                         </ul>
                     </div>
-
-<!--PAGINACION -----------------------------------
-                        {% if lista_estudios.has_other_pages %}
-                          <ul class="pagination">
-                            {% if lista_estudios.has_previous %}
-                              <li><a href="?page={{ lista_estudios.previous_page_number }}">&laquo;</a></li>
-                            {% else %}
-                              <li class="disabled"><span>&laquo;</span></li>
-                            {% endif %}
-                            {% for i in lista_estudios.paginator.page_range %}
-                              {% if lista_estudios.number == i %}
-                                <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
-                              {% else %}
-                                <li><a href="?page={{ i }}">{{ i }}</a></li>
-                              {% endif %}
-                            {% endfor %}
-                            {% if lista_estudios.has_next %}
-                              <li><a href="?page={{ lista_estudios.next_page_number }}">&raquo;</a></li>
-                            {% else %}
-                              <li class="disabled"><span>&raquo;</span></li>
-                            {% endif %}
-                          </ul>
-                        {% endif %}
-
-                    -->
-
                 </div>
             </div>
         </div>

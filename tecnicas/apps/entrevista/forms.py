@@ -1,5 +1,5 @@
 from django import forms
-from .models import EstudioEntrevista, Pregunta
+from .models import EstudioEntrevista, Pregunta, ValorEscalaLikert, RondaJuicio
 
 
 """FORMULARIO ESTUDIO ENTREVISTA------------------------------------------------------------------------------------"""
@@ -47,8 +47,8 @@ class FormEstudioE(forms.ModelForm):
             'idCoordinador': forms.Select(attrs={'class': 'form-control'}),
             'idExpertos': forms.SelectMultiple(attrs={'class': 'form-control'}),
             'fecha_inicio': forms.DateInput(attrs={'class': 'datepicker'}),
-            'fecha_final': forms.DateInput(attrs={'class': 'datepicker'}, ),
-            'estado': forms.CheckboxInput(attrs={'class': 'form-control'}, ),
+            'fecha_final': forms.DateInput(attrs={'class': 'date'}),
+            'estado': forms.CheckboxInput(attrs={'class': 'form-control'}),
             'idProyecto': forms.TextInput(attrs={'class': 'form-control'}),
         }
 
@@ -74,55 +74,52 @@ class FormPregunta(forms.ModelForm):
             'idEstudio': forms.Select(attrs={'class': 'form-control'}),
         }
 
-"""FORMULARIO DE INFLUENCIAS-----------------------------------------------------------------------------------
+"""FORMULARIO DE INFLUENCIAS-----------------------------------------------------------------------------------"""
 
 
-class FormMID(forms.ModelForm):
+class FormValorEscala(forms.ModelForm):
 
     class Meta:
-        model = RelacionMID
+        model = ValorEscalaLikert
 
         fields = [
-            'idActorY',
-            'idActorX',
+            'nombre',
             'valor',
-            'justificacion',
-            'idExperto',
+            'descripcion',
+            'idEstudio',
         ]
 
         widgets = {
-            'idActorY': forms.Select(attrs={'class': 'form-control'}),
-            'idActorX': forms.Select(attrs={'class': 'form-control'}),
-            'valor': forms.Select(choices=VALORES, attrs={'class': 'regDropDown'}),
-            'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
-            'idExperto': forms.Select(attrs={'class': 'form-control'}),
+            'nombre': forms.TextInput(attrs={'class': 'form-control'}),
+            'valor': forms.TextInput(attrs={'class': 'form-control'}),
+            'observacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
         }
 
-FORMULARIO 1MAO----------------------------------------------------------------------------------------------
+
+"""FORMULARIO RONDAS----------------------------------------------------------------------------------------------"""
 
 
-class Form1mao(forms.ModelForm):
+class FormRonda(forms.ModelForm):
 
     class Meta:
-        model = RelacionMAO
+        model = RondaJuicio
 
         fields = [
-            'tipo',
-            'idActorY',
-            'idObjetivoX',
-            'valor',
-            'justificacion',
-            'idExperto',
-            ]
+            'numero_ronda',
+            'descripcion',
+            'estado',
+            'idEstudio',
+        ]
 
         widgets = {
-            'tipo': forms.TextInput(attrs={'class': 'form-control'}, ),
-            'idActorY': forms.Select(attrs={'class': 'form-control'}),
-            'idObjetivoX': forms.Select(attrs={'class': 'form-control'}),
-            'valor': forms.Select(choices=VALORES_1MAO, attrs={'class': 'regDropDown'}),
-            'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
-            'idExperto': forms.Select(attrs={'class': 'form-control'}),
-            }
+            'numero_ronda': forms.TextInput(attrs={'class': 'form-control'}),
+            'descripcion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
+            'estado': forms.CheckboxInput(attrs={'class': 'form-control'}),
+            'idEstudio': forms.Select(attrs={'class': 'form-control'}),
+        }
+
+"""
 FORMULARIO 2MAO---------------------------------------------------------------------------------------------
 
 

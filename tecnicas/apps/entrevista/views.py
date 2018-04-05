@@ -21,19 +21,20 @@ class ListaEstudios(ListView):
     paginate_by = 15
 
 
-class EditarEstudio(UpdateView):
+class EditarEstudio(UpdateView):   # por arreglar template
     model = EstudioEntrevista
     template_name = 'estudio/editar_estudio_entrevista.html'
     form_class = FormEstudioE
     success_url = reverse_lazy('entrevista:lista_estudios')
+
+"""------------------------------------VIEWS MODELO PREGUNTA------------------------------------"""
 
 
 class ListaPreguntas(ListView):
     model = Pregunta
     template_name = 'pregunta/lista_preguntas.html'
     context_object_name = 'preguntas'
-    paginate_by = 1
-
+    paginate_by = 15
 
 
 class CrearPregunta(CreateView):
@@ -41,6 +42,37 @@ class CrearPregunta(CreateView):
     form_class = FormPregunta
     template_name = 'pregunta/crear_pregunta.html'
     success_url = reverse_lazy('entrevista:lista_preguntas')
+
+"""------------------------------------VIEWS MODELO VALOR ESCALA------------------------------------"""
+
+
+class ListaValoresEscala(ListView):
+    model = ValorEscalaLikert
+    template_name = 'escala/lista_valores.html'
+    context_object_name = 'valores'
+    paginate_by = 10
+
+
+class CrearValorEscala(CreateView):
+    model = ValorEscalaLikert
+    form_class = FormValorEscala
+    template_name = 'escala/registrar_valor_escala.html'
+    success_url = reverse_lazy('entrevista:escala')
+
+
+class ListaRondas(ListView):
+    model = RondaJuicio
+    template_name = 'ronda/lista_rondas.html'
+    context_object_name = 'rondas'
+    paginate_by = 10
+
+
+class CrearRonda(CreateView):
+    model = ValorEscalaLikert
+    form_class = FormRonda
+    template_name = 'ronda/crear_ronda.html'
+    success_url = reverse_lazy('entrevista:rondas')
+
 
 
 

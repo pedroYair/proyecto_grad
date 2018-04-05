@@ -15,7 +15,7 @@
                 <div class="col-md-12">
                     <div class="widget wgreen">
                         <div class="widget-head">
-                            <div class="pull-left">Lista de preguntas</div>
+                            <div class="pull-left">Lista de rondas</div>
                             <div class="widget-icons pull-right">
                                 <a href="#" class="wminimize"><i class="fa fa-chevron-up"></i></a>
                             </div>
@@ -24,23 +24,21 @@
                         <div id="div_tabla" class="widget-content">
                             <table id="tabla_actores" class="table table-bordered">
                                 <thead>
-                                    {% if preguntas %}
+                                    {% if rondas %}
                                     <tr>
-                                        <th>#</th>
-                                        <th style="text-align: center">Pregunta</th>
-                                        <th style="text-align: center">Respuesta</th>
-                                        <th style="text-align: center">Observación</th>
+                                        <th style="text-align: center">Número</th>
+                                        <th style="text-align: center">Descripción</th>
+                                        <th style="text-align: center">Estado</th>
                                         <th id="acciones" style="text-align: center">Acciones</th>
                                     </tr>
 
                                 </thead>
                                 <tbody>
-                                        {% for pregunta in preguntas %}
+                                        {% for ronda in rondas %}
                                             <tr>
-                                                <td>{{forloop.counter}}</td>
-                                                <td style="text-align: justify">{{pregunta.texto_pregunta}}</td>
-                                                <td style="text-align: justify">{{pregunta.texto_respuesta}}</td>
-                                                <td style="text-align: justify">{{pregunta.observacion}}</td>
+                                                <td style="text-align: justify">{{ronda.numero_ronda}}</td>
+                                                <td style="text-align: justify">{{ronda.descripcion}}</td>
+                                                <td style="text-align: justify">{{ronda.estado}}</td>
                                                 <td>
                                                     <a id="ver" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal5"><i class="fa fa-eye"></i></a>
                                                     {% if estudio.estado is True and usuario != 'EXPERTO' %}
@@ -52,7 +50,7 @@
                                             </tr>
                                         {% endfor %}
                                     {% else %}
-                                        <h2>No hay preguntas registradas</h2>
+                                        <h2>No se han registrado rondas.</h2>
                                     {% endif %}
                                 </tbody>
                             </table>
@@ -69,7 +67,6 @@
                                         <a href="?page={{page_obj.next_page_number}}">Siguiente</a>
                                     {% endif %}
                                 </li>
-
                         </ul>
 
                         </div>
@@ -79,12 +76,12 @@
     <!--BOTONES--------------------------------------------------------------------------------->
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-8">
-                        <a class="btn btn-sm btn-success" href="{%url 'entrevista:lista_estudios' %}" title="Lista de estudios"><i class="fa fa-arrow-left"></i> Estudios</a>
+                        <a class="btn btn-sm btn-success" href="{%url 'entrevista:escala'%}" title="Escala de Likert"><i class="fa fa-arrow-left"></i> Escala</a>
                         {% if usuario != 'EXPERTO' %}
-                        <a class="btn btn-primary" href="{% url 'entrevista:crear_pregunta' %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
+                        <a class="btn btn-primary" href="{% url 'entrevista:registrar_ronda' %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
                         {% endif %}
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal4" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
-                        <a class="btn btn-sm btn-success" href="{% url 'entrevista:escala' %}" title="Escala de Likert">Escala <i class="fa fa-arrow-right"></i></a>
+                        <a class="btn btn-sm btn-success" href="#" title="Lista de estrategias">Estrategias <i class="fa fa-arrow-right"></i></a>
                     </div>
                 </div>
 
