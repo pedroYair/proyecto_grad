@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content %}
-    {% if request.user.is_superuser %}
+    {% if usuario != '' %}
         <div class="matter">
             <div class="container">
                 <div class="row">

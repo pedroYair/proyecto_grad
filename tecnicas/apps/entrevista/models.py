@@ -84,7 +84,7 @@ class RondaJuicio(models.Model):
 class Juicio(models.Model):
     idPregunta = models.ForeignKey(Pregunta, null=True, blank=False, on_delete=models.CASCADE)
     idValorEscala = models.ForeignKey(ValorEscalaLikert, null=True, blank=False, on_delete=models.CASCADE)
-    justificacion = models.TextField()
+    justificacion = models.TextField(null=True, blank=True)
     idExperto = models.ForeignKey(User, null=True)
     idRonda = models.ForeignKey(RondaJuicio, null=True, blank=False, on_delete=models.CASCADE)
 

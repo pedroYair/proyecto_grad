@@ -3,7 +3,8 @@ from django.contrib.auth.decorators import login_required
 from .views import CrearEstudio, ListaEstudios, EditarEstudio, \
     ListaPreguntas, CrearPregunta, \
     ListaValoresEscala, CrearValorEscala, \
-    ListaRondas, CrearRonda
+    ListaRondas, CrearRonda, \
+    ListaJuicios, CrearJuicio
 
 
 # nombre de la url, view que respondera y el parametro name
@@ -25,5 +26,9 @@ urlpatterns = [
     # Urls modelo Valor escala
     url(r'^lista_rondas', ListaRondas.as_view(), name='rondas'),
     url(r'^registrar_ronda/$', CrearRonda.as_view(), name='registrar_ronda'),
+
+    # Urls modelo Juicio
+    url(r'^lista_juicios', ListaJuicios.as_view(), name='juicios'),
+    url(r'^registrar_juicio/$', CrearJuicio.as_view(), name='registrar_juicio'),
 
 ]

@@ -60,6 +60,9 @@ class CrearValorEscala(CreateView):
     success_url = reverse_lazy('entrevista:escala')
 
 
+"""------------------------------------VIEWS MODELO RONDA-----------------------------------------"""
+
+
 class ListaRondas(ListView):
     model = RondaJuicio
     template_name = 'ronda/lista_rondas.html'
@@ -73,6 +76,22 @@ class CrearRonda(CreateView):
     template_name = 'ronda/crear_ronda.html'
     success_url = reverse_lazy('entrevista:rondas')
 
+
+"""------------------------------------VIEWS MODELO JUICIO-----------------------------------------"""
+
+
+class ListaJuicios(ListView):
+    model = Juicio
+    template_name = 'juicio/lista_juicios.html'
+    context_object_name = 'juicios'
+    paginate_by = 10
+
+
+class CrearJuicio(CreateView):
+    model = Juicio
+    form_class = FormJuicio
+    template_name = 'juicio/crear_juicio.html'
+    success_url = reverse_lazy('entrevista:juicios')
 
 
 

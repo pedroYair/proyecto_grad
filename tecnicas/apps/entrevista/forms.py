@@ -1,5 +1,5 @@
 from django import forms
-from .models import EstudioEntrevista, Pregunta, ValorEscalaLikert, RondaJuicio
+from .models import EstudioEntrevista, Pregunta, ValorEscalaLikert, RondaJuicio, Juicio
 
 
 """FORMULARIO ESTUDIO ENTREVISTA------------------------------------------------------------------------------------"""
@@ -119,34 +119,33 @@ class FormRonda(forms.ModelForm):
             'idEstudio': forms.Select(attrs={'class': 'form-control'}),
         }
 
-"""
-FORMULARIO 2MAO---------------------------------------------------------------------------------------------
+
+"""FORMULARIO JUICIO---------------------------------------------------------------------------------------------"""
 
 
-class Form2mao(forms.ModelForm):
+class FormJuicio(forms.ModelForm):
 
     class Meta:
-        model = RelacionMAO
+        model = Juicio
 
         fields = [
-            'tipo',
-            'idActorY',
-            'idObjetivoX',
-            'valor',
+            'idPregunta',
+            'idValorEscala',
             'justificacion',
             'idExperto',
+            'idRonda',
             ]
 
         widgets = {
-            'tipo': forms.TextInput(attrs={'class': 'form-control'}, ),
-            'idActorY': forms.Select(attrs={'class': 'form-control'}),
-            'idObjetivoX': forms.Select(attrs={'class': 'form-control'}),
-            'valor': forms.Select(choices=VALORES_2MAO, attrs={'class': 'regDropDown'}),
+            'idPregunta': forms.Select(attrs={'class': 'form-control'}),
+            'idValorEscala': forms.Select(attrs={'class': 'form-control'}),
             'justificacion': forms.Textarea(attrs={'class': 'form-control', 'row': '3'}),
-            'idExperto': forms.Select(attrs={'class': 'form-control'}),
+            'idExperto': forms.Select(attrs={'class': 'regDropDown'}),
+            'idRonda': forms.Select(attrs={'class': 'form-control'}),
             }
 
-FORMULARIO INFORME FINAL-------------------------------------------------------------------------------------
+
+"""FORMULARIO INFORME FINAL-------------------------------------------------------------------------------------
 
 
 class FormInforme(forms.ModelForm):
