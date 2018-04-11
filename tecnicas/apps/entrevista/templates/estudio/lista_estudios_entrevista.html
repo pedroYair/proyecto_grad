@@ -35,7 +35,7 @@
                                     {% for estudio in estudios %}
                                         <tr>
                                             <td>{{forloop.counter}}</td>
-                                            <td ><a href="{% url 'entrevista:lista_preguntas' %}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
+                                            <td ><a href="{% url 'entrevista:lista_preguntas' estudio.id %}" style="color: #0a6aa1 ">{{estudio.titulo}}</a></td>
                                             <td>{{estudio.fecha_inicio}}</td>
                                             <td>{{estudio.fecha_final}}</td>
                                             <td>

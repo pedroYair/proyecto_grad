@@ -16,7 +16,7 @@ urlpatterns = [
     url(r'^editar_estudio/(?P<pk>\d+)/$', EditarEstudio.as_view(), name='editar_estudio'),
 
     # Urls modelo Pregunta
-    url(r'^lista_preguntas', ListaPreguntas.as_view(), name='lista_preguntas'),
+    url(r'^lista_preguntas/(\d+)/$', ListaPreguntas.as_view(), name='lista_preguntas'),
     url(r'^crear_pregunta/$', CrearPregunta.as_view(), name='crear_pregunta'),
 
     # Urls modelo Valor escala

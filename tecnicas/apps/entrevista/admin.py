@@ -10,8 +10,8 @@ admin.site.register(EstudioEntrevista, EstudioAdmin)
 
 
 class PreguntaAdmin(admin.ModelAdmin):
-    list_display = ('texto_pregunta',)
-    ordering = ('texto_pregunta',)
+    list_display = ('texto_pregunta', 'idEstudio')
+    ordering = ('idEstudio',)
 
 admin.site.register(Pregunta, PreguntaAdmin)
 
