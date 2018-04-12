@@ -79,7 +79,7 @@
     <!--BOTONES--------------------------------------------------------------------------------->
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-8">
-                        <a class="btn btn-sm btn-success" href="{%url 'entrevista:lista_preguntas' 1%}" title="Lista de preguntas"><i class="fa fa-arrow-left"></i> Preguntas</a>
+                        <a class="btn btn-sm btn-success" href="{%url 'entrevista:lista_preguntas' estudio.id %}" title="Lista de preguntas"><i class="fa fa-arrow-left"></i> Preguntas</a>
                         {% if usuario != 'EXPERTO' %}
                         <a class="btn btn-primary" href="{% url 'entrevista:registrar_valor' %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
                         {% endif %}

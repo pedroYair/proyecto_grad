@@ -41,8 +41,13 @@ class ListaPreguntas(ListView):
     paginate_by = 15
 
     def get_queryset(self):
-        estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
-        return Pregunta.objects.filter(idEstudio=estudio.id).order_by('texto_pregunta')
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        return Pregunta.objects.filter(idEstudio=self.estudio.id).order_by('texto_pregunta')
+
+    def get_context_data(self, **kwargs):
+        context = super(ListaPreguntas, self).get_context_data(**kwargs)
+        context['estudio'] = self.estudio
+        return context
 
 
 class CrearPregunta(CreateView):
@@ -59,6 +64,15 @@ class ListaValoresEscala(ListView):
     template_name = 'escala/lista_valores.html'
     context_object_name = 'valores'
     paginate_by = 10
+
+    def get_queryset(self):
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        return ValorEscalaLikert.objects.filter(idEstudio=self.estudio.id).order_by('valor')
+
+    def get_context_data(self, **kwargs):
+        context = super(ListaValoresEscala, self).get_context_data(**kwargs)
+        context['estudio'] = self.estudio
+        return context
 
 
 class CrearValorEscala(CreateView):

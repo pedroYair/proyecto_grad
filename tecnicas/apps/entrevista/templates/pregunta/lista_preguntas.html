@@ -84,7 +84,7 @@
                         <a class="btn btn-primary" href="{% url 'entrevista:crear_pregunta' %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
                         {% endif %}
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal4" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
-                        <a class="btn btn-sm btn-success" href="{% url 'entrevista:escala' %}" title="Escala de Likert">Escala <i class="fa fa-arrow-right"></i></a>
+                        <a class="btn btn-sm btn-success" href="{% url 'entrevista:escala' estudio.id %}" title="Escala de Likert">Escala <i class="fa fa-arrow-right"></i></a>
                     </div>
                 </div>
 
