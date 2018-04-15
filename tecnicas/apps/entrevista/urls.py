@@ -17,7 +17,7 @@ urlpatterns = [
 
     # Urls modelo Pregunta
     url(r'^lista_preguntas/(\d+)/$', ListaPreguntas.as_view(), name='lista_preguntas'),
-    url(r'^crear_pregunta/$', CrearPregunta.as_view(), name='crear_pregunta'),
+    url(r'^crear_pregunta/(\d+)/$', CrearPregunta.as_view(), name='crear_pregunta'),
 
     # Urls modelo Valor escala
     url(r'^lista_valores_escala/(\d+)/$', ListaValoresEscala.as_view(), name='escala'),

@@ -54,7 +54,12 @@ class CrearPregunta(CreateView):
     model = Pregunta
     form_class = FormPregunta
     template_name = 'pregunta/crear_pregunta.html'
-    success_url = reverse_lazy('entrevista:lista_preguntas')
+
+    def get_context_data(self, **kwargs):
+        context = super(CrearPregunta, self).get_context_data(**kwargs)
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        context['estudio'] = self.estudio
+        return context
 
 """------------------------------------VIEWS MODELO VALOR ESCALA------------------------------------"""
 

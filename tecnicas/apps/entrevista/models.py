@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.timezone import now
+from django.core.urlresolvers import reverse
 
 
 """MODELO ESTUDIO ENTREVISTA---------------------------------------------------------------------------------"""
@@ -39,6 +40,9 @@ class Pregunta(models.Model):
     class Meta:
         verbose_name = 'Pregunta'
         verbose_name_plural = 'Preguntas'
+
+    def get_absolute_url(self):
+        return reverse('entrevista:lista_preguntas', args={self.idEstudio.id})
 
     def __str__(self):
         return u'{0}'.format(self.texto_pregunta)

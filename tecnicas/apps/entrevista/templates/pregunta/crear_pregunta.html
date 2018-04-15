@@ -3,8 +3,8 @@
 {% load crispy_forms_tags %}
 
 {% block head_title %}
-    {% if request.user.is_superuser %}
-        Bienvenido: {{user.username}}
+    {% if usuario != '' %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
     {% endif %}
 {% endblock %}
 
