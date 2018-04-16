@@ -3,7 +3,9 @@ from .models import *
 from .forms import *
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.views.generic import CreateView, ListView, UpdateView
-from django.shortcuts import render, redirect, get_object_or_404
+from django.shortcuts import get_object_or_404
+from django.http import HttpResponse
+from django.template.loader import render_to_string
 
 """------------------------------------VIEWS MODELO ESTUDIOENTREVISTA------------------------------------"""
 
@@ -84,7 +86,13 @@ class CrearValorEscala(CreateView):
     model = ValorEscalaLikert
     form_class = FormValorEscala
     template_name = 'escala/registrar_valor_escala.html'
-    success_url = reverse_lazy('entrevista:escala')
+
+    def get_context_data(self, **kwargs):
+        context = super(CrearValorEscala, self).get_context_data(**kwargs)
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        context['estudio'] = self.estudio
+        return context
+
 
 
 """------------------------------------VIEWS MODELO RONDA-----------------------------------------"""
@@ -96,12 +104,26 @@ class ListaRondas(ListView):
     context_object_name = 'rondas'
     paginate_by = 10
 
+    def get_queryset(self):
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        return RondaJuicio.objects.filter(idEstudio=self.estudio.id).order_by('numero_ronda')
+
+    def get_context_data(self, **kwargs):
+        context = super(ListaRondas, self).get_context_data(**kwargs)
+        context['estudio'] = self.estudio
+        return context
+
 
 class CrearRonda(CreateView):
     model = ValorEscalaLikert
     form_class = FormRonda
     template_name = 'ronda/crear_ronda.html'
-    success_url = reverse_lazy('entrevista:rondas')
+
+    def get_context_data(self, **kwargs):
+        context = super(CrearRonda, self).get_context_data(**kwargs)
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        context['estudio'] = self.estudio
+        return context
 
 
 """------------------------------------VIEWS MODELO JUICIO-----------------------------------------"""

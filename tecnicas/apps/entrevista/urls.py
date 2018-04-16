@@ -20,12 +20,12 @@ urlpatterns = [
     url(r'^crear_pregunta/(\d+)/$', CrearPregunta.as_view(), name='crear_pregunta'),
 
     # Urls modelo Valor escala
-    url(r'^lista_valores_escala/(\d+)/$', ListaValoresEscala.as_view(), name='escala'),
-    url(r'^registrar_valor/$', CrearValorEscala.as_view(), name='registrar_valor'),
+    url(r'^escala_likert/(\d+)/$', ListaValoresEscala.as_view(), name='escala'),
+    url(r'^registrar_valor/(\d+)$', CrearValorEscala.as_view(), name='registrar_valor'),
 
     # Urls modelo Valor escala
-    url(r'^lista_rondas', ListaRondas.as_view(), name='rondas'),
-    url(r'^registrar_ronda/$', CrearRonda.as_view(), name='registrar_ronda'),
+    url(r'^lista_rondas/(\d+)/$', ListaRondas.as_view(), name='rondas'),
+    url(r'^registrar_ronda/(\d+)/$', CrearRonda.as_view(), name='registrar_ronda'),
 
     # Urls modelo Juicio
     url(r'^lista_juicios', ListaJuicios.as_view(), name='juicios'),

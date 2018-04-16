@@ -90,10 +90,7 @@ def crear_actor(request):
 
     if flag is False:
         try:
-            actor = Actor(nombreLargo=nombreLargo,
-                          nombreCorto=nombreCorto,
-                          descripcion=descripcion,
-                          idEstudio=estudio)
+            actor = Actor(nombreLargo=nombreLargo, nombreCorto=nombreCorto, descripcion=descripcion, idEstudio=estudio)
             actor.save()
             response = JsonResponse({'info': "El actor " + nombreLargo + " se ha registrado con exito"})
             return HttpResponse(response.content)

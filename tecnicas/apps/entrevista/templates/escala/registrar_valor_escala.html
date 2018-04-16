@@ -3,8 +3,8 @@
 {% load crispy_forms_tags %}
 
 {% block head_title %}
-    {% if request.user.is_superuser %}
-        Bienvenido: {{user.username}}
+    {% if usuario != '' %}
+        <input hidden class="col-sm-1" type="number" name="idEstudio" value="{{estudio.id}}">Estudio: {{estudio.titulo}}
     {% endif %}
 {% endblock %}
 
@@ -30,7 +30,7 @@
 
                                     <div class="form-group">
                                         <div class="col-md-8 col-md-offset-3">
-                                            <a class="btn btn-sm btn-success" href="{% url 'entrevista:escala' 1 %}" title="Lista de estudios"><i class="fa fa-arrow-left"></i> Atrás</a>
+                                            <a class="btn btn-sm btn-success" href="{% url 'entrevista:escala' estudio.id %}" title="Lista de estudios"><i class="fa fa-arrow-left"></i> Atrás</a>
                                             <button type="submit" class="btn btn-primary" title="Guardar"><i class="fa fa-check"></i> Guardar</button>
                                             <a class="btn btn-primary" data-toggle="modal" href="#myModal" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                                         </div>

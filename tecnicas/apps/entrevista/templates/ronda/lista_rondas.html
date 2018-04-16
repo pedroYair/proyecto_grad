@@ -38,7 +38,13 @@
                                             <tr>
                                                 <td style="text-align: justify">{{ronda.numero_ronda}}</td>
                                                 <td style="text-align: justify">{{ronda.descripcion}}</td>
-                                                <td style="text-align: justify">{{ronda.estado}}</td>
+                                                <td style="text-align: justify">
+                                                    {% if ronda.estado is True %}
+                                                    <a class="btn btn-sm btn-success" title="Ronda abierta"><i class="fa fa-check"></i></a>
+                                                    {% else %}
+                                                    <a class="btn btn-sm btn-danger" title="Ronda cerrada"><i class="fa fa-times"></i></a>
+                                                    {% endif %}
+                                                </td>
                                                 <td>
                                                     <a id="ver" class="btn btn-primary" title="Ver" data-toggle="modal" href="#myModal5"><i class="fa fa-eye"></i></a>
                                                     {% if estudio.estado is True and usuario != 'EXPERTO' %}
@@ -76,9 +82,9 @@
     <!--BOTONES--------------------------------------------------------------------------------->
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-8">
-                        <a class="btn btn-sm btn-success" href="{%url 'entrevista:escala' 1%}" title="Escala de Likert"><i class="fa fa-arrow-left"></i> Escala</a>
+                        <a class="btn btn-sm btn-success" href="{%url 'entrevista:escala' estudio.id %}" title="Escala de Likert"><i class="fa fa-arrow-left"></i> Escala</a>
                         {% if usuario != 'EXPERTO' %}
-                        <a class="btn btn-primary" href="{% url 'entrevista:registrar_ronda' %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
+                        <a class="btn btn-primary" href="{% url 'entrevista:registrar_ronda' estudio.id %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
                         {% endif %}
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal4" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
                         <a class="btn btn-sm btn-success" href="{% url 'entrevista:juicios' %}" title="Juicios">Juicios <i class="fa fa-arrow-right"></i></a>

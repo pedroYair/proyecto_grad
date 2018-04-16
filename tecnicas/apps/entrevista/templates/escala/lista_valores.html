@@ -22,7 +22,7 @@
                             <div class="clearfix"></div>
                         </div>
                         <div id="div_tabla" class="widget-content">
-                            <table id="tabla_actores" class="table table-bordered">
+                            <table id="tabla_escala" class="table table-bordered">
                                 <thead>
                                     {% if valores %}
                                     <tr>
@@ -81,16 +81,16 @@
                     <div class="col-md-offset-2 col-md-8">
                         <a class="btn btn-sm btn-success" href="{%url 'entrevista:lista_preguntas' estudio.id %}" title="Lista de preguntas"><i class="fa fa-arrow-left"></i> Preguntas</a>
                         {% if usuario != 'EXPERTO' %}
-                        <a class="btn btn-primary" href="{% url 'entrevista:registrar_valor' %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
+                        <a class="btn btn-primary"  href="{% url 'entrevista:registrar_valor' estudio.id %}" title="Agregar pregunta"><i class="fa fa-plus"></i> Agregar</a>
+
                         {% endif %}
                         <a class="btn btn-primary" data-toggle="modal" href="#myModal4" title="Ayuda"><i class="fa fa-book"></i> Ayuda</a>
-                        <a class="btn btn-sm btn-success" href="{% url 'entrevista:rondas' %}" title="Lista de rondas">Rondas <i class="fa fa-arrow-right"></i></a>
+                        <a class="btn btn-sm btn-success" href="{% url 'entrevista:rondas' estudio.id %}" title="Lista de rondas">Rondas <i class="fa fa-arrow-right"></i></a>
                     </div>
                 </div>
 
      <!--INICIO MODALS CREAR, ELIMINAR, EDITAR Y AYUDA--------------------------->
 
-            {% include 'actor/modals_actor.html'%}
 
             </div>
         </div>
@@ -99,16 +99,12 @@
         <h2>Upps...no cuenta con permisos para acceder a esta página.</h2>
     {% endif %}
 
-<!--
+
 {% block extrajs %}
 <script src="{% static 'jquery/jquery.min.js' %}"></script>
-<script src="{% static 'js/js_mactor/js_mactor_modals/agregar/agregar_actor.js'%}"></script>
-<script src="{% static 'js/js_mactor/js_mactor_modals/eliminar/eliminar_actor.js'%}"></script>
-<script src="{% static 'js/js_mactor/js_mactor_modals/editar/editar_actor.js'%}"></script>
-<script src="{% static 'js/js_mactor/js_mactor_modals/consultar/consultar_actor.js'%}"></script>
 {% endblock %}
 
-
+<!--
 {% if estudio.estado is False or cantidad_registrados == 15 %}
     <script type="text/javascript">
         document.getElementById("boton_agregar").disabled = true;

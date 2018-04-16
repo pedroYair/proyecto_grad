@@ -61,6 +61,9 @@ class ValorEscalaLikert(models.Model):
         verbose_name = 'Valor escala de Likert'
         verbose_name_plural = 'Valores escala de Likert'
 
+    def get_absolute_url(self):
+        return reverse('entrevista:escala', args={self.idEstudio.id})
+
     def __str__(self):
         return u'{0}'.format(self.nombre)
 
@@ -77,6 +80,9 @@ class RondaJuicio(models.Model):
     class Meta:
         verbose_name = 'Ronda de juicio'
         verbose_name_plural = 'Rondas de juicio'
+
+    def get_absolute_url(self):
+        return reverse('entrevista:rondas', args={self.idEstudio.id})
 
     def __str__(self):
         return u'{0} - {1}'.format(self.numero_ronda, self.idEstudio)
