@@ -42,6 +42,7 @@ class ListaPreguntas(ListView):
     context_object_name = 'preguntas'
     paginate_by = 15
 
+
     def get_queryset(self):
         self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
         return Pregunta.objects.filter(idEstudio=self.estudio.id).order_by('texto_pregunta')
@@ -49,6 +50,7 @@ class ListaPreguntas(ListView):
     def get_context_data(self, **kwargs):
         context = super(ListaPreguntas, self).get_context_data(**kwargs)
         context['estudio'] = self.estudio
+        context['usuario'] = obtener_tipo_usuario(self, self.estudio.id)
         return context
 
 
@@ -79,6 +81,7 @@ class ListaValoresEscala(ListView):
     def get_context_data(self, **kwargs):
         context = super(ListaValoresEscala, self).get_context_data(**kwargs)
         context['estudio'] = self.estudio
+        context['usuario'] = obtener_tipo_usuario(self, self.estudio.id)
         return context
 
 
@@ -92,8 +95,6 @@ class CrearValorEscala(CreateView):
         self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
         context['estudio'] = self.estudio
         return context
-
-
 
 """------------------------------------VIEWS MODELO RONDA-----------------------------------------"""
 
@@ -111,6 +112,7 @@ class ListaRondas(ListView):
     def get_context_data(self, **kwargs):
         context = super(ListaRondas, self).get_context_data(**kwargs)
         context['estudio'] = self.estudio
+        context['usuario'] = obtener_tipo_usuario(self, self.estudio.id)
         return context
 
 
@@ -135,12 +137,44 @@ class ListaJuicios(ListView):
     context_object_name = 'juicios'
     paginate_by = 10
 
+    def get_queryset(self):
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        return Juicio.objects.filter(idPregunta__idEstudio=self.estudio.id).order_by('idPregunta')
+
+    def get_context_data(self, **kwargs):
+        context = super(ListaJuicios, self).get_context_data(**kwargs)
+        context['estudio'] = self.estudio
+        context['usuario'] = obtener_tipo_usuario(self, self.estudio.id)
+        return context
+
 
 class CrearJuicio(CreateView):
     model = Juicio
     form_class = FormJuicio
     template_name = 'juicio/crear_juicio.html'
-    success_url = reverse_lazy('entrevista:juicios')
+
+    def get_context_data(self, **kwargs):
+        context = super(CrearJuicio, self).get_context_data(**kwargs)
+        self.estudio = get_object_or_404(EstudioEntrevista, id=self.args[0])
+        context['estudio'] = self.estudio
+        return context
+
+
+"""----------------------------------------------------FUNCIONES AUXILIARES------------------------------"""
+
+
+def obtener_tipo_usuario(self, idEstudio):
+
+    estudio = EstudioEntrevista.objects.get(id=idEstudio)
+    lista_expertos = estudio.idExpertos.all()
+    tipo = ""
+
+    if self.request.user == estudio.idAdministrador or self.request.user == estudio.idCoordinador:
+        tipo = "COORDINADOR"
+    elif self.request.user in lista_expertos:
+        tipo = "EXPERTO"
+    print(tipo, "-------")
+    return tipo
 
 
 

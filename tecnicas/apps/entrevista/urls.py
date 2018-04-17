@@ -28,7 +28,7 @@ urlpatterns = [
     url(r'^registrar_ronda/(\d+)/$', CrearRonda.as_view(), name='registrar_ronda'),
 
     # Urls modelo Juicio
-    url(r'^lista_juicios', ListaJuicios.as_view(), name='juicios'),
-    url(r'^registrar_juicio/$', CrearJuicio.as_view(), name='registrar_juicio'),
+    url(r'^lista_juicios/(\d+)/$', ListaJuicios.as_view(), name='juicios'),
+    url(r'^registrar_juicio/(\d+)/$', CrearJuicio.as_view(), name='registrar_juicio'),
 
 ]

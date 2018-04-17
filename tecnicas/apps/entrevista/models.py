@@ -102,6 +102,9 @@ class Juicio(models.Model):
         verbose_name = 'Juicio de expertos'
         verbose_name_plural = 'Juicios de los expertos'
 
+    def get_absolute_url(self):
+        return reverse('entrevista:juicios', args={self.idPregunta.idEstudio.id})
+
     def __str__(self):
         return u'{0} - {1} - {2}'.format(self.idRonda, self.idPregunta, self.idValorEscala)
 
